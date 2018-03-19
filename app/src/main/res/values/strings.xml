@@ -1,0 +1,80 @@
+<resources>
+    <!-- Application Name -->
+    <string name="app_name">RockBottom</string>
+
+    <!-- Login String Data -->
+    <string name="login_google_txt">구글 아이디로 로그인</string>
+    <string name="login_facebook_txt">페이스북 아이디로 로그인</string>
+    <string name="login_intro_subject_txt">Subject Name</string>
+    <string name="login_intro_content_txt">Content</string>
+
+    <!-- Intro String Data -->
+    <string name="intro_subject_first"></string>
+    <string name="intro_subject_second">지금 시작하세요</string>
+    <string name="intro_subject_third">빠르게 익히세요</string>
+    <string name="intro_subject_fourth">꼬셔보세요</string>
+    <string name="intro_content_first">만들어 제껴부러</string>
+    <string name="intro_content_second">가장 빠른 길은 바로 행동하는 것입니다</string>
+    <string name="intro_content_third">개론서 정도의 지식을 머리에 담아보세요</string>
+    <string name="intro_content_fourth">알아야 꼬십니다</string>
+
+    <!-- Input Information String Data -->
+    <string name="input_info_yours_txt">여러분의 정보를 입력하고 시작해보세요</string>
+    <string name="input_info_selfie_txt">사진</string>
+    <string name="input_info_nick_name_txt">닉네임(필수)</string>
+    <string name="input_info_message_txt">메세지</string>
+    <string name="input_info_team_name_txt">소속</string>
+    <string name="input_info_github_txt">GitHub ID(주소가 아닌 ID)</string>
+    <string name="input_info_done_txt">완료</string>
+
+    <!-- Main String Data -->
+    <string name="main_ranking_bottom_txt">랭킹</string>
+    <string name="main_study_bottom_txt">학습</string>
+    <string name="main_my_info_bottom_txt">내 정보</string>
+
+    <!-- Ranking String Data -->
+    <string name="ranking_priority_txt">랭킹 순위</string>
+
+    <!-- Study String Data -->
+    <string name="study_txt">컴퓨터 공학을 학습하고\n더 깊은 실력을 갖춰보세요</string>
+    <string name="study_subject_txt">Subject</string>
+    <string name="study_chapter_txt">Chapter</string>
+    <string name="study_update_done_txt">업데이트 완료</string>
+    <string name="study_update_ing_txt">업데이트 중</string>
+
+    <!-- Learn String Data -->
+    <string name="learn_done_txt">공부 끝!</string>
+    <string name="learn_later_txt">나중에 공부할래요</string>
+    <string name="learn_subject_txt">Subject</string>
+    <string name="learn_content_txt">Content</string>
+
+    <!-- My Information String Data -->
+    <string name="my_info_point_txt">포인트</string>
+    <string name="my_info_ranking_txt">랭킹</string>
+    <string name="my_info_edit_profile_btn_txt">Edit Profile</string>
+    <string name="my_info_study_situation">학습현황</string>
+    <string name="my_info_subject_txt">Subject</string>
+    <string name="my_info_done_all_number_txt">done / all</string>
+
+    <!-- Edit Information String Data -->
+    <string name="edit_info_selfie_txt">사진 수정</string>
+    <string name="edit_info_logout_txt">로그아웃</string>
+    <string name="edit_info_good_bye_txt">회원탈퇴</string>
+    <string name="edit_info_list_title_txt">List Title</string>
+    <string name="edit_info_list_content_txt">List Content</string>
+
+    <!-- User String Data -->
+    <string name="user_nick_name_txt">Nick Name</string>
+    <string name="user_message_txt">Message</string>
+    <string name="user_team_name_txt">Team</string>
+    <string name="user_github_txt">GitHub ID</string>
+    <string name="user_point_number_txt">9999</string>
+    <string name="user_ranking_number_txt">1111</string>
+
+    <!-- Dialog String Data -->
+    <string name="dialog_learn_txt">학습</string>
+    <string name="dialog_quiz_txt">퀴즈</string>
+    <string name="dialog_update_done">업데이트 완료!</string>
+    <string name="dialog_update_ing">업데이트 중</string>
+
+</resources>

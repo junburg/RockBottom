@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/learn_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="48dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:weightSum="1">
+
+
+    <Button
+        android:id="@+id/learn_done_btn"
+        android:layout_width="0dp"
+        android:layout_weight="0.4995"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_custom_learn"
+        android:text="@string/learn_done_txt"
+        android:textColor="@color/colorAccent"
+        />
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_weight="0.001"
+            android:layout_height="match_parent"/>
+
+    <Button
+        android:id="@+id/learn_later_btn"
+        android:layout_width="0dp"
+        android:layout_weight="0.4995"
+        android:background="@drawable/button_custom_learn"
+        android:layout_height="wrap_content"
+        android:text="@string/learn_later_txt"
+        android:textColor="@color/colorAccent"/>
+    </LinearLayout>
+</RelativeLayout>

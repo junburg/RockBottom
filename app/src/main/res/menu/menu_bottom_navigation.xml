@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/bottom_ranking"
+        android:enabled="true"
+        android:icon="@drawable/ic_format_list_numbered_black_24dp"
+        android:title="@string/main_ranking_bottom_txt"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/bottom_study"
+        android:enabled="true"
+        android:icon="@drawable/ic_create_black_24dp"
+        android:title="@string/main_study_bottom_txt"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/bottom_my_info"
+        android:enabled="true"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="@string/main_my_info_bottom_txt"
+        app:showAsAction="ifRoom" />
+</menu>
