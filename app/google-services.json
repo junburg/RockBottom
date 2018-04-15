@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1000836139160",
+    "firebase_url": "https://rockbottom-2bc4e.firebaseio.com",
+    "project_id": "rockbottom-2bc4e",
+    "storage_bucket": "rockbottom-2bc4e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000836139160:android:da5b9311e886c656",
+        "android_client_info": {
+          "package_name": "com.junburg.moon.rockbottom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000836139160-pam575bvjn5a3s28h3at9jvbkd666ang.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.junburg.moon.rockbottom",
+            "certificate_hash": "ba5c82f046c4a88f6fa90abbf6b9ea35591da548"
+          }
+        },
+        {
+          "client_id": "1000836139160-lrbv2l1m288aqh2p8cjj1ug5croh0rqi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_bBWYA97DrIGdStulzBITOYCTu1un57c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000836139160-lrbv2l1m288aqh2p8cjj1ug5croh0rqi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
