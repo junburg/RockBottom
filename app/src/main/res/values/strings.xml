@@ -5,6 +5,7 @@
     <!-- Login String Data -->
     <string name="login_google_txt">구글 아이디로 로그인</string>
     <string name="login_facebook_txt">페이스북 아이디로 로그인</string>
+    <string name="login_email_txt">이메일로 가입 또는 로그인</string>
     <string name="login_intro_subject_txt">Subject Name</string>
     <string name="login_intro_content_txt">Content</string>
 
@@ -17,6 +18,14 @@
     <string name="intro_content_second">가장 빠른 길은 바로 행동하는 것입니다</string>
     <string name="intro_content_third">개론서 정도의 지식을 머리에 담아보세요</string>
     <string name="intro_content_fourth">알아야 꼬십니다</string>
+
+    <!-- Email Login String Data -->
+    <string name ="email_login_email_txt">이메일</string>
+    <string name ="email_login_passwrod_txt">비밀번호</string>
+    <string name ="email_login_check_passwrod_txt">비밀번호 확인</string>
+    <string name ="email_login_sign_in_txt">로그인</string>
+    <string name ="email_login_sign_up_txt">새로운 계정 만들기</string>
+    <string name ="email_sign_up_txt">가입하기</string>
 
     <!-- Input Information String Data -->
     <string name="input_info_yours_txt">여러분의 정보를 입력하고 시작해보세요</string>
@@ -36,7 +45,7 @@
     <string name="ranking_priority_txt">랭킹 순위</string>
 
     <!-- Study String Data -->
-    <string name="study_txt">컴퓨터 공학을 학습하고\n더 깊은 실력을 갖춰보세요</string>
+    <string name="study_txt">  컴퓨터 공학을 학습하고\n더 깊은 실력을 갖춰보세요</string>
     <string name="study_subject_txt">Subject</string>
     <string name="study_chapter_txt">Chapter</string>
     <string name="study_update_done_txt">업데이트 완료</string>
@@ -71,10 +80,13 @@
     <string name="user_point_number_txt">9999</string>
     <string name="user_ranking_number_txt">1111</string>
 
-    <!-- Dialog String Data -->
+    <!-- Chapter Dialog String Data -->
     <string name="dialog_learn_txt">학습</string>
     <string name="dialog_quiz_txt">퀴즈</string>
     <string name="dialog_update_done">업데이트 완료!</string>
     <string name="dialog_update_ing">업데이트 중</string>
+
+    <!-- Input Information Dialog String Data -->
+    <string name="dialog_selfie_delete_txt">사진삭제</string>
 
 </resources>

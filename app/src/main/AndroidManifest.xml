@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.junburg.rockbottom">
+    package="com.junburg.moon.rockbottom">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -9,17 +12,33 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".login.LoginActivity" android:theme="@style/AppTheme2">
+        <activity
+            android:name="com.junburg.moon.rockbottom.login.LoginActivity"
+            android:theme="@style/AppTheme2">
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".login.InputInfoActivity" android:theme="@style/AppTheme2"></activity>
-        <activity android:name=".main.MainActivity" android:theme="@style/AppTheme2"></activity>
-        <activity android:name=".myinfo.EditInfoActivity" android:theme="@style/AppTheme2"></activity>
-        <activity android:name=".learn.LearnActivity" android:theme="@style/AppTheme2"></activity>
+        <activity
+            android:name="com.junburg.moon.rockbottom.login.InputInfoActivity"
+            android:theme="@style/AppTheme2">
+        </activity>
+        <activity
+            android:name="com.junburg.moon.rockbottom.main.MainActivity"
+            android:theme="@style/AppTheme2"></activity>
+        <activity
+            android:name="com.junburg.moon.rockbottom.myinfo.EditInfoActivity"
+            android:theme="@style/AppTheme2"></activity>
+        <activity
+            android:name="com.junburg.moon.rockbottom.learn.LearnActivity"
+            android:theme="@style/AppTheme2"></activity>
+        <activity android:name=".login.EmailLoginActivity"
+            android:theme="@style/AppTheme"></activity>
+        <activity android:name=".login.EmailSignUpActivity"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

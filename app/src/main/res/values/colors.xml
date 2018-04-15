@@ -7,5 +7,6 @@
     <color name="colorVideoTxt">#001020</color>
     <color name="colorVideoTransparent">#92dadada</color>
     <color name="colorDarkerGray">@android:color/darker_gray</color>
+    <color name="white">@android:color/white</color>
 
 </resources>

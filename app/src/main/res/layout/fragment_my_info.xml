@@ -21,8 +21,8 @@
             android:layout_weight="0.35"
             android:layout_height="120dp"
             android:layout_marginRight="4dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/example_selfie_img" />
+            android:scaleType="center"
+            android:src="@drawable/selfie_basic_image" />
         <Space
             android:layout_width="0dp"
             android:layout_weight="0.05"
