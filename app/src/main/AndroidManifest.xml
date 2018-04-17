@@ -28,7 +28,8 @@
         </activity>
         <activity
             android:name="com.junburg.moon.rockbottom.main.MainActivity"
-            android:theme="@style/AppTheme2"></activity>
+            android:theme="@style/AppTheme2">
+        </activity>
         <activity
             android:name="com.junburg.moon.rockbottom.myinfo.EditInfoActivity"
             android:theme="@style/AppTheme2"></activity>
@@ -36,7 +37,8 @@
             android:name="com.junburg.moon.rockbottom.learn.LearnActivity"
             android:theme="@style/AppTheme2"></activity>
         <activity android:name=".login.EmailLoginActivity"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme">
+        </activity>
         <activity android:name=".login.EmailSignUpActivity"
             android:theme="@style/AppTheme"></activity>
     </application>

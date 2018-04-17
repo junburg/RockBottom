@@ -1,4 +1,4 @@
-package com.junburg.moon.rockbottom.login;
+package com.junburg.moon.rockbottom.model;
 
 /**
  * Created by Junburg on 2018. 3. 20..

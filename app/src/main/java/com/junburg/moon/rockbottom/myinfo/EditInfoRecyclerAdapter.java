@@ -1,5 +1,7 @@
 package com.junburg.moon.rockbottom.myinfo;
 
+import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +20,11 @@ import java.util.Map;
 public class EditInfoRecyclerAdapter extends RecyclerView.Adapter<EditInfoRecyclerViewHolder> {
 
     private ArrayList<EditInfoRecyclerData> editInfoDataList;
+    private Context context;
 
-    public EditInfoRecyclerAdapter(ArrayList<EditInfoRecyclerData> editInfoDataList) {
+    public EditInfoRecyclerAdapter(ArrayList<EditInfoRecyclerData> editInfoDataList, Context context) {
         this.editInfoDataList = editInfoDataList;
+        this.context = context;
 
     }
 
@@ -32,7 +36,7 @@ public class EditInfoRecyclerAdapter extends RecyclerView.Adapter<EditInfoRecycl
     }
 
     @Override
-    public void onBindViewHolder(EditInfoRecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(EditInfoRecyclerViewHolder holder, final int position) {
         EditInfoRecyclerData editInfoData =  editInfoDataList.get(position);
 
         Map<String, String> editInfoDataMap = editInfoData.getEditDataMap();
@@ -47,10 +51,22 @@ public class EditInfoRecyclerAdapter extends RecyclerView.Adapter<EditInfoRecycl
             }
             holder.editInfoDataContentTxt.setText(value);
         }
+
+        holder.editInfoEditImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+            }
+        });
+
+
     }
 
     @Override
     public int getItemCount() {
         return (editInfoDataList != null) ? editInfoDataList.size() : 0;
     }
+
+
 }

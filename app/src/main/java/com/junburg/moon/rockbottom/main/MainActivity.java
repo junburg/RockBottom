@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.junburg.moon.rockbottom.myinfo.MyInfoFragment;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.ranking.RankingFragment;
@@ -17,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView mainBottomNavigationView;
     private Fragment mainFragment;
+    // Firebase
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

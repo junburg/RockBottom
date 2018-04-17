@@ -1,35 +1,43 @@
 package com.junburg.moon.rockbottom.myinfo;
 
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.renderscript.Sampler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
-import com.junburg.moon.rockbottom.login.UserData;
+import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
+import com.junburg.moon.rockbottom.glide.GlideMethods;
+import com.junburg.moon.rockbottom.model.UserData;
 
 import java.util.ArrayList;
 
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Junburg on 2018. 2. 7..
@@ -37,6 +45,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class MyInfoFragment extends Fragment {
 
+    // Widgets
     private ImageView myInfoSelfieImg;
     private TextView myInfoPointsTxt;
     private TextView myInfoRankingTxt;
@@ -46,25 +55,28 @@ public class MyInfoFragment extends Fragment {
     private TextView myInfoGithubTxt;
     private Button myInfoEditBtn;
     private RecyclerView myInfoRecycler;
+    private ProgressDialog progressDialog;
 
+    // Variables
     private MyInfoRecyclerData myInfoRecyclerData;
     private ArrayList<MyInfoRecyclerData> list = new ArrayList<>();
     private String[] subjectArray = new String[7];
     private int[] subjectNumArray = new int[7];
     private int[] doneNumArray = new int[7];
+    private String uid;
+    private Context context;
+    private String selfie, nickName, message, teamName, github;
 
-    private FirebaseDatabase database;
+    // Firebase
+    private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener authStateListener;
     private DatabaseReference databaseReference;
-    private String userId;
+    private FirebaseMethods firebaseMethods;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference();
-        auth = FirebaseAuth.getInstance();
-        userId = auth.getCurrentUser().getUid();
 
         subjectArray[0] = "자료구조";
         subjectArray[1] = "알고리즘";
@@ -107,6 +119,10 @@ public class MyInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_info, null);
+        context = getActivity();
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("정보를 가져오고있습니다");
+        progressDialog.show();
         myInfoSelfieImg = (ImageView) view.findViewById(R.id.my_info_selfie_img);
         myInfoPointsTxt = (TextView) view.findViewById(R.id.my_info_points_txt);
         myInfoRankingTxt = (TextView) view.findViewById(R.id.my_info_ranking_txt);
@@ -120,6 +136,11 @@ public class MyInfoFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), EditInfoActivity.class);
+                intent.putExtra("selfieUri", selfie);
+                intent.putExtra("nickName", nickName);
+                intent.putExtra("message", message);
+                intent.putExtra("teamName", teamName);
+                intent.putExtra("github", github);
                 startActivity(intent);
             }
         });
@@ -129,60 +150,81 @@ public class MyInfoFragment extends Fragment {
         myInfoRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         myInfoRecycler.setAdapter(new MyInfoRecyclerAdapter(list));
 
+        firebaseMethods = new FirebaseMethods(context);
+
+        setupFirebaseAuth();
+
         return view;
+    }
+
+    private void putIntentData(UserData userData) {
+        selfie = userData.getSelfieUri();
+        nickName = userData.getNickName();
+        message = userData.getMessage();
+        teamName = userData.getTeamName();
+        github = userData.getGithub();
+    }
+
+    private void setupProfileInfo(UserData userData) {
+        Log.d(TAG, "setupProfileInfo: " + userData.getSelfieUri());
+        putIntentData(userData);
+        GlideMethods glideMethods = new GlideMethods(context, userData.getSelfieUri(), myInfoSelfieImg);
+        glideMethods.setCircleProfileImage();
+        myInfoNickNameTxt.setText(userData.getNickName());
+        myInfoMessageTxt.setText(userData.getMessage());
+        myInfoTeamNameTxt.setText(userData.getTeamName());
+        myInfoGithubTxt.setText(userData.getGithub());
+        myInfoPointsTxt.setText(Integer.toString(userData.getPoints()));
+        myInfoRankingTxt.setText(Integer.toString(userData.getRanking()));
+    }
+
+    private void setupFirebaseAuth() {
+        auth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("정보를 가져오는 중입니다");
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if (user != null) {
+                    // go LoginActivity
+                } else {
+
+                }
+            }
+        };
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                setupProfileInfo(firebaseMethods.setProfileInfo(dataSnapshot));
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        databaseReference.addValueEventListener(listener);
+        auth.addAuthStateListener(authStateListener);
     }
 
     @Override
     public void onStop() {
-        databaseReference.removeEventListener(listener);
         super.onStop();
-    }
-
-    private ValueEventListener listener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            getData(dataSnapshot);
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-    private void getData(DataSnapshot dataSnapshot) {
-        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-            UserData userData = new UserData();
-            userData.setSelfieUri(ds.child(userId).getValue(UserData.class).getSelfieUri());
-            userData.setNickName(ds.child(userId).getValue(UserData.class).getNickName());
-            userData.setMessage(ds.child(userId).getValue(UserData.class).getMessage());
-            userData.setTeamName(ds.child(userId).getValue(UserData.class).getTeamName());
-            userData.setGithub(ds.child(userId).getValue(UserData.class).getGithub());
-            userData.setPoints(ds.child(userId).getValue(UserData.class).getPoints());
-            userData.setRanking(ds.child(userId).getValue(UserData.class).getRanking());
-
-            if (userData.getSelfieUri() != null) {
-                Glide.with(this)
-                        .load(userData.getSelfieUri())
-                        .bitmapTransform(new CropCircleTransformation(getActivity()))
-                        .crossFade()
-                        .into(myInfoSelfieImg);
-            }
-
-            myInfoNickNameTxt.setText(userData.getNickName());
-            myInfoMessageTxt.setText(userData.getMessage());
-            myInfoTeamNameTxt.setText(userData.getTeamName());
-            myInfoGithubTxt.setText(userData.getGithub());
-            myInfoRankingTxt.setText(Integer.toString(userData.getRanking()));
-            myInfoPointsTxt.setText(Integer.toString(userData.getPoints()));
-
+        if (authStateListener != null) {
+            auth.removeAuthStateListener(authStateListener);
         }
     }
+
+
 }
 

@@ -18,11 +18,11 @@
     <string name="intro_content_second">가장 빠른 길은 바로 행동하는 것입니다</string>
     <string name="intro_content_third">개론서 정도의 지식을 머리에 담아보세요</string>
     <string name="intro_content_fourth">알아야 꼬십니다</string>
-
     <!-- Email Login String Data -->
     <string name ="email_login_email_txt">이메일</string>
-    <string name ="email_login_passwrod_txt">비밀번호</string>
-    <string name ="email_login_check_passwrod_txt">비밀번호 확인</string>
+    <string name ="email_login_password_explain_txt">비밀번호(영문 숫자 특수문자 8자 이상)</string>
+    <string name ="email_login_password_txt">비밀번호</string>
+    <string name ="email_login_check_password_txt">비밀번호 확인</string>
     <string name ="email_login_sign_in_txt">로그인</string>
     <string name ="email_login_sign_up_txt">새로운 계정 만들기</string>
     <string name ="email_sign_up_txt">가입하기</string>
@@ -88,5 +88,11 @@
 
     <!-- Input Information Dialog String Data -->
     <string name="dialog_selfie_delete_txt">사진삭제</string>
+
+    <!-- Edit Information Dialog String Data -->
+    <string name="dialog_edit_info_target_txt">대상</string>
+    <string name="dialog_edit_info_hint_txt">변경할 데이터를 입력해주세요</string>
+    <string name="dialog_edit_info_confirm_txt">확인</string>
+    <string name="dialog_edit_info_cancel_txt">취소</string>
 
 </resources>
