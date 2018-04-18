@@ -17,7 +17,7 @@ import org.w3c.dom.Text;
  */
 
 public class InputInfoSelfieClickDialog extends Dialog {
-    private TextView inputInfoSelfieClickTxt;
+    private TextView inputInfoSelfieDeleteTxt, dialogSelfieBackTxt;
     private Context context;
 
     public InputInfoSelfieClickDialog(@NonNull Context context) {
@@ -30,12 +30,19 @@ public class InputInfoSelfieClickDialog extends Dialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_input_info_selfie_click);
 
-        inputInfoSelfieClickTxt = (TextView)findViewById(R.id.dialog_selfie_delete_txt);
-        inputInfoSelfieClickTxt.setOnClickListener(new View.OnClickListener() {
+        inputInfoSelfieDeleteTxt = (TextView)findViewById(R.id.dialog_selfie_delete_txt);
+        inputInfoSelfieDeleteTxt.setOnClickListener(new View.OnClickListener() {
             @Override
                 public void onClick(View view) {
                 ((InputInfoActivity)context).inputInfoSelfieImg.setImageResource(R.drawable.ic_selfie_img);
                 ((InputInfoActivity)context).isGlideUsed = false;
+                dismiss();
+            }
+        });
+        dialogSelfieBackTxt = (TextView)findViewById(R.id.dialog_selfie_back_txt);
+        dialogSelfieBackTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 dismiss();
             }
         });

@@ -46,6 +46,7 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
             public void onItemClick(int position) {
             ChapterClickDialog dialog = new ChapterClickDialog(context);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.setCancelable(false);
             dialog.show();
             }
         });

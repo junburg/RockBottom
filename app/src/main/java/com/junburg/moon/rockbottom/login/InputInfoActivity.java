@@ -2,6 +2,7 @@ package com.junburg.moon.rockbottom.login;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
@@ -18,7 +19,9 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -35,6 +38,7 @@ import com.google.firebase.storage.UploadTask;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.main.MainActivity;
 import com.junburg.moon.rockbottom.model.UserData;
+import com.junburg.moon.rockbottom.util.ValidationCheck;
 
 import java.io.File;
 
@@ -45,9 +49,15 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  */
 
 public class InputInfoActivity extends AppCompatActivity {
+
+    // Constants
     private static final int GALLERY_CODE = 10;
+
+    // Variables
     private Uri selfieUri;
     protected boolean isGlideUsed = false;
+    private ValidationCheck validationCheck;
+    private Context context;
 
     // View
     protected ImageView inputInfoSelfieImg;
@@ -73,7 +83,8 @@ public class InputInfoActivity extends AppCompatActivity {
         uid = auth.getCurrentUser().getUid();
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
-
+        context = InputInfoActivity.this;
+        validationCheck = new ValidationCheck(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
         }
@@ -86,6 +97,7 @@ public class InputInfoActivity extends AppCompatActivity {
                     InputInfoSelfieClickDialog dialog
                             = new InputInfoSelfieClickDialog(InputInfoActivity.this);
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog.setCancelable(false);
                     dialog.show();
                 } else {
                     pickUpPicture();
@@ -101,9 +113,9 @@ public class InputInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                boolean nickNameEmptyCheck = infoEmptyCheck(inputInfoNickNameEdit);
+                boolean nickNameEmptyCheck = validationCheck.infoEmptyCheck(inputInfoNickNameEdit);
                 Log.d("empty", nickNameEmptyCheck + "");
-                boolean lengthCheck = infoLengthCheck(inputInfoNickNameEdit, inputInfoMessageEdit
+                boolean lengthCheck = validationCheck.infoLengthCheck(inputInfoNickNameEdit, inputInfoMessageEdit
                         , inputInfoTeamNameEdit, inputInfoGithubEdit);
                 Log.d("length", lengthCheck + "");
 
@@ -118,7 +130,6 @@ public class InputInfoActivity extends AppCompatActivity {
                 }
             }
         });
-
 
     }
 
@@ -201,29 +212,6 @@ public class InputInfoActivity extends AppCompatActivity {
 
                 }
             });
-        }
-    }
-
-    private boolean infoEmptyCheck(TextInputEditText editText) {
-        String text = editText.getText().toString();
-        if (text.equals("")) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private boolean infoLengthCheck(TextInputEditText nickNameEditTxt, TextInputEditText messageEditTxt
-            , TextInputEditText teamNameEditTxt, TextInputEditText githubEditTxt) {
-        String nickName = nickNameEditTxt.getText().toString();
-        String message = messageEditTxt.getText().toString();
-        String teamName = teamNameEditTxt.getText().toString();
-        String github = githubEditTxt.getText().toString();
-
-        if (nickName.length() > 20 || message.length() > 40 || teamName.length() > 20 || github.length() > 40) {
-            return false;
-        } else {
-            return true;
         }
     }
 

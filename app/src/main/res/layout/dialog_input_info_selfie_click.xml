@@ -14,4 +14,16 @@
         android:textColor="@color/colorAccent"
         android:textSize="16sp" />
 
+    <TextView
+        android:id="@+id/dialog_selfie_back_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_selfie_delete_txt"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp"
+        android:gravity="center"
+        android:text="@string/dialog_selfie_back_txt"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
 </RelativeLayout>

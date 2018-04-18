@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.learn.LearnActivity;
@@ -19,6 +20,7 @@ public class ChapterClickDialog extends Dialog  {
     private Context context;
     private LinearLayout dialogLearnLayout;
     private LinearLayout dialogQuizLayout;
+    private TextView dialogChapterBackTxt;
 
     public ChapterClickDialog(@NonNull Context context) {
         super(context);
@@ -38,6 +40,14 @@ public class ChapterClickDialog extends Dialog  {
             public void onClick(View view) {
                 Intent intent = new Intent(context, LearnActivity.class);
                 context.startActivity(intent);
+                dismiss();
+            }
+        });
+
+        dialogChapterBackTxt = (TextView)findViewById(R.id.dialog_chapter_back_txt);
+        dialogChapterBackTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 dismiss();
             }
         });

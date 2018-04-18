@@ -15,16 +15,19 @@
         <activity
             android:name="com.junburg.moon.rockbottom.login.LoginActivity"
             android:theme="@style/AppTheme2">
+
             <intent-filter>
 
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name="com.junburg.moon.rockbottom.login.InputInfoActivity"
-            android:theme="@style/AppTheme2">
+            android:theme="@style/AppTheme2"
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <activity
             android:name="com.junburg.moon.rockbottom.main.MainActivity"

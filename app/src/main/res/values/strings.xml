@@ -86,9 +86,11 @@
     <string name="dialog_quiz_txt">퀴즈</string>
     <string name="dialog_update_done">업데이트 완료!</string>
     <string name="dialog_update_ing">업데이트 중</string>
+    <string name="dialog_chapter_back_txt">뒤로가기</string>
 
     <!-- Input Information Dialog String Data -->
     <string name="dialog_selfie_delete_txt">사진삭제</string>
+    <string name="dialog_selfie_back_txt">뒤로가기</string>
 
     <!-- Edit Information Dialog String Data -->
     <string name="dialog_edit_info_target_txt">대상</string>
