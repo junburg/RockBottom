@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -54,6 +55,7 @@ public class EmailLoginActivity extends AppCompatActivity {
         emailLoginPasswordTxt = (TextInputEditText)findViewById(R.id.email_login_password_txt);
 
         emailLoginSignUpBtn = (TextView) findViewById(R.id.email_login_sign_up_btn);
+        emailLoginSignUpBtn.setText(Html.fromHtml("<u>" + getString(R.string.email_login_sign_up_txt) + "</u>"));
         emailLoginSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -4,12 +4,14 @@ package com.junburg.moon.rockbottom.myinfo;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,6 +68,7 @@ public class MyInfoFragment extends Fragment {
     private String uid;
     private Context context;
     private String selfie, nickName, message, teamName, github;
+    private GlideMethods glideMethods;
 
     // Firebase
     private FirebaseDatabase firebaseDatabase;
@@ -120,16 +123,30 @@ public class MyInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_info, null);
         context = getActivity();
+        glideMethods = new GlideMethods(context);
         progressDialog = new ProgressDialog(getActivity());
+        firebaseMethods = new FirebaseMethods(context);
+
         progressDialog.setMessage("정보를 가져오고있습니다");
         progressDialog.show();
+
         myInfoSelfieImg = (ImageView) view.findViewById(R.id.my_info_selfie_img);
         myInfoPointsTxt = (TextView) view.findViewById(R.id.my_info_points_txt);
         myInfoRankingTxt = (TextView) view.findViewById(R.id.my_info_ranking_txt);
         myInfoNickNameTxt = (TextView) view.findViewById(R.id.my_info_nick_name_txt);
         myInfoMessageTxt = (TextView) view.findViewById(R.id.my_info_message_txt);
         myInfoTeamNameTxt = (TextView) view.findViewById(R.id.my_info_team_name_txt);
+
         myInfoGithubTxt = (TextView) view.findViewById(R.id.my_info_github_txt);
+        myInfoGithubTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Uri uri = Uri.parse("http://github.com/" + myInfoGithubTxt.getText().toString());
+                intent.setData(uri);
+                startActivity(intent);
+            }
+        });
 
         myInfoEditBtn = (Button) view.findViewById(R.id.my_info_edit_btn);
         myInfoEditBtn.setOnClickListener(new View.OnClickListener() {
@@ -150,8 +167,6 @@ public class MyInfoFragment extends Fragment {
         myInfoRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         myInfoRecycler.setAdapter(new MyInfoRecyclerAdapter(list));
 
-        firebaseMethods = new FirebaseMethods(context);
-
         setupFirebaseAuth();
 
         return view;
@@ -168,12 +183,11 @@ public class MyInfoFragment extends Fragment {
     private void setupProfileInfo(UserData userData) {
         Log.d(TAG, "setupProfileInfo: " + userData.getSelfieUri());
         putIntentData(userData);
-        GlideMethods glideMethods = new GlideMethods(context, userData.getSelfieUri(), myInfoSelfieImg);
-        glideMethods.setCircleProfileImage();
+        glideMethods.setCircleProfileImage(userData.getSelfieUri(), myInfoSelfieImg);
         myInfoNickNameTxt.setText(userData.getNickName());
         myInfoMessageTxt.setText(userData.getMessage());
         myInfoTeamNameTxt.setText(userData.getTeamName());
-        myInfoGithubTxt.setText(userData.getGithub());
+        myInfoGithubTxt.setText(Html.fromHtml("<u>" + userData.getGithub() + "</u>"));
         myInfoPointsTxt.setText(Integer.toString(userData.getPoints()));
         myInfoRankingTxt.setText(Integer.toString(userData.getRanking()));
     }
@@ -215,6 +229,7 @@ public class MyInfoFragment extends Fragment {
     public void onStart() {
         super.onStart();
         auth.addAuthStateListener(authStateListener);
+
     }
 
     @Override

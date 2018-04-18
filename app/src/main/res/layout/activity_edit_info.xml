@@ -26,20 +26,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/example_selfie_img"
+                android:src="@drawable/rock_bottom_logo"
                 app:layout_collapseMode="parallax" />
 
             <Button
-                android:id="@+id/edit_info_selfie_btn"
+                android:id="@+id/edit_info_selfie_edit_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_gravity="bottom|right"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="16dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/button_custom_edit_info_selfie"
                 app:layout_collapseMode="parallax"
-                android:text="@string/edit_info_selfie_txt"
-                android:textColor="@color/colorPrimary"/>
+                android:text="@string/edit_info_selfie_edit_txt"
+                android:textSize="12sp"
+                android:textColor="@color/white"/>
+
+            <Button
+                android:id="@+id/edit_info_selfie_delete_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="left|bottom"
+                android:background="@drawable/button_custom_edit_info_selfie"
+                app:layout_collapseMode="parallax"
+                android:text="@string/edit_info_selfie_delete_txt"
+                android:textSize="12sp"
+                android:textColor="@color/white"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/edit_info_tool_bar"

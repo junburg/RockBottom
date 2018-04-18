@@ -21,7 +21,7 @@ public class StudyRecyclerViewHolder extends RecyclerView.ViewHolder{
     public StudyRecyclerViewHolder(View itemView) {
         super(itemView);
         studySubjectNameTxt = (TextView)itemView.findViewById(R.id.study_subject_name_txt);
-        studyUpdateConditionTxt = (TextView)itemView.findViewById(R.id.study_update_condition_txt);
+        studyUpdateConditionTxt = (TextView)itemView.findViewById(R.id.study_subject_explain_txt);
         chapterRecycler = (RecyclerView)itemView.findViewById(R.id.chapter_recycler);
         chapterRecycler.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
         chapterRecyclerAdapter = new ChapterRecyclerAdapter();

@@ -10,6 +10,8 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.glide.GlideMethods;
 import com.junburg.moon.rockbottom.login.LoginActivity;
 import com.junburg.moon.rockbottom.model.UserData;
@@ -49,7 +52,7 @@ import java.util.Map;
  * Created by Junburg on 2018. 2. 26..
  */
 
-public class EditInfoActivity extends AppCompatActivity {
+public class EditInfoActivity extends AppCompatActivity implements EditInfoDialogFragment.EditInfoDialogFragmentListener{
     private static final String TAG = "EditInfoActivity";
     // Constant
     private static final int GALLERY_CODE = 11;
@@ -68,16 +71,18 @@ public class EditInfoActivity extends AppCompatActivity {
     private RecyclerView editInfoRecyclerView;
     private Toolbar editInfoToolbar;
     private ImageView editInfoSelfieImg;
-    private Button editInfoSelfieBtn;
+    private Button editInfoSelfieEditBtn, editInfoSelfieDeleteBtn;
     private CollapsingToolbarLayout editInfoCollapsingToolbarLayout;
+    private EditInfoRecyclerAdapter editInfoRecyclerAdapter;
 
     // Firebase
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private FirebaseUser user;
-    private String userId;
+    private String uid;
     private FirebaseStorage storage;
+    private FirebaseMethods firebaseMethods;
 
 
     @Override
@@ -85,36 +90,51 @@ public class EditInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_info);
         auth = FirebaseAuth.getInstance();
-        userId = auth.getCurrentUser().getUid();
+        uid = auth.getCurrentUser().getUid();
         user = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
         storage = FirebaseStorage.getInstance();
         context = EditInfoActivity.this;
+        firebaseMethods = new FirebaseMethods(context);
+        glideMethods = new GlideMethods(context);
 
         editInfoCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.edit_info_collapsing_tool_bar_layout);
-        editInfoCollapsingToolbarLayout.setTitle("내 정보");
+        editInfoCollapsingToolbarLayout.setTitle("프로필 설정");
+        editInfoCollapsingToolbarLayout.setExpandedTitleMarginBottom(140);
         editInfoToolbar = (Toolbar) findViewById(R.id.edit_info_tool_bar);
         setSupportActionBar(editInfoToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         editInfoSelfieImg = (ImageView) findViewById(R.id.edit_info_selfie_img);
-        getIntentFromMyInfo();
-
-        editInfoSelfieBtn = (Button) findViewById(R.id.edit_info_selfie_btn);
+        editInfoSelfieEditBtn = (Button) findViewById(R.id.edit_info_selfie_edit_btn);
+        editInfoSelfieDeleteBtn = (Button) findViewById(R.id.edit_info_selfie_delete_btn);
         editInfoRecyclerView = (RecyclerView) findViewById(R.id.edit_info_recycler);
         editInfoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        EditInfoRecyclerAdapter adapter = new EditInfoRecyclerAdapter(dataList, context);
-        editInfoRecyclerView.setAdapter(adapter);
-        editInfoSelfieBtn.setOnClickListener(new View.OnClickListener() {
+        FragmentManager fm = getSupportFragmentManager();
+        editInfoRecyclerAdapter = new EditInfoRecyclerAdapter(dataList, context, fm);
+        editInfoRecyclerView.setAdapter(editInfoRecyclerAdapter);
+        editInfoSelfieEditBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 pickUpPicture();
             }
         });
+        editInfoSelfieDeleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteUserSelfie();
+            }
+        });
+
+        getIntentFromMyInfo();
 
 
+    }
 
+    private void deleteUserSelfie() {
+        editInfoSelfieImg.setImageResource(R.drawable.rock_bottom_logo);
+        editInfoSelfieImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        firebaseMethods.deleteSelfieImg(uid);
     }
 
     private void getIntentFromMyInfo() {
@@ -157,8 +177,7 @@ public class EditInfoActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GALLERY_CODE && resultCode == RESULT_OK) {
             selfieUri = data.getData();
-            String selfieString = selfieUri.toString();
-            setSelfieImg(selfieUri);
+            firebaseMethods.setSelfieImg(selfieUri, uid);
             Glide.with(this)
                     .load(selfieUri)
                     .crossFade()
@@ -174,37 +193,8 @@ public class EditInfoActivity extends AppCompatActivity {
         startActivityForResult(intent, GALLERY_CODE);
     }
 
-
-//    private void alertDialogForEdit(String title, String message, final int id) {
-//        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-//
-//        alert.setTitle(title);
-//        alert.setMessage(message);
-//
-//        final EditText editName = new EditText(this);
-//        alert.setView(editName);
-//
-//        alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                String text = editName.getText().toString();
-//
-//            }
-//        });
-//
-//        alert.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//
-//            }
-//        });
-//
-//        alert.show();
-//    }
-
     private void setUserData(String selfie, String nickName, String message, String teamName, String github) {
-        glideMethods = new GlideMethods(this, selfie, editInfoSelfieImg);
-        glideMethods.setProfileImage();
+        glideMethods.setProfileImage(selfie, editInfoSelfieImg);
         for (int i = 0; i < 4; i++) {
             editInfoRecyclerData = new EditInfoRecyclerData();
             editDataMap = new HashMap<>();
@@ -227,59 +217,13 @@ public class EditInfoActivity extends AppCompatActivity {
         }
     }
 
-//    private void getData(DataSnapshot dataSnapshot) {
-//        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-//            userData = new UserData();
-//            userData.setSelfieUri(ds.child(userId).getValue(UserData.class).getSelfieUri());
-//            userData.setNickName(ds.child(userId).getValue(UserData.class).getNickName());
-//            userData.setMessage(ds.child(userId).getValue(UserData.class).getMessage());
-//            userData.setTeamName(ds.child(userId).getValue(UserData.class).getTeamName());
-//            userData.setGithub(ds.child(userId).getValue(UserData.class).getGithub());
-//            userData.setPoints(ds.child(userId).getValue(UserData.class).getPoints());
-//            userData.setRanking(ds.child(userId).getValue(UserData.class).getRanking());
-//
-//            if (userData.getSelfieUri() != null) {
-//                Glide.with(this)
-//                        .load(userData.getSelfieUri())
-//                        .crossFade()
-//                        .into(editInfoSelfieImg);
-//            }
-//
-//
-//        }
-//    }
 
-    public String getPath(Uri uri) {
-        String[] proj = {MediaStore.Images.Media.DATA};
-        CursorLoader cursorLoader = new CursorLoader(this, uri, proj, null, null, null);
-
-        Cursor cursor = cursorLoader.loadInBackground();
-        int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-
-        cursor.moveToFirst();
-
-        return cursor.getString(index);
-    }
-
-    private void setSelfieImg(Uri selfieUri) {
-        StorageReference storageReference = storage.getReferenceFromUrl("gs://rockbottom-2bc4e.appspot.com");
-        Uri file = Uri.fromFile(new File(getPath(selfieUri)));
-        StorageReference riversRef = storageReference.child("selfieImages/" + file.getLastPathSegment());
-        UploadTask uploadTask = riversRef.putFile(file);
-
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                @SuppressWarnings("VisibleForTests")
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                database.getReference().child("users").child(userId).child("selfieUri").setValue(downloadUrl);
-
-            }
-        });
+    @Override
+    public void onEditInfoClick(DialogFragment dialogf, String targetString, String editString, int position) {
+        editInfoRecyclerData = new EditInfoRecyclerData();
+        editDataMap = new HashMap<>();
+        editDataMap.put(targetString, editString);
+        editInfoRecyclerData.setEditDataMap(editDataMap);
+        editInfoRecyclerAdapter.editItemFromDialog(position, editInfoRecyclerData);
     }
 }

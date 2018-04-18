@@ -18,6 +18,7 @@
     <string name="intro_content_second">가장 빠른 길은 바로 행동하는 것입니다</string>
     <string name="intro_content_third">개론서 정도의 지식을 머리에 담아보세요</string>
     <string name="intro_content_fourth">알아야 꼬십니다</string>
+
     <!-- Email Login String Data -->
     <string name ="email_login_email_txt">이메일</string>
     <string name ="email_login_password_explain_txt">비밀번호(영문 숫자 특수문자 8자 이상)</string>
@@ -48,8 +49,7 @@
     <string name="study_txt">  컴퓨터 공학을 학습하고\n더 깊은 실력을 갖춰보세요</string>
     <string name="study_subject_txt">Subject</string>
     <string name="study_chapter_txt">Chapter</string>
-    <string name="study_update_done_txt">업데이트 완료</string>
-    <string name="study_update_ing_txt">업데이트 중</string>
+    <string name="study_subject_explain_txt">업데이트 중</string>
 
     <!-- Learn String Data -->
     <string name="learn_done_txt">공부 끝!</string>
@@ -66,7 +66,8 @@
     <string name="my_info_done_all_number_txt">done / all</string>
 
     <!-- Edit Information String Data -->
-    <string name="edit_info_selfie_txt">사진 수정</string>
+    <string name="edit_info_selfie_edit_txt">사진수정</string>
+    <string name="edit_info_selfie_delete_txt">사진삭제</string>
     <string name="edit_info_logout_txt">로그아웃</string>
     <string name="edit_info_good_bye_txt">회원탈퇴</string>
     <string name="edit_info_list_title_txt">List Title</string>
@@ -91,8 +92,9 @@
 
     <!-- Edit Information Dialog String Data -->
     <string name="dialog_edit_info_target_txt">대상</string>
-    <string name="dialog_edit_info_hint_txt">변경할 데이터를 입력해주세요</string>
+    <string name="dialog_edit_info_hint_txt">변경할 정보를 입력해주세요</string>
     <string name="dialog_edit_info_confirm_txt">확인</string>
     <string name="dialog_edit_info_cancel_txt">취소</string>
+    <string name="dialog_edit_info_selfie_cancel_txt">뒤로가기</string>
 
 </resources>

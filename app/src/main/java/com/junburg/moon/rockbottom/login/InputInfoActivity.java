@@ -183,7 +183,7 @@ public class InputInfoActivity extends AppCompatActivity {
         } else {
             StorageReference storageReference = storage.getReferenceFromUrl("gs://rockbottom-2bc4e.appspot.com");
             Uri file = Uri.fromFile(new File(getPath(selfieUri)));
-            StorageReference riversRef = storageReference.child("selfieImages/" + file.getLastPathSegment());
+            StorageReference riversRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
             UploadTask uploadTask = riversRef.putFile(file);
 
             uploadTask.addOnFailureListener(new OnFailureListener() {
