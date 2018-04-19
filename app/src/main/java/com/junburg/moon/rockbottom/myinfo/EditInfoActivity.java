@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,6 +49,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by Junburg on 2018. 2. 26..
  */
@@ -74,6 +77,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
     private Button editInfoSelfieEditBtn, editInfoSelfieDeleteBtn;
     private CollapsingToolbarLayout editInfoCollapsingToolbarLayout;
     private EditInfoRecyclerAdapter editInfoRecyclerAdapter;
+    private TextView editInfoAccountSettingsTxt;
 
     // Firebase
     private FirebaseAuth auth;
@@ -109,6 +113,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         editInfoSelfieEditBtn = (Button) findViewById(R.id.edit_info_selfie_edit_btn);
         editInfoSelfieDeleteBtn = (Button) findViewById(R.id.edit_info_selfie_delete_btn);
         editInfoRecyclerView = (RecyclerView) findViewById(R.id.edit_info_recycler);
+        editInfoAccountSettingsTxt = (TextView)findViewById(R.id.edit_info_account_settings_txt);
         editInfoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         FragmentManager fm = getSupportFragmentManager();
         editInfoRecyclerAdapter = new EditInfoRecyclerAdapter(dataList, context, fm);
@@ -126,6 +131,14 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
             }
         });
 
+        editInfoAccountSettingsTxt.setText(Html.fromHtml("<u>" + getResources().getString(R.string.edit_info_account_settings_txt) + "</u>"));
+        editInfoAccountSettingsTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditInfoActivity.this, AccountSettingActivity.class);
+                startActivity(intent);
+            }
+        });
         getIntentFromMyInfo();
 
 

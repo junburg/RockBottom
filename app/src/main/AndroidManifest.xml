@@ -43,7 +43,9 @@
             android:theme="@style/AppTheme">
         </activity>
         <activity android:name=".login.EmailSignUpActivity"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme2"></activity>
+        <activity android:name=".myinfo.AccountSettingActivity"
+            android:theme="@style/AppTheme2"></activity>
     </application>
 
 </manifest>

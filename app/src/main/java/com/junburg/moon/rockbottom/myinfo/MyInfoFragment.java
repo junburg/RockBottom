@@ -4,11 +4,16 @@ package com.junburg.moon.rockbottom.myinfo;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -33,10 +38,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.glide.GlideMethods;
+import com.junburg.moon.rockbottom.login.LoginActivity;
 import com.junburg.moon.rockbottom.model.UserData;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 import static android.content.ContentValues.TAG;
@@ -48,7 +55,7 @@ import static android.content.ContentValues.TAG;
 public class MyInfoFragment extends Fragment {
 
     // Widgets
-    private ImageView myInfoSelfieImg;
+    private CircleImageView myInfoSelfieImg;
     private TextView myInfoPointsTxt;
     private TextView myInfoRankingTxt;
     private TextView myInfoNickNameTxt;
@@ -130,7 +137,7 @@ public class MyInfoFragment extends Fragment {
         progressDialog.setMessage("정보를 가져오고있습니다");
         progressDialog.show();
 
-        myInfoSelfieImg = (ImageView) view.findViewById(R.id.my_info_selfie_img);
+        myInfoSelfieImg = (CircleImageView) view.findViewById(R.id.my_info_selfie_img);
         myInfoPointsTxt = (TextView) view.findViewById(R.id.my_info_points_txt);
         myInfoRankingTxt = (TextView) view.findViewById(R.id.my_info_ranking_txt);
         myInfoNickNameTxt = (TextView) view.findViewById(R.id.my_info_nick_name_txt);
@@ -168,7 +175,6 @@ public class MyInfoFragment extends Fragment {
         myInfoRecycler.setAdapter(new MyInfoRecyclerAdapter(list));
 
         setupFirebaseAuth();
-
         return view;
     }
 
@@ -204,9 +210,10 @@ public class MyInfoFragment extends Fragment {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
-                    // go LoginActivity
-                } else {
 
+                } else {
+                    Intent intent = new Intent (getActivity(), LoginActivity.class);
+                    startActivity(intent);
                 }
             }
         };
@@ -215,7 +222,6 @@ public class MyInfoFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 setupProfileInfo(firebaseMethods.setProfileInfo(dataSnapshot));
-                progressDialog.dismiss();
             }
 
             @Override
@@ -223,12 +229,14 @@ public class MyInfoFragment extends Fragment {
 
             }
         });
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
         auth.addAuthStateListener(authStateListener);
+
 
     }
 

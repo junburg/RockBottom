@@ -47,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mainBottomNavigationView.setSelectedItemId(R.id.bottom_study);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
     }
 }

@@ -17,7 +17,9 @@
         <item name="colorControlNormal">@android:color/darker_gray</item>
         <item name="colorControlActivated">@android:color/holo_red_dark</item>
     </style>
-
+    <style name="AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
 
 
 
