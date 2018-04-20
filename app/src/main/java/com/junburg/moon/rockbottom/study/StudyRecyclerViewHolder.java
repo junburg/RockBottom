@@ -14,14 +14,14 @@ import com.junburg.moon.rockbottom.R;
 public class StudyRecyclerViewHolder extends RecyclerView.ViewHolder{
 
     protected TextView studySubjectNameTxt;
-    protected TextView studyUpdateConditionTxt;
+    protected TextView studySubjectExplainTxt;
     protected RecyclerView chapterRecycler;
     protected ChapterRecyclerAdapter chapterRecyclerAdapter;
 
     public StudyRecyclerViewHolder(View itemView) {
         super(itemView);
         studySubjectNameTxt = (TextView)itemView.findViewById(R.id.study_subject_name_txt);
-        studyUpdateConditionTxt = (TextView)itemView.findViewById(R.id.study_subject_explain_txt);
+        studySubjectExplainTxt = (TextView)itemView.findViewById(R.id.study_subject_explain_txt);
         chapterRecycler = (RecyclerView)itemView.findViewById(R.id.chapter_recycler);
         chapterRecycler.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
         chapterRecyclerAdapter = new ChapterRecyclerAdapter();

@@ -9,22 +9,24 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.model.Chapter;
+import com.junburg.moon.rockbottom.model.Subject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Junburg on 2018. 3. 11..
  */
 
 public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerViewHolder>{
-    private ArrayList<StudyRecyclerData> studyDataList;
-    private ArrayList<ChapterRecyclerData> chapterDataList;
+    private List<Subject> subjectList;
     private Context context;
 
-    public StudyRecyclerAdapter(ArrayList<StudyRecyclerData> studyDataList
-            , ArrayList<ChapterRecyclerData> chapterDataList, Context context) {
-        this.studyDataList = studyDataList;
-        this.chapterDataList = chapterDataList;
+    public StudyRecyclerAdapter(
+            List<Subject> subjectList
+            , Context context) {
+        this.subjectList = subjectList;
         this.context = context;
     }
 
@@ -37,10 +39,11 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
 
     @Override
     public void onBindViewHolder(StudyRecyclerViewHolder holder, int position) {
-        StudyRecyclerData studyData = studyDataList.get(position);
-        holder.studySubjectNameTxt.setText(studyData.getStudySubjectName());
-        holder.studyUpdateConditionTxt.setText(studyData.getStudyUpdateCondition());
-        holder.chapterRecyclerAdapter.setData(chapterDataList);
+        holder.studySubjectNameTxt.setText(subjectList.get(position).getSubjectName());
+        holder.studySubjectExplainTxt.setText(subjectList.get(position).getSubjectExplain());
+        List<Chapter> chapterList = new ArrayList<>();
+        chapterList.add(subjectList.get(position).getChapter());
+        holder.chapterRecyclerAdapter.setData(chapterList);
         holder.chapterRecyclerAdapter.setOnItemClickListener(new ChapterRecyclerViewHolder.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
@@ -54,6 +57,6 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
 
     @Override
     public int getItemCount() {
-        return (studyDataList != null) ? studyDataList.size() : 0;
+        return (subjectList != null) ? subjectList.size() : 0;
     }
 }

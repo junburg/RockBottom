@@ -4,7 +4,7 @@ package com.junburg.moon.rockbottom.model;
  * Created by Junburg on 2018. 3. 20..
  */
 
-public class UserData {
+public class User {
 
     private String selfieUri;
     private String nickName;
@@ -14,7 +14,7 @@ public class UserData {
     private int points;
     private int ranking;
 
-    public UserData() {
+    public User() {
 
     }
 

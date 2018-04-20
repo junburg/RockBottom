@@ -19,9 +19,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -37,7 +35,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.main.MainActivity;
-import com.junburg.moon.rockbottom.model.UserData;
+import com.junburg.moon.rockbottom.model.User;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
 
 import java.io.File;
@@ -188,8 +186,8 @@ public class InputInfoActivity extends AppCompatActivity {
 
         if (isGlideUsed == false) {
             selfieUri = null;
-            UserData userData = setUserData(selfieUri);
-            database.getReference().child("users").child(uid).setValue(userData);
+            User user = setUserData(selfieUri);
+            database.getReference().child("users").child(uid).setValue(user);
 
         } else {
             StorageReference storageReference = storage.getReferenceFromUrl("gs://rockbottom-2bc4e.appspot.com");
@@ -207,28 +205,28 @@ public class InputInfoActivity extends AppCompatActivity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     @SuppressWarnings("VisibleForTests")
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    UserData userData = setUserData(downloadUrl);
-                    database.getReference().child("users").child(uid).setValue(userData);
+                    User user = setUserData(downloadUrl);
+                    database.getReference().child("users").child(uid).setValue(user);
 
                 }
             });
         }
     }
 
-    private UserData setUserData(Uri uri) {
-        UserData userData = new UserData();
+    private User setUserData(Uri uri) {
+        User user = new User();
         if (selfieUri == null) {
-            userData.setSelfieUri(null);
+            user.setSelfieUri(null);
         } else {
-            userData.setSelfieUri(uri.toString());
+            user.setSelfieUri(uri.toString());
         }
-        userData.setNickName(inputInfoNickNameEdit.getText().toString());
-        userData.setMessage(inputInfoMessageEdit.getText().toString());
-        userData.setTeamName(inputInfoTeamNameEdit.getText().toString());
-        userData.setGithub(inputInfoGithubEdit.getText().toString());
-        userData.setPoints(0);
-        userData.setRanking(0);
+        user.setNickName(inputInfoNickNameEdit.getText().toString());
+        user.setMessage(inputInfoMessageEdit.getText().toString());
+        user.setTeamName(inputInfoTeamNameEdit.getText().toString());
+        user.setGithub(inputInfoGithubEdit.getText().toString());
+        user.setPoints(0);
+        user.setRanking(0);
 
-        return userData;
+        return user;
     }
 }

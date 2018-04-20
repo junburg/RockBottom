@@ -6,8 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.model.Chapter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Junburg on 2018. 3. 12..
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 
 public class ChapterRecyclerAdapter extends RecyclerView.Adapter<ChapterRecyclerViewHolder> {
 
-    private ArrayList<ChapterRecyclerData> dataList;
+    private List<Chapter> chapterList;
     private ChapterRecyclerViewHolder.OnItemClickListener listener;
 
     public void setOnItemClickListener(ChapterRecyclerViewHolder.OnItemClickListener listener) {
@@ -26,8 +27,8 @@ public class ChapterRecyclerAdapter extends RecyclerView.Adapter<ChapterRecycler
 
     }
 
-    public void setData(ArrayList<ChapterRecyclerData> dataList) {
-        this.dataList = dataList;
+    public void setData(List<Chapter> chapterList) {
+        this.chapterList = chapterList;
         notifyDataSetChanged();
     }
 
@@ -40,12 +41,13 @@ public class ChapterRecyclerAdapter extends RecyclerView.Adapter<ChapterRecycler
 
     @Override
     public void onBindViewHolder(ChapterRecyclerViewHolder holder, int position) {
-        ChapterRecyclerData data = dataList.get(position);
-        holder.chapterNameTxt.setText(data.getChapterName());
+
+        holder.chapterNameTxt.setText(chapterList.get(position).getChaterName());
+        holder.chapterExplainTxt.setText(chapterList.get(position).getChaterExplain());
     }
 
     @Override
     public int getItemCount() {
-        return (dataList != null) ? dataList.size() : 0;
+        return (chapterList != null) ? chapterList.size() : 0;
     }
 }

@@ -46,6 +46,8 @@
             android:theme="@style/AppTheme2"></activity>
         <activity android:name=".myinfo.AccountSettingActivity"
             android:theme="@style/AppTheme2"></activity>
+        <activity android:name=".myinfo.StudyConditionActivity"
+            android:theme="@style/AppTheme2"></activity>
     </application>
 
 </manifest>

@@ -1,13 +1,10 @@
 package com.junburg.moon.rockbottom.myinfo;
 
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.DialogFragment;
@@ -17,8 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -26,30 +21,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.glide.GlideMethods;
-import com.junburg.moon.rockbottom.login.LoginActivity;
-import com.junburg.moon.rockbottom.model.UserData;
+import com.junburg.moon.rockbottom.model.User;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by Junburg on 2018. 2. 26..
@@ -65,7 +49,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
     private Map<String, String> editDataMap;
     private EditInfoRecyclerData editInfoRecyclerData;
     private Uri selfieUri;
-    private UserData userData;
+    private User user;
     private Intent intent;
     private GlideMethods glideMethods;
     private Context context;
@@ -83,7 +67,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
-    private FirebaseUser user;
+    private FirebaseUser firebaseUser;
     private String uid;
     private FirebaseStorage storage;
     private FirebaseMethods firebaseMethods;
@@ -95,7 +79,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         setContentView(R.layout.activity_edit_info);
         auth = FirebaseAuth.getInstance();
         uid = auth.getCurrentUser().getUid();
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
         storage = FirebaseStorage.getInstance();
@@ -144,6 +128,16 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void deleteUserSelfie() {
         editInfoSelfieImg.setImageResource(R.drawable.rock_bottom_logo);
         editInfoSelfieImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -158,32 +152,6 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         String github = intent.getStringExtra("github");
         String teamName = intent.getStringExtra("teamName");
         setUserData(selfie, nickName, message, teamName, github);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_edit_info, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
-            case R.id.edit_menu_logout:
-                auth.signOut();
-                finish();
-                startActivity(new Intent(EditInfoActivity.this, LoginActivity.class));
-                break;
-            case R.id.edit_menu_signout:
-
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-
     }
 
     @Override

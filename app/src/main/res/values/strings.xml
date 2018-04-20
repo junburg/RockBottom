@@ -58,12 +58,22 @@
     <string name="learn_content_txt">Content</string>
 
     <!-- My Information String Data -->
+    <string name="my_info_nick_name_txt">닉네임</string>
+    <string name="my_info_message_txt">메세지</string>
+    <string name="my_info_team_name_txt">소속</string>
+    <string name="my_info_ranking_number_txt">0</string>
+    <string name="my_info_point_number_txt">0</string>
     <string name="my_info_point_txt">포인트</string>
     <string name="my_info_ranking_txt">랭킹</string>
-    <string name="my_info_edit_profile_btn_txt">Edit Profile</string>
-    <string name="my_info_study_situation">학습현황</string>
-    <string name="my_info_subject_txt">Subject</string>
-    <string name="my_info_done_all_number_txt">done / all</string>
+    <string name="my_info_study_condition_btn_txt">나의 학습현황</string>
+    <string name="my_info_github_btn_txt">나의 깃헙으로</string>
+    <string name="my_info_edit_profile_btn_txt">프로필 수정</string>
+
+
+    <!-- Study Condition String Data -->
+    <string name="study_condition_txt">학습현황</string>
+    <string name="study_condition_subject_txt">Subject</string>
+    <string name="study_condition_done_all_number_txt">done / all</string>
 
     <!-- Edit Information String Data -->
     <string name="edit_info_selfie_edit_txt">사진수정</string>
