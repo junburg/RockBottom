@@ -101,6 +101,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
 
                 } else {
                     Snackbar.make(getWindow().getDecorView().getRootView(), "환영합니다 :)", Snackbar.LENGTH_SHORT).show();

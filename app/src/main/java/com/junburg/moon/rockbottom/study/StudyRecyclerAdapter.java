@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import com.junburg.moon.rockbottom.model.Subject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Junburg on 2018. 3. 11..
@@ -39,11 +42,9 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
 
     @Override
     public void onBindViewHolder(StudyRecyclerViewHolder holder, int position) {
-        holder.studySubjectNameTxt.setText(subjectList.get(position).getSubjectName());
-        holder.studySubjectExplainTxt.setText(subjectList.get(position).getSubjectExplain());
-        List<Chapter> chapterList = new ArrayList<>();
-        chapterList.add(subjectList.get(position).getChapter());
-        holder.chapterRecyclerAdapter.setData(chapterList);
+        holder.studySubjectNameTxt.setText(subjectList.get(position).getName());
+        holder.studySubjectExplainTxt.setText(subjectList.get(position).getExplain());
+        holder.chapterRecyclerAdapter.setData(subjectList.get(position).getChapterList());
         holder.chapterRecyclerAdapter.setOnItemClickListener(new ChapterRecyclerViewHolder.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {

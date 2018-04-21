@@ -1,6 +1,7 @@
 package com.junburg.moon.rockbottom.study;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.model.Chapter;
 
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Junburg on 2018. 3. 12..
@@ -29,6 +32,7 @@ public class ChapterRecyclerAdapter extends RecyclerView.Adapter<ChapterRecycler
 
     public void setData(List<Chapter> chapterList) {
         this.chapterList = chapterList;
+        Log.d(TAG, "setData: " + this.chapterList.toString());
         notifyDataSetChanged();
     }
 
@@ -42,8 +46,8 @@ public class ChapterRecyclerAdapter extends RecyclerView.Adapter<ChapterRecycler
     @Override
     public void onBindViewHolder(ChapterRecyclerViewHolder holder, int position) {
 
-        holder.chapterNameTxt.setText(chapterList.get(position).getChaterName());
-        holder.chapterExplainTxt.setText(chapterList.get(position).getChaterExplain());
+        holder.chapterNameTxt.setText(chapterList.get(position).getName());
+        holder.chapterExplainTxt.setText(chapterList.get(position).getExplain());
     }
 
     @Override

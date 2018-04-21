@@ -1,216 +1,310 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:orientation="vertical"
-    android:weightSum="10">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/my_info_layout_1"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="3.8"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/my_info_nick_name_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/my_info_nick_name_txt"
-            android:textColor="@color/colorBlack"
-            android:textSize="24sp" />
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/my_info_selfie_img"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="12dp"
-            android:src="@drawable/rock_bottom_logo"
-            app:civ_border_color="@color/colorPrimary"
-            app:civ_border_width="2dp"
-            app:civ_circle_background_color="@color/colorPrimary" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/my_info_layout_2"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="2.7"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/my_info_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="32dp"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:text="@string/my_info_message_txt"
-            android:textColor="@color/colorBlack" />
-
-        <TextView
-            android:id="@+id/my_info_message_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="@string/my_info_message_txt" />
-
-        <TextView
-            android:id="@+id/my_info_team_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:text="@string/my_info_team_name_txt"
-            android:textColor="@color/colorBlack" />
-
-        <TextView
-            android:id="@+id/my_info_team_name_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="@string/my_info_team_name_txt" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/my_info_layout_3"
-        android:layout_width="300dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:weightSum="10">
-
-        <LinearLayout
-            android:id="@+id/my_info_layout_4_1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/my_info_ranking_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_marginBottom="4dp"
-                android:text="@string/my_info_ranking_txt"
-                android:textColor="@color/colorBlack"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/my_info_ranking_number_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="@string/my_info_ranking_number_txt"
-                android:textSize="16sp" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/my_info_layout_4_2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/my_info_points_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="4dp"
-                android:gravity="center"
-                android:text="@string/my_info_point_txt"
-                android:textColor="@color/colorBlack"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/my_info_points_number_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="@string/my_info_point_number_txt"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/my_info_layout_5"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2.5"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:weightSum="13">
+        android:layout_height="wrap_content"
+        android:background="#f7f7f7">
 
-        <android.support.v4.widget.Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+        <android.support.v7.widget.CardView
+            android:id="@+id/my_info_carview_1"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:layout_margin="32dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="8dp">
 
-        <Button
-            android:id="@+id/my_info_study_condition_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:background="@drawable/button_custom_my_info"
-            android:text="@string/my_info_study_condition_btn_txt" />
+            <LinearLayout
+                android:id="@+id/my_info_layout_2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="8">
 
-        <android.support.v4.widget.Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+                <LinearLayout
+                    android:id="@+id/my_info_layout_2_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="4"
+                    android:orientation="vertical"
+                    android:weightSum="10">
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:background="@color/colorPrimary"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="8dp"
+                        android:text="@string/my_info_profile_txt"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
 
-        <Button
-            android:id="@+id/my_info_github_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:background="@drawable/button_custom_my_info"
-            android:text="@string/my_info_github_btn_txt" />
-
-        <android.support.v4.widget.Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-
-        <Button
-            android:id="@+id/my_info_edit_profile_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:background="@drawable/button_custom_my_info"
-            android:text="@string/my_info_edit_profile_btn_txt" />
-
-        <android.support.v4.widget.Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-    </LinearLayout>
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/my_info_selfie_img"
+                        android:layout_width="130dp"
+                        android:layout_height="0dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="16dp"
+                        android:layout_weight="5"
+                        android:src="@drawable/rock_bottom_logo"
+                        app:civ_border_color="@color/colorPrimary"
+                        app:civ_border_width="2dp"
+                        app:civ_circle_background_color="@color/white" />
 
 
-</LinearLayout>
+                    <TextView
+                        android:id="@+id/my_info_nick_name_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="1.5"
+                        android:gravity="center"
+                        android:text="@string/my_info_nick_name_txt"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="20sp" />
+
+                    <View
+                        android:layout_width="50dp"
+                        android:layout_height="0dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="4dp"
+                        android:layout_weight="0.1"
+                        android:background="@color/colorBlack" />
+
+                    <TextView
+                        android:id="@+id/my_info_introduce_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.4"
+                        android:gravity="center"
+                        android:text="@string/my_info_introduce_txt"
+                        android:textColor="@color/colorPrimaryLight" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/my_info_layout_2_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDarkerGray" />
+
+                    <TextView
+                        android:id="@+id/my_info_message"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/my_info_message_txt"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="16sp" />
+
+
+                    <TextView
+                        android:id="@+id/my_info_message_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/my_info_message_txt" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/my_info_layout_2_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDarkerGray" />
+
+                    <TextView
+                        android:id="@+id/my_info_team_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/my_info_team_name_txt"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/my_info_team_name_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/my_info_team_name_txt" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/my_info_layout_2_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDarkerGray" />
+
+                    <TextView
+                        android:id="@+id/my_info_ranking_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/my_info_ranking_txt"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/my_info_ranking_number_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/my_info_ranking_number_txt" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/my_info_layout_2_5"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorDarkerGray" />
+
+                    <TextView
+                        android:id="@+id/my_info_points_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/my_info_point_txt"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/my_info_points_number_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/my_info_point_number_txt" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_below="@id/my_info_carview_1"
+            android:layout_marginBottom="32sp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:paddingBottom="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="8dp"
+                    android:text="@string/my_info_etc_txt"
+                    android:textColor="@color/white"
+                    android:textSize="24sp" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:weightSum="9">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/my_info_study_condition_btn"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/my_info_study_condition_btn_txt"
+                            android:textColor="@color/colorDarkerGray" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorDarkerGray" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/my_info_github_btn"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/my_info_github_btn_txt"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorDarkerGray" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorDarkerGray" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/my_info_edit_profile_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:gravity="center"
+                        android:text="@string/my_info_edit_profile_btn_txt"
+                        android:textColor="@color/colorDarkerGray" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+
+    </RelativeLayout>
+</ScrollView>

@@ -47,9 +47,9 @@ public class MyInfoFragment extends Fragment {
     private TextView myInfoNickNameTxt;
     private TextView myInfoMessageTxt;
     private TextView myInfoTeamNameTxt;
-    private Button myInfoGithubBtn;
-    private Button myInfoEditProfileBtn;
-    private Button myInfoStudyConditionBtn;
+    private TextView myInfoGithubBtn;
+    private TextView myInfoEditProfileBtn;
+    private TextView myInfoStudyConditionBtn;
     private ProgressDialog progressDialog;
 
     // Variables
@@ -94,7 +94,7 @@ public class MyInfoFragment extends Fragment {
 
         setupFirebaseAuth();
 
-        myInfoGithubBtn = (Button) view.findViewById(R.id.my_info_github_btn);
+        myInfoGithubBtn = (TextView) view.findViewById(R.id.my_info_github_btn);
         myInfoGithubBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,7 +102,7 @@ public class MyInfoFragment extends Fragment {
             }
         });
 
-        myInfoEditProfileBtn = (Button) view.findViewById(R.id.my_info_edit_profile_btn);
+        myInfoEditProfileBtn = (TextView) view.findViewById(R.id.my_info_edit_profile_btn);
         myInfoEditProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -110,7 +110,7 @@ public class MyInfoFragment extends Fragment {
             }
         });
 
-        myInfoStudyConditionBtn = (Button)view.findViewById(R.id.my_info_study_condition_btn);
+        myInfoStudyConditionBtn = (TextView)view.findViewById(R.id.my_info_study_condition_btn);
         myInfoStudyConditionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

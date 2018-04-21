@@ -4,6 +4,7 @@ package com.junburg.moon.rockbottom.study;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,10 +17,12 @@ import android.widget.VideoView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.model.Chapter;
@@ -86,20 +89,28 @@ public class StudyFragment extends Fragment {
         studyVideo.start();
     }
 
-
     private void getStudyData() {
-        databaseReference.child("study").child("subject").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("subject").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 subjectList.clear();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
                     Subject subject = ds.getValue(Subject.class);
+
+                    Log.d(TAG, "onDataChange: " + subject.getName()
+                            + subject.getExplain()
+                            );
+
+                    ArrayList<Chapter> chapterList = new ArrayList<>();
+                    for(DataSnapshot ds2 : ds.child("chapter").getChildren()) {
+                        Chapter chapter = ds2.getValue(Chapter.class);
+                        chapterList.add(chapter);
+                    }
+                    subject.setChapterList(chapterList);
+                    Log.d(TAG, "onDataChange: " +subject.toString());
                     subjectList.add(subject);
-                    Log.d(TAG, "onDataChange: " + subject.getChapter().getChaterName()  + subject.getChapter().getChaterExplain());
-
+                    studyRecyclerAdapter.notifyDataSetChanged();
                 }
-                studyRecyclerAdapter.notifyDataSetChanged();
-
             }
 
             @Override

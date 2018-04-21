@@ -58,13 +58,16 @@
     <string name="learn_content_txt">Content</string>
 
     <!-- My Information String Data -->
+    <string name="my_info_profile_txt">프로필</string>
     <string name="my_info_nick_name_txt">닉네임</string>
+    <string name="my_info_introduce_txt">Rock Bottom에 오신걸 환영합니다!</string>
     <string name="my_info_message_txt">메세지</string>
     <string name="my_info_team_name_txt">소속</string>
     <string name="my_info_ranking_number_txt">0</string>
     <string name="my_info_point_number_txt">0</string>
     <string name="my_info_point_txt">포인트</string>
     <string name="my_info_ranking_txt">랭킹</string>
+    <string name="my_info_etc_txt">기타</string>
     <string name="my_info_study_condition_btn_txt">나의 학습현황</string>
     <string name="my_info_github_btn_txt">나의 깃헙으로</string>
     <string name="my_info_edit_profile_btn_txt">프로필 수정</string>

@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">@android:color/holo_red_dark</color>
     <color name="colorPrimaryDark">#9f0000</color>
+    <color name="colorPrimaryLight">#c15f5f</color>
     <color name="colorAccent">@android:color/white</color>
     <color name="colorBlack">@android:color/black</color>
     <color name="colorVideoTxt">#001020</color>
