@@ -8,13 +8,15 @@ public class Chapter {
 
     private String name;
     private String explain;
+    private String chapterId;
 
     public Chapter() {
     }
 
-    public Chapter(String name, String explain) {
+    public Chapter(String name, String explain, String chapterId) {
         this.name = name;
         this.explain = explain;
+        this.chapterId = chapterId;
     }
 
     public String getName() {
@@ -33,11 +35,20 @@ public class Chapter {
         this.explain = explain;
     }
 
+    public String getChapterId() {
+        return chapterId;
+    }
+
+    public void setChapterId(String chapterId) {
+        this.chapterId = chapterId;
+    }
+
     @Override
     public String toString() {
         return "Chapter{" +
                 "name='" + name + '\'' +
                 ", explain='" + explain + '\'' +
+                ", chapterId='" + chapterId + '\'' +
                 '}';
     }
 }

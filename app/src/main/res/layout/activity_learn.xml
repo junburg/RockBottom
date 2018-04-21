@@ -3,7 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/learn_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorBlack"/>
+
     <android.support.v7.widget.RecyclerView
+        android:layout_below="@id/learn_txt"
         android:id="@+id/learn_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

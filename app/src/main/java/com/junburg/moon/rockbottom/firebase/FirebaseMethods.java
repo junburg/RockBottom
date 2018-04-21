@@ -28,6 +28,7 @@ import com.junburg.moon.rockbottom.login.EmailLoginActivity;
 import com.junburg.moon.rockbottom.login.EmailSignUpActivity;
 import com.junburg.moon.rockbottom.login.InputInfoActivity;
 import com.junburg.moon.rockbottom.main.MainActivity;
+import com.junburg.moon.rockbottom.model.Chapter;
 import com.junburg.moon.rockbottom.model.User;
 import com.junburg.moon.rockbottom.util.GetPath;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
@@ -281,6 +282,26 @@ public class FirebaseMethods {
             riverRef.delete();
         }
         firebaseDatabase.getReference().child("users").child(uid).child("selfieUri").setValue("");
+
+
+    }
+
+    public void initUserLearnSettings(final String uid) {
+        databaseReference.child("subject").child("chapter").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Chapter chapter = ds.getValue(Chapter.class);
+                    String chapterId = chapter.getChapterId();
+                    databaseReference.child("user_learn_settings").child(uid).push();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
     }

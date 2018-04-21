@@ -34,6 +34,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.main.MainActivity;
 import com.junburg.moon.rockbottom.model.User;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
@@ -71,6 +72,7 @@ public class InputInfoActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private FirebaseStorage storage;
     private String uid;
+    private FirebaseMethods firebaseMethods;
 
 
     @Override
@@ -83,6 +85,7 @@ public class InputInfoActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         context = InputInfoActivity.this;
         validationCheck = new ValidationCheck(context);
+        firebaseMethods = new FirebaseMethods(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
         }
@@ -207,7 +210,7 @@ public class InputInfoActivity extends AppCompatActivity {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     User user = setUserData(downloadUrl);
                     database.getReference().child("users").child(uid).setValue(user);
-
+                    firebaseMethods.initUserLearnSettings(uid);
                 }
             });
         }
@@ -229,4 +232,5 @@ public class InputInfoActivity extends AppCompatActivity {
 
         return user;
     }
+
 }

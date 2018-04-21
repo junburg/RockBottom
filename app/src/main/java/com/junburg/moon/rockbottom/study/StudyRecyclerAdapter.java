@@ -1,8 +1,10 @@
 package com.junburg.moon.rockbottom.study;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,12 +27,15 @@ import static android.content.ContentValues.TAG;
 public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerViewHolder>{
     private List<Subject> subjectList;
     private Context context;
+    private android.support.v4.app.FragmentManager fm;
 
     public StudyRecyclerAdapter(
             List<Subject> subjectList
-            , Context context) {
+            , Context context
+            , android.support.v4.app.FragmentManager fm) {
         this.subjectList = subjectList;
         this.context = context;
+        this.fm = fm;
     }
 
     @Override
@@ -44,14 +49,12 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
     public void onBindViewHolder(StudyRecyclerViewHolder holder, int position) {
         holder.studySubjectNameTxt.setText(subjectList.get(position).getName());
         holder.studySubjectExplainTxt.setText(subjectList.get(position).getExplain());
-        holder.chapterRecyclerAdapter.setData(subjectList.get(position).getChapterList());
+        final List<Chapter> chapterList = subjectList.get(position).getChapterList();
+        holder.chapterRecyclerAdapter.setData(chapterList);
         holder.chapterRecyclerAdapter.setOnItemClickListener(new ChapterRecyclerViewHolder.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-            ChapterClickDialog dialog = new ChapterClickDialog(context);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.setCancelable(false);
-            dialog.show();
+                showDialog(position, chapterList.get(position).getChapterId());
             }
         });
     }
@@ -59,5 +62,16 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
     @Override
     public int getItemCount() {
         return (subjectList != null) ? subjectList.size() : 0;
+    }
+
+    private void showDialog(int position, String chapterId) {
+        ChapterDialogFragment chapterDialogFragment = new ChapterDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("position", position);
+        bundle.putString("chapterId", chapterId);
+        chapterDialogFragment.setArguments(bundle);
+
+        chapterDialogFragment.setCancelable(false);
+        chapterDialogFragment.show(fm, "ChapterDialogFragment");
     }
 }

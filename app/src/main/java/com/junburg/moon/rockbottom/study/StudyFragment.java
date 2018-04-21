@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -77,7 +78,8 @@ public class StudyFragment extends Fragment {
         studyRecycler.setHasFixedSize(true);
         studyRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         studyRecycler.setNestedScrollingEnabled(false);
-        studyRecyclerAdapter = new StudyRecyclerAdapter(subjectList, getContext());
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        studyRecyclerAdapter = new StudyRecyclerAdapter(subjectList, getContext(), fm);
         studyRecycler.setAdapter(studyRecyclerAdapter);
 
         return view;
