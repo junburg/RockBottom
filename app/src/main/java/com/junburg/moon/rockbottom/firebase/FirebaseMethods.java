@@ -246,8 +246,8 @@ public class FirebaseMethods {
                     Log.d(TAG, "setProfileInfoNullException: " + e.getMessage());
                 }
             }
-        }
 
+        }
         return user;
     }
 

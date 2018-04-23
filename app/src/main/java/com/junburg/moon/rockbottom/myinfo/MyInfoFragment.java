@@ -70,8 +70,6 @@ public class MyInfoFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
-
-
     }
 
     @Nullable
@@ -80,10 +78,7 @@ public class MyInfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my_info, null);
         context = getActivity();
         glideMethods = new GlideMethods(context);
-        progressDialog = new ProgressDialog(getActivity());
         firebaseMethods = new FirebaseMethods(context);
-        progressDialog.setMessage("정보를 가져오고있습니다");
-        progressDialog.show();
 
         myInfoSelfieImg = (CircleImageView) view.findViewById(R.id.my_info_selfie_img);
         myInfoPointsNumTxt = (TextView) view.findViewById(R.id.my_info_points_number_txt);
@@ -110,7 +105,7 @@ public class MyInfoFragment extends Fragment {
             }
         });
 
-        myInfoStudyConditionBtn = (TextView)view.findViewById(R.id.my_info_study_condition_btn);
+        myInfoStudyConditionBtn = (TextView) view.findViewById(R.id.my_info_study_condition_btn);
         myInfoStudyConditionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,7 +146,7 @@ public class MyInfoFragment extends Fragment {
         github = user.getGithub();
     }
 
-    private void setupProfileInfo(User user) {
+    private void setupProfileInfo(User user, ProgressDialog progressDialog) {
         Log.d(TAG, "setupProfileInfo: " + user.getSelfieUri());
         putIntentData(user);
         glideMethods.setCircleProfileImage(user.getSelfieUri(), myInfoSelfieImg);
@@ -160,14 +155,13 @@ public class MyInfoFragment extends Fragment {
         myInfoTeamNameTxt.setText(user.getTeamName());
         myInfoPointsNumTxt.setText(Integer.toString(user.getPoints()));
         myInfoRankingNumTxt.setText(Integer.toString(user.getRanking()));
+        progressDialog.dismiss();
     }
 
     private void setupFirebaseAuth() {
         auth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("정보를 가져오는 중입니다");
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -176,16 +170,20 @@ public class MyInfoFragment extends Fragment {
                 if (user != null) {
 
                 } else {
-                    Intent intent = new Intent (getActivity(), LoginActivity.class);
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
                     startActivity(intent);
                 }
             }
         };
 
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("정보를 가져오는 중이에요");
+        progressDialog.show();
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                setupProfileInfo(firebaseMethods.setProfileInfo(dataSnapshot));
+                setupProfileInfo(firebaseMethods.setProfileInfo(dataSnapshot), progressDialog);
+
             }
 
             @Override
@@ -196,13 +194,16 @@ public class MyInfoFragment extends Fragment {
 
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
         auth.addAuthStateListener(authStateListener);
 
 
+
     }
+
 
     @Override
     public void onStop() {

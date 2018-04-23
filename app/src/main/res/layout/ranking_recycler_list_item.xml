@@ -31,7 +31,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/example_selfie_img"/>
+                    android:background="@color/colorPrimary"
+                    android:src="@drawable/rock_bottom_logo"/>
 
                 <TextView
                     android:id="@+id/ranking_number_txt"

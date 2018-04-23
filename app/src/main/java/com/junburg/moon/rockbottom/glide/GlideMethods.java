@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -15,6 +16,8 @@ import com.junburg.moon.rockbottom.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Junburg on 2018. 4. 17..
@@ -31,18 +34,9 @@ public class GlideMethods {
     }
 
     public void setProfileImage(String selfieUri, ImageView imgView) {
-        if(selfieUri.equals("")) {
-            Uri uri = Uri.parse(
-                    "android.resource://"
-                            + context.getPackageName()
-                            + "/"
-                            + R.drawable.rock_bottom_logo
-            );
-            Glide.with(context)
-                    .load(uri)
-                    .bitmapTransform(new CropCircleTransformation(context))
-                    .crossFade()
-                    .into(imgView);
+        Log.d(TAG, "setProfileImage: " + selfieUri.toString());
+        if (selfieUri.equals("")) {
+            imgView.setImageResource(R.drawable.rock_bottom_logo);
         } else {
             Glide.with(context)
                     .load(selfieUri)
@@ -52,23 +46,23 @@ public class GlideMethods {
     }
 
     public void setCircleProfileImage(String selfieUri, CircleImageView imgView) {
-        if(selfieUri.equals("")) {
-            Uri uri = Uri.parse(
-                    "android.resource://"
-                            + context.getPackageName()
-                            + "/"
-                            + R.drawable.rock_bottom_logo
-            );
-            Glide.with(context)
-                    .load(uri)
-                    .crossFade()
-                    .into(imgView);
+        if (selfieUri.equals("")) {
+            imgView.setImageResource(R.drawable.rock_bottom_logo);
         } else {
             Glide.with(context)
                     .load(selfieUri)
                     .crossFade()
                     .into(imgView);
 
+        }
+    }
+
+    public void setRankingImage(String selfieUri, ImageView imgView) {
+        if (!(selfieUri.equals(""))) {
+            Glide.with(context)
+                    .load(selfieUri)
+                    .crossFade()
+                    .into(imgView);
         }
     }
 }

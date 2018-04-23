@@ -1,13 +1,18 @@
 package com.junburg.moon.rockbottom.ranking;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.glide.GlideMethods;
+import com.junburg.moon.rockbottom.model.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Junburg on 2018. 3. 4..
@@ -15,10 +20,14 @@ import java.util.ArrayList;
 
 public class RankingRecyclerAdapter extends RecyclerView.Adapter<RankingRecyclerViewHolder> {
 
-    private ArrayList<RankingRecyclerData> dataList;
+    private List<User> userList;
+    private Context context;
+    private GlideMethods glideMethods;
 
-    public RankingRecyclerAdapter(ArrayList<RankingRecyclerData> dataList) {
-        this.dataList = dataList;
+    public RankingRecyclerAdapter(List<User> userList, Context context, GlideMethods glideMethods) {
+        this.userList = userList;
+        this.context = context;
+        this.glideMethods = glideMethods;
     }
 
     @Override
@@ -30,17 +39,22 @@ public class RankingRecyclerAdapter extends RecyclerView.Adapter<RankingRecycler
 
     @Override
     public void onBindViewHolder(RankingRecyclerViewHolder holder, int position) {
-        RankingRecyclerData data = dataList.get(position);
-        holder.rankingNickNameTxt.setText(data.getRankingNickName());
-        holder.rankingPointTxt.setText(data.getRankingPoint());
-        holder.rankingMessageTxt.setText(data.getRankingMessage());
-        holder.rankingNumberTxt.setText(data.getRankingNumber());
-        holder.rankingTeamTxt.setText(data.getRankingTeam());
-        holder.rankingGithubTxt.setText(data.getRankingGithub());
+        Collections.reverse(userList);
+        User userData = userList.get(position);
+        holder.rankingNickNameTxt.setText(userData.getNickName());
+        holder.rankingPointTxt.setText(Integer.toString(userData.getPoints()));
+        holder.rankingMessageTxt.setText(userData.getMessage());
+        holder.rankingNumberTxt.setText(Integer.toString(position+1));
+        holder.rankingTeamTxt.setText(userData.getTeamName());
+        holder.rankingGithubTxt.setText(userData.getGithub());
+        glideMethods.setRankingImage(userData.getSelfieUri(), holder.rankingSelfieImg);
+
+
+
     }
 
     @Override
     public int getItemCount() {
-        return (dataList != null) ? dataList.size() : 0;
+        return (userList != null) ? userList.size() : 0;
     }
 }
