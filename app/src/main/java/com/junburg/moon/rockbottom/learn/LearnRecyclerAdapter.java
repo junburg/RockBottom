@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import com.junburg.moon.rockbottom.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Junburg on 2018. 3. 4..
@@ -15,10 +16,12 @@ import java.util.ArrayList;
 
 public class LearnRecyclerAdapter extends RecyclerView.Adapter<LearnRecyclerViewHolder> {
 
-    private ArrayList<LearnRecyclerData> dataList;
+    private List<String> titleList;
+    private List<String> bodyList;
 
-    public LearnRecyclerAdapter(ArrayList<LearnRecyclerData> dataList) {
-        this.dataList = dataList;
+    public LearnRecyclerAdapter(List<String> titleList, List<String> bodyList) {
+        this.titleList = titleList;
+        this.bodyList = bodyList;
     }
 
     @Override
@@ -30,14 +33,20 @@ public class LearnRecyclerAdapter extends RecyclerView.Adapter<LearnRecyclerView
 
     @Override
     public void onBindViewHolder(LearnRecyclerViewHolder holder, int position) {
-        LearnRecyclerData data = dataList.get(position);
-        holder.learnSubjectTxt.setText(data.getLearnSubject());
-        holder.learnContentTxt.setText(data.getLearnContent());
+        holder.learnSubjectTxt.setText(titleList.get(position));
+        holder.learnContentTxt.setText(bodyList.get(position));
 
     }
 
     @Override
     public int getItemCount() {
-        return (null != dataList ? dataList.size() : 0);
+        return (null != titleList ? titleList.size() : 0);
+    }
+
+    public void setData(List<String> titleList, List<String> bodyList) {
+        this.titleList = titleList;
+        this.bodyList = bodyList;
+        notifyDataSetChanged();
+
     }
 }
