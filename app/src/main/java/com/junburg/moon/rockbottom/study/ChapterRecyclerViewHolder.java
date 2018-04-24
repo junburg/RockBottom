@@ -28,6 +28,7 @@ public class ChapterRecyclerViewHolder extends RecyclerView.ViewHolder {
         chapterNameTxt = (TextView)itemView.findViewById(R.id.chapter_subject_name_txt);
         chapterExplainTxt = (TextView)itemView.findViewById(R.id.chapter_explain_txt);
         chapterCard = (CardView)itemView.findViewById(R.id.chapter_card);
+
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

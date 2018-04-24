@@ -1,5 +1,6 @@
 package com.junburg.moon.rockbottom.myinfo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.junburg.moon.rockbottom.R;
+import com.tsengvn.typekit.TypekitContextWrapper;
 
 import java.util.ArrayList;
 
@@ -71,5 +73,10 @@ public class StudyConditionActivity extends AppCompatActivity {
             list.add(studyConditionRecyclerData);
 
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
 }

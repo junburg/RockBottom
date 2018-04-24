@@ -23,6 +23,7 @@ import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.main.MainActivity;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
+import com.tsengvn.typekit.TypekitContextWrapper;
 
 /**
  * Created by Junburg on 2018. 4. 15..
@@ -77,5 +78,10 @@ public class EmailLoginActivity extends AppCompatActivity {
                 firebaseMethods.loginEmail(email, password);
             }
         });
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
 }

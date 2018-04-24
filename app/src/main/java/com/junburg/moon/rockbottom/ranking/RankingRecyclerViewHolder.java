@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.study.ChapterRecyclerViewHolder;
 
 /**
  * Created by Junburg on 2018. 3. 4..
@@ -13,23 +14,32 @@ import com.junburg.moon.rockbottom.R;
 
 public class RankingRecyclerViewHolder extends RecyclerView.ViewHolder {
 
-    protected ImageView rankingSelfieImg;
     protected TextView rankingNickNameTxt;
     protected TextView rankingPointTxt;
-    protected TextView rankingMessageTxt;
     protected TextView rankingNumberTxt;
-    protected TextView rankingGithubTxt;
-    protected TextView rankingTeamTxt;
+    private OnItemClickListener listener;
 
-    public RankingRecyclerViewHolder(View itemView) {
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+    public RankingRecyclerViewHolder(View itemView, final OnItemClickListener listener) {
         super(itemView);
-        rankingSelfieImg = (ImageView)itemView.findViewById(R.id.ranking_selfie_img);
-        rankingNickNameTxt = (TextView)itemView.findViewById(R.id.ranking_nick_name_txt);
-        rankingPointTxt = (TextView)itemView.findViewById(R.id.ranking_point_txt);
-        rankingMessageTxt = (TextView)itemView.findViewById(R.id.ranking_message_txt);
-        rankingNumberTxt = (TextView)itemView.findViewById(R.id.ranking_number_txt);
-        rankingGithubTxt = (TextView)itemView.findViewById(R.id.ranking_github_txt);
-        rankingTeamTxt = (TextView)itemView.findViewById(R.id.ranking_team_txt);
+        rankingNickNameTxt = (TextView)itemView.findViewById(R.id.ranking_list_nick_name_txt);
+        rankingPointTxt = (TextView)itemView.findViewById(R.id.ranking_list_points_txt);
+        rankingNumberTxt = (TextView)itemView.findViewById(R.id.ranking_list_number_txt);
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(listener != null) {
+                    int position  = getAdapterPosition();
+                    if(position != RecyclerView.NO_POSITION) {
+                        listener.onItemClick(position);
+                    }
+                }
+            }
+        });
 
     }
 }

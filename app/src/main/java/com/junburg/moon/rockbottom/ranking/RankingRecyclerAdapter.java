@@ -2,6 +2,7 @@ package com.junburg.moon.rockbottom.ranking;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +10,13 @@ import android.view.ViewGroup;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.glide.GlideMethods;
 import com.junburg.moon.rockbottom.model.User;
+import com.junburg.moon.rockbottom.study.ChapterRecyclerViewHolder;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Junburg on 2018. 3. 4..
@@ -23,6 +27,11 @@ public class RankingRecyclerAdapter extends RecyclerView.Adapter<RankingRecycler
     private List<User> userList;
     private Context context;
     private GlideMethods glideMethods;
+    private RankingRecyclerViewHolder.OnItemClickListener listener;
+
+    public void setOnItemClickListener(RankingRecyclerViewHolder.OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public RankingRecyclerAdapter(List<User> userList, Context context, GlideMethods glideMethods) {
         this.userList = userList;
@@ -33,22 +42,30 @@ public class RankingRecyclerAdapter extends RecyclerView.Adapter<RankingRecycler
     @Override
     public RankingRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.ranking_recycler_list_item, null);
-        RankingRecyclerViewHolder holder = new RankingRecyclerViewHolder(v);
+        RankingRecyclerViewHolder holder = new RankingRecyclerViewHolder(v, listener);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(RankingRecyclerViewHolder holder, int position) {
-        Collections.reverse(userList);
+        String numAppend = "";
         User userData = userList.get(position);
         holder.rankingNickNameTxt.setText(userData.getNickName());
-        holder.rankingPointTxt.setText(Integer.toString(userData.getPoints()));
-        holder.rankingMessageTxt.setText(userData.getMessage());
-        holder.rankingNumberTxt.setText(Integer.toString(position+1));
-        holder.rankingTeamTxt.setText(userData.getTeamName());
-        holder.rankingGithubTxt.setText(userData.getGithub());
-        glideMethods.setRankingImage(userData.getSelfieUri(), holder.rankingSelfieImg);
-
+        holder.rankingPointTxt.setText(Integer.toString(userData.getPoints()) + "pts");
+        switch (position) {
+            case 0:
+                numAppend = "st";
+                break;
+            case 1:
+                numAppend = "nd";
+                break;
+            case 2:
+                numAppend = "rd";
+                break;
+            default:
+                numAppend = "th";
+        }
+        holder.rankingNumberTxt.setText(Integer.toString(position + 1) + numAppend);
 
 
     }

@@ -30,6 +30,7 @@ import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.glide.GlideMethods;
 import com.junburg.moon.rockbottom.model.User;
+import com.tsengvn.typekit.TypekitContextWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -206,5 +207,10 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         editDataMap.put(targetString, editString);
         editInfoRecyclerData.setEditDataMap(editDataMap);
         editInfoRecyclerAdapter.editItemFromDialog(position, editInfoRecyclerData);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
 }

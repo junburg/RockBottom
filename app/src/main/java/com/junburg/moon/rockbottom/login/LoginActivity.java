@@ -1,6 +1,7 @@
 package com.junburg.moon.rockbottom.login;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -35,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.main.MainActivity;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
+import com.tsengvn.typekit.TypekitContextWrapper;
 
 /**
  * Created by Junburg on 2018. 2. 1..
@@ -181,5 +183,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onStop() {
         super.onStop();
         auth.removeAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
 }

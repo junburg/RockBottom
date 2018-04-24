@@ -1,6 +1,7 @@
 package com.junburg.moon.rockbottom.myinfo;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.login.LoginActivity;
+import com.tsengvn.typekit.TypekitContextWrapper;
 
 /**
  * Created by Junburg on 2018. 4. 19..
@@ -140,5 +142,9 @@ public class AccountSettingActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         firebaseAuth.removeAuthStateListener(authStateListener);
+    }
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
 }

@@ -1,5 +1,6 @@
 package com.junburg.moon.rockbottom.main;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import com.junburg.moon.rockbottom.myinfo.MyInfoFragment;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.ranking.RankingFragment;
 import com.junburg.moon.rockbottom.study.StudyFragment;
+import com.tsengvn.typekit.TypekitContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,5 +55,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
 }

@@ -28,15 +28,6 @@ public class ChapterRecyclerAdapter extends RecyclerView.Adapter<ChapterRecycler
         this.listener = listener;
     }
 
-    public ChapterRecyclerAdapter() {
-
-    }
-
-    public void setData(List<Chapter> chapterList) {
-        this.chapterList = chapterList;
-        Log.d(TAG, "setData: " + this.chapterList.toString());
-        notifyDataSetChanged();
-    }
 
     @Override
     public ChapterRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -56,6 +47,12 @@ public class ChapterRecyclerAdapter extends RecyclerView.Adapter<ChapterRecycler
     @Override
     public int getItemCount() {
         return (chapterList != null) ? chapterList.size() : 0;
+    }
+
+    public void setData(List<Chapter> chapterList) {
+        this.chapterList = chapterList;
+        Log.d(TAG, "setData: " + this.chapterList.toString());
+        notifyDataSetChanged();
     }
 
 

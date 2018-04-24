@@ -2,8 +2,11 @@ package com.junburg.moon.rockbottom.ranking;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,7 +30,10 @@ import com.junburg.moon.rockbottom.glide.GlideMethods;
 import com.junburg.moon.rockbottom.model.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.ContentValues.TAG;
 
@@ -35,17 +43,24 @@ import static android.content.ContentValues.TAG;
 
 public class RankingFragment extends Fragment {
 
+    // Variables
     private RecyclerView rankingRecycler;
     private RankingRecyclerAdapter rankingRecyclerAdapter;
     private List<User> userList;
     private Context context;
     private GlideMethods glideMethods;
 
+    // Firebases
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
 
+    // Widgets
+    private TextView rankingTeamNameTxt, rankingNickNameTxt, rankingMessageTxt, rankingNumberTxt, rankingPointsTxt;
+    private Button rankingGithubBtn;
+    private CircleImageView rankingSelfieImg;
+    private CollapsingToolbarLayout rankingCollapsingToolbarLayout;
 
     @Nullable
     @Override
@@ -58,29 +73,42 @@ public class RankingFragment extends Fragment {
         databaseReference = firebaseDatabase.getReference();
         context = getActivity();
         glideMethods = new GlideMethods(context);
+        rankingCollapsingToolbarLayout = (CollapsingToolbarLayout)view.findViewById(R.id.ranking_collapsing_tool_bar_layout);
+        rankingTeamNameTxt = (TextView) view.findViewById(R.id.ranking_team_name_txt);
+        rankingNickNameTxt = (TextView) view.findViewById(R.id.ranking_nick_name_txt);
+        rankingMessageTxt = (TextView) view.findViewById(R.id.ranking_message_txt);
+        rankingSelfieImg = (CircleImageView) view.findViewById(R.id.ranking_selfie_img);
+        rankingGithubBtn = (Button) view.findViewById(R.id.ranking_github_btn);
+        rankingNumberTxt = (TextView) view.findViewById(R.id.ranking_number_txt);
+        rankingPointsTxt = (TextView) view.findViewById(R.id.ranking_points_txt);
         getRankingData();
-        rankingRecycler = (RecyclerView)view.findViewById(R.id.ranking_recycler);
+        rankingRecycler = (RecyclerView) view.findViewById(R.id.ranking_recycler);
         rankingRecycler.setHasFixedSize(true);
         rankingRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         rankingRecyclerAdapter = new RankingRecyclerAdapter(userList, context, glideMethods);
         rankingRecycler.setAdapter(rankingRecyclerAdapter);
+        rankingRecyclerAdapter.setOnItemClickListener(new RankingRecyclerViewHolder.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                setRankingUser(position);
+            }
+        });
 
         return view;
     }
 
-
     private void getRankingData() {
-        Query query = databaseReference.child("users").orderByChild("points").limitToLast(5);
+        Query query = databaseReference.child("users").orderByChild("points").limitToLast(10);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 userList.clear();
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     userList.add(ds.getValue(User.class));
-
                 }
+                Collections.reverse(userList);
+                initFirstUser();
                 rankingRecyclerAdapter.notifyDataSetChanged();
-                Log.d(TAG, "onDataChange: " + userList.size());
             }
 
             @Override
@@ -89,6 +117,59 @@ public class RankingFragment extends Fragment {
             }
         });
 
+    }
+
+    private void toYourGithub(String github) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.parse("http://github.com/" + github);
+        intent.setData(uri);
+        startActivity(intent);
+    }
+
+    private void initFirstUser() {
+        rankingTeamNameTxt.setText(userList.get(0).getTeamName());
+        rankingNickNameTxt.setText(userList.get(0).getNickName());
+        rankingMessageTxt.setText("\"" + userList.get(0).getMessage() + "\"");
+        glideMethods.setCircleProfileImage(userList.get(0).getSelfieUri(), rankingSelfieImg);
+        rankingGithubBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toYourGithub(userList.get(0).getGithub());
+            }
+        });
+        rankingPointsTxt.setText(Integer.toString(userList.get(0).getPoints()) + "pts");
+        rankingNumberTxt.setText("1st");
+    }
+
+    private void setRankingUser(final int position) {
+        rankingTeamNameTxt.setText(userList.get(position).getTeamName());
+        rankingNickNameTxt.setText(userList.get(position).getNickName());
+        rankingMessageTxt.setText("\"" + userList.get(position).getMessage() + "\"");
+        glideMethods.setCircleProfileImage(userList.get(position).getSelfieUri(), rankingSelfieImg);
+        rankingGithubBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toYourGithub(userList.get(position).getGithub());
+            }
+        });
+
+        rankingPointsTxt.setText(Integer.toString(userList.get(position).getPoints()) + "pts");
+        String numAppend = "";
+        switch (position) {
+            case 0:
+                numAppend = "st";
+                break;
+            case 1:
+                numAppend = "nd";
+                break;
+            case 2:
+                numAppend = "rd";
+                break;
+            default:
+                numAppend = "th";
+        }
+        rankingNumberTxt.setText(position + 1 + numAppend);
+        rankingCollapsingToolbarLayout.setVisibility(View.VISIBLE);
     }
 }
 

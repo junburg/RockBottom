@@ -46,7 +46,7 @@
     <string name="ranking_priority_txt">랭킹 순위</string>
 
     <!-- Study String Data -->
-    <string name="study_txt">  컴퓨터 공학을 학습하고\n더 깊은 실력을 갖춰보세요</string>
+    <string name="study_txt">컴퓨터 공학을 학습하고\n더 깊은 실력을 갖춰보세요</string>
     <string name="study_subject_txt">Subject</string>
     <string name="study_chapter_txt">Chapter</string>
     <string name="study_subject_explain_txt">업데이트 중</string>

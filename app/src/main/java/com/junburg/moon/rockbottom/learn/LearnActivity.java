@@ -1,5 +1,6 @@
 package com.junburg.moon.rockbottom.learn;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.model.Learn;
 import com.junburg.moon.rockbottom.util.ProcessContent;
+import com.tsengvn.typekit.TypekitContextWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,5 +131,8 @@ public class LearnActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
+    }
 }

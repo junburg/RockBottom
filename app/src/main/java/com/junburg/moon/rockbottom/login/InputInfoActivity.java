@@ -38,6 +38,7 @@ import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.main.MainActivity;
 import com.junburg.moon.rockbottom.model.User;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
+import com.tsengvn.typekit.TypekitContextWrapper;
 
 import java.io.File;
 
@@ -231,6 +232,11 @@ public class InputInfoActivity extends AppCompatActivity {
         user.setRanking(0);
 
         return user;
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
 
 }
