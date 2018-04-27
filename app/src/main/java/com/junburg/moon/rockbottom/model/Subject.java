@@ -10,17 +10,18 @@ import java.util.Map;
 
 public class Subject {
 
-
-   private String name;
-   private String explain;
-   private List<Chapter> chapterList;
+    private String name;
+    private String explain;
+    private String subject_id;
+    private List<Chapter> chapterList;
 
     public Subject() {
     }
 
-    public Subject(String name, String explain, List<Chapter> chapterList) {
+    public Subject(String name, String explain, String subject_id, List<Chapter> chapterList) {
         this.name = name;
         this.explain = explain;
+        this.subject_id = subject_id;
         this.chapterList = chapterList;
     }
 
@@ -40,6 +41,14 @@ public class Subject {
         this.explain = explain;
     }
 
+    public String getSubject_id() {
+        return subject_id;
+    }
+
+    public void setSubject_id(String subject_id) {
+        this.subject_id = subject_id;
+    }
+
     public List<Chapter> getChapterList() {
         return chapterList;
     }
@@ -53,6 +62,7 @@ public class Subject {
         return "Subject{" +
                 "name='" + name + '\'' +
                 ", explain='" + explain + '\'' +
+                ", subject_id='" + subject_id + '\'' +
                 ", chapterList=" + chapterList +
                 '}';
     }

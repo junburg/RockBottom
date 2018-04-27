@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,12 +45,15 @@ public class LearnActivity extends AppCompatActivity {
 
     private Intent intent;
     private String chapterId;
+    private String subjectId;
     private int position;
     private String content;
     private ProcessContent processContent;
     private List<String> titleList;
     private List<String> bodyList;
 
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
 
@@ -56,9 +61,12 @@ public class LearnActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
         processContent = new ProcessContent();
         intent = getIntent();
         chapterId = intent.getStringExtra("chapterId");
+        subjectId = intent.getStringExtra("subjectId");
         position = intent.getIntExtra("position", 0);
         Log.d(TAG, "onCreate: " + chapterId + position);
         learnTxt = (TextView)findViewById(R.id.learn_txt);
@@ -75,7 +83,11 @@ public class LearnActivity extends AppCompatActivity {
         learnDoneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                databaseReference.child("user_study_condition")
+                        .child(firebaseUser.getUid())
+                        .child(subjectId).child(chapterId).setValue(true);
                 finish();
+
             }
         });
 
@@ -87,13 +99,6 @@ public class LearnActivity extends AppCompatActivity {
         });
     }
 
-//    private void createDummyData() {
-//        for(int i=1; i<10; i++) {
-//            LearnRecyclerData data = new LearnRecyclerData("subject" + i, "content" + i );
-//            dataList.add(data);
-//        }
-//
-//    }
 
     private void getLearnData() {
         firebaseDatabase = FirebaseDatabase.getInstance();

@@ -6,11 +6,21 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.study.StudyRecyclerAdapter;
 import com.tsengvn.typekit.TypekitContextWrapper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Junburg on 2018. 4. 20..
@@ -18,61 +28,62 @@ import java.util.ArrayList;
 
 public class StudyConditionActivity extends AppCompatActivity {
 
+    private static final String TAG = "StudyConditionActivity";
 
-    private StudyConditionRecyclerData studyConditionRecyclerData;
-    private ArrayList<StudyConditionRecyclerData> list = new ArrayList<>();
-    private String[] subjectArray = new String[7];
-    private int[] subjectNumArray = new int[7];
-    private int[] doneNumArray = new int[7];
     private RecyclerView studyConditionRecycler;
+
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+
+    private List<String> subjectNameList;
+    private List<Integer> countChapterList;
+    private List<Integer> trueChapterList;
+    private StudyConditionRecyclerAdapter studyConditionRecyclerAdapter;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_study_condition);
-        setData();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+
+        getUserStudyCondition();
 
         studyConditionRecycler = (RecyclerView) findViewById(R.id.study_condition_recycler);
         studyConditionRecycler.setHasFixedSize(true);
         studyConditionRecycler.setLayoutManager(new LinearLayoutManager(this));
-        studyConditionRecycler.setAdapter(new StudyConditionRecyclerAdapter(list));
+        studyConditionRecyclerAdapter = new StudyConditionRecyclerAdapter(subjectNameList, countChapterList);
+        studyConditionRecycler.setAdapter(studyConditionRecyclerAdapter);
     }
 
-    private void setData() {
-        subjectArray[0] = "자료구조";
-        subjectArray[1] = "알고리즘";
-        subjectArray[2] = "소프트웨어 공학";
-        subjectArray[3] = "네트워크";
-        subjectArray[4] = "데이터 베이스";
-        subjectArray[5] = "컴퓨터 구조";
-        subjectArray[6] = "이산수학";
+    private void getUserStudyCondition() {
+        subjectNameList = new ArrayList<>();
+        countChapterList = new ArrayList<>();
+        trueChapterList = new ArrayList<>();
 
-        subjectNumArray[0] = 20;
-        subjectNumArray[1] = 30;
-        subjectNumArray[2] = 23;
-        subjectNumArray[3] = 14;
-        subjectNumArray[4] = 12;
-        subjectNumArray[5] = 90;
-        subjectNumArray[6] = 45;
+        databaseReference.child("user_study_condition").child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    subjectNameList.add(ds.getKey());
+                    countChapterList.add((int)ds.getChildrenCount());
+
+                }
+            studyConditionRecyclerAdapter.notifyDataSetChanged();
+            }
 
 
-        doneNumArray[0] = 1;
-        doneNumArray[1] = 3;
-        doneNumArray[2] = 0;
-        doneNumArray[3] = 12;
-        doneNumArray[4] = 9;
-        doneNumArray[5] = 23;
-        doneNumArray[6] = 33;
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        for (int i = 0; i < 7; i++) {
-            studyConditionRecyclerData = new StudyConditionRecyclerData();
-            studyConditionRecyclerData.setStudyConditionSubjectName(subjectArray[i]);
-            studyConditionRecyclerData.setStudyConditionSubjectNumber(subjectNumArray[i]);
-            studyConditionRecyclerData.setStudyConditionDoneNumber(doneNumArray[i]);
-            list.add(studyConditionRecyclerData);
+            }
+        });
 
-        }
     }
 
     @Override

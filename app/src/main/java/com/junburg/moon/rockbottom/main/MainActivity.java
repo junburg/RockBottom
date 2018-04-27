@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.myinfo.MyInfoFragment;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.ranking.RankingFragment;
@@ -20,14 +22,22 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView mainBottomNavigationView;
     private Fragment mainFragment;
+
     // Firebase
     private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private FirebaseMethods firebaseMethods;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        context = MainActivity.this;
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseMethods = new FirebaseMethods(context);
+        firebaseMethods.initUserConditionSetting(firebaseUser.getUid());
         mainBottomNavigationView = (BottomNavigationView) findViewById(R.id.main_bottom_navigation_view);
         mainBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override

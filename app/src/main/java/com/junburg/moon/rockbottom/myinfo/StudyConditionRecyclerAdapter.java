@@ -8,17 +8,21 @@ import android.view.ViewGroup;
 import com.junburg.moon.rockbottom.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Junburg on 2018. 2. 13..
  */
 
-public class StudyConditionRecyclerAdapter extends RecyclerView.Adapter<StudyConditionRecyclerViewHolder>{
+public class StudyConditionRecyclerAdapter extends RecyclerView.Adapter<StudyConditionRecyclerViewHolder> {
 
-    private ArrayList<StudyConditionRecyclerData> dataList;
+    private List<String> subjectNameList;
+    private List<Integer> chapterCountList;
 
-    StudyConditionRecyclerAdapter(ArrayList<StudyConditionRecyclerData> dataList) {
-        this.dataList = dataList;
+
+    public StudyConditionRecyclerAdapter(List<String> subjectNameList, List<Integer> chapterCountList) {
+        this.subjectNameList = subjectNameList;
+        this.chapterCountList = chapterCountList;
     }
 
     @Override
@@ -30,19 +34,15 @@ public class StudyConditionRecyclerAdapter extends RecyclerView.Adapter<StudyCon
 
     @Override
     public void onBindViewHolder(StudyConditionRecyclerViewHolder holder, int position) {
-        StudyConditionRecyclerData data = dataList.get(position);
-
-        holder.studyConditionSubjectNameTxt.setText(data.getStudyConditionSubjectName());
-        String number = data.getStudyConditionDoneNumber() + "/" + data.getStudyConditionSubjectNumber();
-        holder.studyConditionDoneNumberTxt.setText(number);
-        holder.studyConditionProgressBar.setMax(data.getStudyConditionSubjectNumber());
-        holder.studyConditionProgressBar.setProgress(data.getStudyConditionDoneNumber());
-
+        holder.studyConditionSubjectNameTxt.setText(subjectNameList.get(position));
+        holder.studyConditionDoneNumberTxt.setText(Integer.toString(chapterCountList.get(position) - 1));
+        holder.studyConditionProgressBar.setMax(chapterCountList.get(position) - 1);
+        holder.studyConditionProgressBar.setProgress(1);
     }
 
     @Override
     public int getItemCount() {
-        return dataList.size();
+        return (subjectNameList != null) ? subjectNameList.size() : 0;
     }
 
 

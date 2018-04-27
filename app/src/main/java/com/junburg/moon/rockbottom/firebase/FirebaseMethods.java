@@ -29,11 +29,16 @@ import com.junburg.moon.rockbottom.login.EmailSignUpActivity;
 import com.junburg.moon.rockbottom.login.InputInfoActivity;
 import com.junburg.moon.rockbottom.main.MainActivity;
 import com.junburg.moon.rockbottom.model.Chapter;
+import com.junburg.moon.rockbottom.model.Subject;
 import com.junburg.moon.rockbottom.model.User;
 import com.junburg.moon.rockbottom.util.GetPath;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static android.content.ContentValues.TAG;
 
@@ -47,7 +52,7 @@ public class FirebaseMethods {
     private Context context;
     private boolean firstEmailLogin;
     private String uid;
-
+    private List<Chapter> chapterList = new ArrayList<>();
     // Firebase
     private FirebaseAuth auth;
     private FirebaseDatabase firebaseDatabase;
@@ -209,8 +214,8 @@ public class FirebaseMethods {
 
                     user.setNickName(
                             ds.child(uid)
-                            .getValue(User.class)
-                            .getNickName()
+                                    .getValue(User.class)
+                                    .getNickName()
                     );
 
                     user.setMessage(
@@ -254,8 +259,8 @@ public class FirebaseMethods {
     public void setSelfieImg(Uri selfieUri, final String uid) {
         GetPath getPath = new GetPath(context);
         Uri file = Uri.fromFile(new File(getPath.getPathUri(selfieUri)));
-        StorageReference riversRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie" );
-        if(riversRef != null) {
+        StorageReference riversRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
+        if (riversRef != null) {
             riversRef.delete();
         }
         UploadTask uploadTask = riversRef.putFile(file);
@@ -277,8 +282,8 @@ public class FirebaseMethods {
     }
 
     public void deleteSelfieImg(String uid) {
-        StorageReference riverRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie" );
-        if(riverRef != null) {
+        StorageReference riverRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
+        if (riverRef != null) {
             riverRef.delete();
         }
         firebaseDatabase.getReference().child("users").child(uid).child("selfieUri").setValue("");
@@ -290,9 +295,9 @@ public class FirebaseMethods {
         databaseReference.child("subject").child("chapter").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Chapter chapter = ds.getValue(Chapter.class);
-                    String chapterId = chapter.getChapterId();
+                    String chapterId = chapter.getChapter_id();
                     databaseReference.child("user_learn_settings").child(uid).push();
                 }
             }
@@ -302,8 +307,37 @@ public class FirebaseMethods {
 
             }
         });
+    }
 
+    public void initUserConditionSetting(final String uid) {
+        if (databaseReference.child("user_study_condition").child(uid).equals(null)) {
 
+            final Map<String, Object> chapterMap = new HashMap<>();
+            databaseReference.child("subject").addValueEventListener(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        Subject subject = ds.getValue(Subject.class);
+
+                        chapterMap.clear();
+                        for (DataSnapshot ds2 : ds.child("chapter").getChildren()) {
+                            Chapter chapter = ds2.getValue(Chapter.class);
+                            chapterMap.put(chapter.getChapter_id(), false);
+                        }
+                        Map<String, Object> nameMap = new HashMap<>();
+                        nameMap.put("name", subject.getName());
+                        databaseReference.child("user_study_condition").child(uid).child(subject.getSubject_id()).setValue(nameMap);
+                        databaseReference.child("user_study_condition").child(uid).child(subject.getSubject_id()).updateChildren(chapterMap);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
 }

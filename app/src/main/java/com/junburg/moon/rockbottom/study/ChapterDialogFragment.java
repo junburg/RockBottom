@@ -39,6 +39,7 @@ public class ChapterDialogFragment extends DialogFragment {
         Bundle bundle = getArguments();
         final int position = bundle.getInt("position");
         final String chapterId = bundle.getString("chapterId");
+        final String subjectId = bundle.getString("subjectId");
 
         dialogLearnLayout = (LinearLayout) view.findViewById(R.id.dialog_learn_layout);
         dialogQuizLayout = (LinearLayout) view.findViewById(R.id.dialog_quiz_layout);
@@ -49,6 +50,7 @@ public class ChapterDialogFragment extends DialogFragment {
                 Intent intent = new Intent(getActivity(), LearnActivity.class);
                 intent.putExtra("position", position);
                 intent.putExtra("chapterId", chapterId);
+                intent.putExtra("subjectId", subjectId);
                 getActivity().startActivity(intent);
                 dismiss();
             }

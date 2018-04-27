@@ -1,6 +1,7 @@
 package com.junburg.moon.rockbottom.study;
 
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.model.Chapter;
 import com.junburg.moon.rockbottom.model.Subject;
 
@@ -49,8 +51,10 @@ public class StudyFragment extends Fragment {
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private FirebaseMethods firebaseMethods;
 
     private List<Subject> subjectList;
+    private Context context;
 
     @Nullable
     @Override
@@ -62,7 +66,11 @@ public class StudyFragment extends Fragment {
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
+        context = getActivity();
+        firebaseMethods = new FirebaseMethods(context);
+
         getStudyData();
+
         studyVideo = (VideoView) view.findViewById(R.id.study_video);
         String videoUriPath = "android.resource://" + getActivity().getPackageName() + "/" + R.raw.study_video;
         Uri uri = Uri.parse(videoUriPath);

@@ -126,6 +126,7 @@ public class InputInfoActivity extends AppCompatActivity {
                 } else {
                     Snackbar.make(view, "정보 확인 완료 :)", Snackbar.LENGTH_SHORT).show();
                     userInitialize();
+                    firebaseMethods.initUserConditionSetting(uid);
                     startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
                     finish();
 

@@ -54,7 +54,7 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
         holder.chapterRecyclerAdapter.setOnItemClickListener(new ChapterRecyclerViewHolder.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                showDialog(position, chapterList.get(position).getChapterId());
+                showDialog(position, chapterList.get(position).getChapter_id(), subjectList.get(position).getSubject_id());
             }
         });
     }
@@ -64,11 +64,12 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
         return (subjectList != null) ? subjectList.size() : 0;
     }
 
-    private void showDialog(int position, String chapterId) {
+    private void showDialog(int position, String chapterId, String subjectId) {
         ChapterDialogFragment chapterDialogFragment = new ChapterDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("position", position);
         bundle.putString("chapterId", chapterId);
+        bundle.putString("subjectId", subjectId);
         chapterDialogFragment.setArguments(bundle);
 
         chapterDialogFragment.setCancelable(false);
