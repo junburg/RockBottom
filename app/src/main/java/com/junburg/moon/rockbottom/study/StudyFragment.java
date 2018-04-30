@@ -1,6 +1,7 @@
 package com.junburg.moon.rockbottom.study;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -45,6 +46,7 @@ public class StudyFragment extends Fragment {
     private VideoView studyVideo;
     private RecyclerView studyRecycler;
     private StudyRecyclerAdapter studyRecyclerAdapter;
+    private ProgressDialog progressDialog;
 
     // Firebase
     private FirebaseAuth firebaseAuth;
@@ -55,6 +57,7 @@ public class StudyFragment extends Fragment {
 
     private List<Subject> subjectList;
     private Context context;
+
 
     @Nullable
     @Override
@@ -68,7 +71,7 @@ public class StudyFragment extends Fragment {
         databaseReference = firebaseDatabase.getReference();
         context = getActivity();
         firebaseMethods = new FirebaseMethods(context);
-
+        firebaseMethods.checkUserConditionSetting(firebaseUser.getUid());
         getStudyData();
 
         studyVideo = (VideoView) view.findViewById(R.id.study_video);
@@ -100,6 +103,11 @@ public class StudyFragment extends Fragment {
     }
 
     private void getStudyData() {
+
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("정보를 가져오고 있습니다");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         databaseReference.child("subject").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -121,11 +129,13 @@ public class StudyFragment extends Fragment {
                     subjectList.add(subject);
                     studyRecyclerAdapter.notifyDataSetChanged();
                 }
+
+                progressDialog.dismiss();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                progressDialog.dismiss();
             }
         });
     }

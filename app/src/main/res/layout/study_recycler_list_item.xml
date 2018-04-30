@@ -29,6 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/study_subject_txt"
+                android:textColor="@color/colorBlack"
                 android:layout_marginBottom="4dp"
                 android:textSize="32sp" />
 

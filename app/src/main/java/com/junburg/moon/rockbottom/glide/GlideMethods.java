@@ -34,8 +34,7 @@ public class GlideMethods {
     }
 
     public void setProfileImage(String selfieUri, ImageView imgView) {
-        Log.d(TAG, "setProfileImage: " + selfieUri.toString());
-        if (selfieUri.equals("")) {
+        if (selfieUri == null) {
             imgView.setImageResource(R.drawable.rock_bottom_logo);
         } else {
             Glide.with(context)
@@ -46,7 +45,7 @@ public class GlideMethods {
     }
 
     public void setCircleProfileImage(String selfieUri, CircleImageView imgView) {
-        if (selfieUri.equals("")) {
+        if (selfieUri == null) {
             imgView.setImageResource(R.drawable.rock_bottom_logo);
         } else {
             Glide.with(context)

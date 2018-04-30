@@ -18,11 +18,15 @@ public class StudyConditionRecyclerAdapter extends RecyclerView.Adapter<StudyCon
 
     private List<String> subjectNameList;
     private List<Integer> chapterCountList;
+    private List<Integer> trueChapterList;
 
 
-    public StudyConditionRecyclerAdapter(List<String> subjectNameList, List<Integer> chapterCountList) {
+    public StudyConditionRecyclerAdapter(List<String> subjectNameList
+            , List<Integer> chapterCountList
+            , List<Integer> trueChapterList) {
         this.subjectNameList = subjectNameList;
         this.chapterCountList = chapterCountList;
+        this.trueChapterList = trueChapterList;
     }
 
     @Override
@@ -35,15 +39,14 @@ public class StudyConditionRecyclerAdapter extends RecyclerView.Adapter<StudyCon
     @Override
     public void onBindViewHolder(StudyConditionRecyclerViewHolder holder, int position) {
         holder.studyConditionSubjectNameTxt.setText(subjectNameList.get(position));
-        holder.studyConditionDoneNumberTxt.setText(Integer.toString(chapterCountList.get(position) - 1));
-        holder.studyConditionProgressBar.setMax(chapterCountList.get(position) - 1);
-        holder.studyConditionProgressBar.setProgress(1);
+        holder.studyConditionDoneNumberTxt.setText(trueChapterList.get(position) - 1 + "/" + chapterCountList.get(position));
+        holder.studyConditionProgressBar.setMax(chapterCountList.get(position));
+        holder.studyConditionProgressBar.setProgress(trueChapterList.get(position) - 1);
     }
 
     @Override
     public int getItemCount() {
         return (subjectNameList != null) ? subjectNameList.size() : 0;
     }
-
 
 }

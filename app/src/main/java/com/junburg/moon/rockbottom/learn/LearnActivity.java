@@ -41,8 +41,6 @@ public class LearnActivity extends AppCompatActivity {
     private LearnRecyclerAdapter learnRecyclerAdapter;
     private Button learnDoneBtn;
     private Button learnLaterBtn;
-    private TextView learnTxt;
-
     private Intent intent;
     private String chapterId;
     private String subjectId;
@@ -69,7 +67,6 @@ public class LearnActivity extends AppCompatActivity {
         subjectId = intent.getStringExtra("subjectId");
         position = intent.getIntExtra("position", 0);
         Log.d(TAG, "onCreate: " + chapterId + position);
-        learnTxt = (TextView)findViewById(R.id.learn_txt);
         getLearnData();
 
         learnRecycler = (RecyclerView)findViewById(R.id.learn_recycler);

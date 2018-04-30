@@ -64,6 +64,7 @@ public class MyInfoFragment extends Fragment {
     private FirebaseAuth.AuthStateListener authStateListener;
     private DatabaseReference databaseReference;
     private FirebaseMethods firebaseMethods;
+    private FirebaseUser firebaseUser;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +79,7 @@ public class MyInfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my_info, null);
         context = getActivity();
         glideMethods = new GlideMethods(context);
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firebaseMethods = new FirebaseMethods(context);
 
         myInfoSelfieImg = (CircleImageView) view.findViewById(R.id.my_info_selfie_img);
@@ -114,10 +116,6 @@ public class MyInfoFragment extends Fragment {
             }
         });
         return view;
-    }
-
-    private void initUserData(User user) {
-
     }
 
     private void toEditInfo() {
@@ -177,7 +175,8 @@ public class MyInfoFragment extends Fragment {
         };
 
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("정보를 가져오는 중이에요");
+        progressDialog.setMessage("정보를 가져오고 있습니다");
+        progressDialog.setCancelable(false);
         progressDialog.show();
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override

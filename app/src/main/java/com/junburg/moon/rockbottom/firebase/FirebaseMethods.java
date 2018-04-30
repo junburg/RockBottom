@@ -20,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -259,12 +260,12 @@ public class FirebaseMethods {
     public void setSelfieImg(Uri selfieUri, final String uid) {
         GetPath getPath = new GetPath(context);
         Uri file = Uri.fromFile(new File(getPath.getPathUri(selfieUri)));
+        Log.d(TAG, "setSelfieImg: " + file.toString());
         StorageReference riversRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
         if (riversRef != null) {
             riversRef.delete();
         }
         UploadTask uploadTask = riversRef.putFile(file);
-
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -310,8 +311,7 @@ public class FirebaseMethods {
     }
 
     public void initUserConditionSetting(final String uid) {
-        if (databaseReference.child("user_study_condition").child(uid).equals(null)) {
-
+        Log.d(TAG, "initUserConditionSetting: " + "come");
             final Map<String, Object> chapterMap = new HashMap<>();
             databaseReference.child("subject").addValueEventListener(new ValueEventListener() {
 
@@ -320,15 +320,9 @@ public class FirebaseMethods {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         Subject subject = ds.getValue(Subject.class);
 
-                        chapterMap.clear();
-                        for (DataSnapshot ds2 : ds.child("chapter").getChildren()) {
-                            Chapter chapter = ds2.getValue(Chapter.class);
-                            chapterMap.put(chapter.getChapter_id(), false);
-                        }
                         Map<String, Object> nameMap = new HashMap<>();
                         nameMap.put("name", subject.getName());
                         databaseReference.child("user_study_condition").child(uid).child(subject.getSubject_id()).setValue(nameMap);
-                        databaseReference.child("user_study_condition").child(uid).child(subject.getSubject_id()).updateChildren(chapterMap);
                     }
                 }
 
@@ -337,8 +331,29 @@ public class FirebaseMethods {
 
                 }
             });
-        }
+
     }
+
+    public void checkUserConditionSetting(final String uid) {
+        Log.d(TAG, "checkUserConditionSetting: " + "ok");
+        databaseReference.child("user_study_condition").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() == null) {
+                    Log.d(TAG, "null: " + "null");
+                    initUserConditionSetting(uid);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
 
 }
 

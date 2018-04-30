@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.login.LoginActivity;
 import com.tsengvn.typekit.TypekitContextWrapper;
@@ -34,6 +36,8 @@ public class AccountSettingActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser firebaseUser;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
 
     // Variables
     private String userEmail;
@@ -45,6 +49,8 @@ public class AccountSettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account_setting);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
         userEmail = firebaseUser.getEmail();
         progressDialog = new ProgressDialog(this);
 
@@ -96,13 +102,16 @@ public class AccountSettingActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful()) {
                                              progressDialog.dismiss();
-                                             Snackbar.make(getWindow().getDecorView().getRootView()
-                                                     , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
-                                             startActivity(new Intent(AccountSettingActivity.this, LoginActivity.class));
+                                             databaseReference.child("users").child(firebaseUser.getUid()).removeValue();
+                                             databaseReference.child("user_study_condition").child(firebaseUser.getUid()).removeValue();
+                                            Snackbar.make(getWindow().getDecorView().getRootView()
+                                                    , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
+                                            startActivity(new Intent(AccountSettingActivity.this, LoginActivity.class));
+
                                         } else {
                                             progressDialog.dismiss();
                                             Snackbar.make(getWindow().getDecorView().getRootView()
-                                                    , "탈퇴가 정상적으로 처리되지 않았습니다. ahn428@gmail.com으로 문의해주세요! 죄송합니다 :(", Snackbar.LENGTH_SHORT).show();
+                                                    , "탈퇴가 정상적으로 처리되지 않았습니다. ahn428@gmail.com으로 문의해주세요! 죄송합니다 :(", Snackbar.LENGTH_LONG).show();
 
                                         }
                                     }

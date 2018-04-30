@@ -23,21 +23,10 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mainBottomNavigationView;
     private Fragment mainFragment;
 
-    // Firebase
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
-    private FirebaseMethods firebaseMethods;
-    private Context context;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        context = MainActivity.this;
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        firebaseMethods = new FirebaseMethods(context);
-        firebaseMethods.initUserConditionSetting(firebaseUser.getUid());
         mainBottomNavigationView = (BottomNavigationView) findViewById(R.id.main_bottom_navigation_view);
         mainBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override

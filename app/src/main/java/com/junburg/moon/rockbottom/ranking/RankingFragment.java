@@ -1,6 +1,7 @@
 package com.junburg.moon.rockbottom.ranking;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,10 +59,11 @@ public class RankingFragment extends Fragment {
     private DatabaseReference databaseReference;
 
     // Widgets
-    private TextView rankingTeamNameTxt, rankingNickNameTxt, rankingMessageTxt, rankingNumberTxt, rankingPointsTxt;
-    private Button rankingGithubBtn;
+    private TextView rankingTeamNameTxt, rankingNickNameTxt, rankingMessageTxt, rankingNumberTxt
+            , rankingPointsTxt, rankingGitHubTxt;
     private CircleImageView rankingSelfieImg;
     private CollapsingToolbarLayout rankingCollapsingToolbarLayout;
+    private ProgressDialog progressDialog;
 
     @Nullable
     @Override
@@ -78,10 +81,14 @@ public class RankingFragment extends Fragment {
         rankingNickNameTxt = (TextView) view.findViewById(R.id.ranking_nick_name_txt);
         rankingMessageTxt = (TextView) view.findViewById(R.id.ranking_message_txt);
         rankingSelfieImg = (CircleImageView) view.findViewById(R.id.ranking_selfie_img);
-        rankingGithubBtn = (Button) view.findViewById(R.id.ranking_github_btn);
+        rankingGitHubTxt = (TextView) view.findViewById(R.id.ranking_github_txt);
+
+        rankingGitHubTxt.setText(Html.fromHtml("<u>" + getResources().getString(R.string.ranking_github_txt) + "</u>"));
         rankingNumberTxt = (TextView) view.findViewById(R.id.ranking_number_txt);
         rankingPointsTxt = (TextView) view.findViewById(R.id.ranking_points_txt);
+
         getRankingData();
+
         rankingRecycler = (RecyclerView) view.findViewById(R.id.ranking_recycler);
         rankingRecycler.setHasFixedSize(true);
         rankingRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -98,6 +105,12 @@ public class RankingFragment extends Fragment {
     }
 
     private void getRankingData() {
+
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("정보를 가져오고 있습니다");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        Log.d(TAG, "getRankingData: " + "come");
         Query query = databaseReference.child("users").orderByChild("points").limitToLast(10);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -109,11 +122,12 @@ public class RankingFragment extends Fragment {
                 Collections.reverse(userList);
                 initFirstUser();
                 rankingRecyclerAdapter.notifyDataSetChanged();
+                progressDialog.dismiss();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                progressDialog.dismiss();
             }
         });
 
@@ -131,7 +145,7 @@ public class RankingFragment extends Fragment {
         rankingNickNameTxt.setText(userList.get(0).getNickName());
         rankingMessageTxt.setText("\"" + userList.get(0).getMessage() + "\"");
         glideMethods.setCircleProfileImage(userList.get(0).getSelfieUri(), rankingSelfieImg);
-        rankingGithubBtn.setOnClickListener(new View.OnClickListener() {
+        rankingGitHubTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toYourGithub(userList.get(0).getGithub());
@@ -146,7 +160,7 @@ public class RankingFragment extends Fragment {
         rankingNickNameTxt.setText(userList.get(position).getNickName());
         rankingMessageTxt.setText("\"" + userList.get(position).getMessage() + "\"");
         glideMethods.setCircleProfileImage(userList.get(position).getSelfieUri(), rankingSelfieImg);
-        rankingGithubBtn.setOnClickListener(new View.OnClickListener() {
+        rankingGitHubTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toYourGithub(userList.get(position).getGithub());

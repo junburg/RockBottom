@@ -43,7 +43,14 @@
     <string name="main_my_info_bottom_txt">내 정보</string>
 
     <!-- Ranking String Data -->
+    <string name="ranking_ranking_txt">랭킹</string>
     <string name="ranking_priority_txt">랭킹 순위</string>
+    <string name="ranking_github_txt">GitHub 놀러가기</string>
+    <string name="ranking_points_txt">0pts</string>
+    <string name="rnaking_number_txt">0</string>
+    <string name="ranking_message_txt">Message</string>
+    <string name="ranking_nick_name_txt">Nick Name</string>
+    <string name="ranking_team_name_txt">Team Name</string>
 
     <!-- Study String Data -->
     <string name="study_txt">컴퓨터 공학을 학습하고\n더 깊은 실력을 갖춰보세요</string>
