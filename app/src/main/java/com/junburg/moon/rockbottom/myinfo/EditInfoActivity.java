@@ -1,14 +1,21 @@
 package com.junburg.moon.rockbottom.myinfo;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +26,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +48,7 @@ import java.util.Map;
  * Created by Junburg on 2018. 2. 26..
  */
 
-public class EditInfoActivity extends AppCompatActivity implements EditInfoDialogFragment.EditInfoDialogFragmentListener{
+public class EditInfoActivity extends AppCompatActivity implements EditInfoDialogFragment.EditInfoDialogFragmentListener {
     private static final String TAG = "EditInfoActivity";
     // Constant
     private static final int GALLERY_CODE = 11;
@@ -98,7 +106,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         editInfoSelfieEditBtn = (Button) findViewById(R.id.edit_info_selfie_edit_btn);
         editInfoSelfieDeleteBtn = (Button) findViewById(R.id.edit_info_selfie_delete_btn);
         editInfoRecyclerView = (RecyclerView) findViewById(R.id.edit_info_recycler);
-        editInfoAccountSettingsTxt = (TextView)findViewById(R.id.edit_info_account_settings_txt);
+        editInfoAccountSettingsTxt = (TextView) findViewById(R.id.edit_info_account_settings_txt);
         editInfoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         FragmentManager fm = getSupportFragmentManager();
         editInfoRecyclerAdapter = new EditInfoRecyclerAdapter(dataList, context, fm);
@@ -106,7 +114,23 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         editInfoSelfieEditBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pickUpPicture();
+                boolean galleryPermission = ContextCompat.checkSelfPermission(view.getContext()
+                        , Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+
+                if (galleryPermission) {
+                    pickUpPicture();
+                } else {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(EditInfoActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        ActivityCompat.requestPermissions(EditInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+                    } else {
+                        Snackbar.make(getWindow().getDecorView().getRootView()
+                                , "사진을 등록을 위해선 권한 설정이 필요합니다. 설정에서 권한을 부여해주세요", Snackbar.LENGTH_LONG).show();
+
+                    }
+                    ActivityCompat.requestPermissions(EditInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+                }
             }
         });
         editInfoSelfieDeleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +164,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
     }
 
     private void deleteUserSelfie() {
-        editInfoSelfieImg.setImageResource(R.drawable.rock_bottom_logo);
+        editInfoSelfieImg.setImageResource(R.drawable.intro_background);
         editInfoSelfieImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
         firebaseMethods.deleteSelfieImg(uid);
     }
@@ -207,6 +231,16 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         editDataMap.put(targetString, editString);
         editInfoRecyclerData.setEditDataMap(editDataMap);
         editInfoRecyclerAdapter.editItemFromDialog(position, editInfoRecyclerData);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1 && grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickUpPicture();
+            }
+        }
     }
 
     @Override

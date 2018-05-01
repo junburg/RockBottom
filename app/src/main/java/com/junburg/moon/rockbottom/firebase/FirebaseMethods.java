@@ -258,6 +258,10 @@ public class FirebaseMethods {
     }
 
     public void setSelfieImg(Uri selfieUri, final String uid) {
+        final ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage("사진을 등록중입니다.");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         GetPath getPath = new GetPath(context);
         Uri file = Uri.fromFile(new File(getPath.getPathUri(selfieUri)));
         Log.d(TAG, "setSelfieImg: " + file.toString());
@@ -277,15 +281,16 @@ public class FirebaseMethods {
                 @SuppressWarnings("VisibleForTests")
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 firebaseDatabase.getReference().child("users").child(uid).child("selfieUri").setValue(downloadUrl.toString());
-
+                progressDialog.dismiss();
             }
         });
     }
 
     public void deleteSelfieImg(String uid) {
-        StorageReference riverRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
-        if (riverRef != null) {
-            riverRef.delete();
+        Log.d(TAG, "deleteSelfieImg: " + uid.toString());
+        StorageReference deleteRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
+        if (deleteRef != null) {
+            deleteRef.delete();
         }
         firebaseDatabase.getReference().child("users").child(uid).child("selfieUri").setValue("");
 

@@ -46,15 +46,15 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
     }
 
     @Override
-    public void onBindViewHolder(StudyRecyclerViewHolder holder, int position) {
-        holder.studySubjectNameTxt.setText(subjectList.get(position).getName());
-        holder.studySubjectExplainTxt.setText(subjectList.get(position).getExplain());
-        final List<Chapter> chapterList = subjectList.get(position).getChapterList();
+    public void onBindViewHolder(StudyRecyclerViewHolder holder, final int subjectPosition) {
+        holder.studySubjectNameTxt.setText(subjectList.get(subjectPosition).getName());
+        holder.studySubjectExplainTxt.setText(subjectList.get(subjectPosition).getExplain());
+        final List<Chapter> chapterList = subjectList.get(subjectPosition).getChapterList();
         holder.chapterRecyclerAdapter.setData(chapterList);
         holder.chapterRecyclerAdapter.setOnItemClickListener(new ChapterRecyclerViewHolder.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                showDialog(position, chapterList.get(position).getChapter_id(), subjectList.get(position).getSubject_id());
+            public void onItemClick(int chapterPosition) {
+                showDialog(chapterPosition, chapterList.get(chapterPosition).getChapter_id(), subjectList.get(subjectPosition).getSubject_id());
             }
         });
     }

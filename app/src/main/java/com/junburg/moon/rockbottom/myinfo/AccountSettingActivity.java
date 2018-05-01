@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.login.LoginActivity;
 import com.tsengvn.typekit.TypekitContextWrapper;
 
@@ -38,10 +39,12 @@ public class AccountSettingActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private FirebaseMethods firebaseMethods;
 
     // Variables
     private String userEmail;
     private ProgressDialog progressDialog;
+    private String uid;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,10 +52,10 @@ public class AccountSettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account_setting);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+        uid = firebaseUser.getUid();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
         userEmail = firebaseUser.getEmail();
-        progressDialog = new ProgressDialog(this);
 
         accountSettingEmailTxt = (TextView) findViewById(R.id.account_setting_email_txt);
         accountSettingEmailTxt.setText(userEmail);
@@ -95,15 +98,18 @@ public class AccountSettingActivity extends AppCompatActivity {
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(final DialogInterface dialogInterface, int i) {
+                                progressDialog = new ProgressDialog(AccountSettingActivity.this);
                                 progressDialog.setMessage("탈퇴 처리중입니다");
                                 progressDialog.show();
+
                                 firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()) {
-                                             progressDialog.dismiss();
-                                             databaseReference.child("users").child(firebaseUser.getUid()).removeValue();
-                                             databaseReference.child("user_study_condition").child(firebaseUser.getUid()).removeValue();
+                                        if (task.isSuccessful()) {
+                                            databaseReference.child("user_study_condition").child(uid).removeValue();
+                                            firebaseMethods.deleteSelfieImg(uid);
+                                            databaseReference.child("users").child(uid).removeValue();
+                                            progressDialog.dismiss();
                                             Snackbar.make(getWindow().getDecorView().getRootView()
                                                     , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
                                             startActivity(new Intent(AccountSettingActivity.this, LoginActivity.class));
@@ -152,6 +158,7 @@ public class AccountSettingActivity extends AppCompatActivity {
         super.onStop();
         firebaseAuth.removeAuthStateListener(authStateListener);
     }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));

@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
@@ -26,16 +27,14 @@ import static android.content.ContentValues.TAG;
 public class GlideMethods {
 
     private Context context;
-    private Uri selfieUri;
-    private ImageView imgView;
 
     public GlideMethods(Context context) {
         this.context = context;
     }
 
     public void setProfileImage(String selfieUri, ImageView imgView) {
-        if (selfieUri == null) {
-            imgView.setImageResource(R.drawable.rock_bottom_logo);
+        if (selfieUri.equals("")) {
+            imgView.setImageResource(R.drawable.intro_background);
         } else {
             Glide.with(context)
                     .load(selfieUri)
@@ -45,19 +44,9 @@ public class GlideMethods {
     }
 
     public void setCircleProfileImage(String selfieUri, CircleImageView imgView) {
-        if (selfieUri == null) {
-            imgView.setImageResource(R.drawable.rock_bottom_logo);
+        if (selfieUri.equals("")) {
+            imgView.setImageResource(R.drawable.intro_background);
         } else {
-            Glide.with(context)
-                    .load(selfieUri)
-                    .crossFade()
-                    .into(imgView);
-
-        }
-    }
-
-    public void setRankingImage(String selfieUri, ImageView imgView) {
-        if (!(selfieUri.equals(""))) {
             Glide.with(context)
                     .load(selfieUri)
                     .crossFade()

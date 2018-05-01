@@ -26,8 +26,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -49,7 +51,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  */
 
 public class InputInfoActivity extends AppCompatActivity {
-
+    private static final String TAG = "InputInfoActivity";
     // Constants
     private static final int GALLERY_CODE = 10;
 
@@ -124,11 +126,8 @@ public class InputInfoActivity extends AppCompatActivity {
                 if ((nickNameEmptyCheck & lengthCheck) == false) {
                     Snackbar.make(view, "공백과 길이를 확인해주세요. 닉네임은 필수입니다 :)", Snackbar.LENGTH_SHORT).show();
                 } else {
-                    Snackbar.make(view, "정보 확인 완료 :)", Snackbar.LENGTH_SHORT).show();
                     userInitialize();
-                    firebaseMethods.initUserConditionSetting(uid);
-                    startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
-                    finish();
+                    Snackbar.make(view, "정보 확인 완료 :)", Snackbar.LENGTH_SHORT).show();
 
                 }
             }
@@ -142,6 +141,7 @@ public class InputInfoActivity extends AppCompatActivity {
             selfieUri = data.getData();
             progressDialog = new ProgressDialog(this);
             progressDialog.setMessage("이미지 로딩중 입니다");
+            progressDialog.setCancelable(false);
             progressDialog.show();
             Glide.with(this)
                     .load(selfieUri)
@@ -178,16 +178,12 @@ public class InputInfoActivity extends AppCompatActivity {
     }
 
     public void userInitialize() {
-//        Log.d("drawable", inputInfoSelfieImg.getDrawable().toString());
-//        Log.d("drawable2", ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_selfie_img).toString());
-//
-//
-//        Drawable temp = inputInfoSelfieImg.getDrawable();
-//        Drawable temp1 = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_selfie_img);
-//
-//        Bitmap tmpBitmap = ((BitmapDrawable) temp).getBitmap();
 
         Log.d("isGlideUsed?", isGlideUsed + "");
+        final ProgressDialog progressDialog = new ProgressDialog(InputInfoActivity.this);
+        progressDialog.setMessage("가입중입니다");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         if (isGlideUsed == false) {
             selfieUri = null;
@@ -199,7 +195,6 @@ public class InputInfoActivity extends AppCompatActivity {
             Uri file = Uri.fromFile(new File(getPath(selfieUri)));
             StorageReference riversRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
             UploadTask uploadTask = riversRef.putFile(file);
-
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
@@ -211,8 +206,18 @@ public class InputInfoActivity extends AppCompatActivity {
                     @SuppressWarnings("VisibleForTests")
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     User user = setUserData(downloadUrl);
+                    Log.d(TAG, "onSuccess: " + user.toString());
                     database.getReference().child("users").child(uid).setValue(user);
                     firebaseMethods.initUserLearnSettings(uid);
+                    firebaseMethods.initUserConditionSetting(uid);
+                    progressDialog.dismiss();
+
+                }
+            }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
+
                 }
             });
         }
@@ -221,7 +226,7 @@ public class InputInfoActivity extends AppCompatActivity {
     private User setUserData(Uri uri) {
         User user = new User();
         if (selfieUri == null) {
-            user.setSelfieUri(null);
+            user.setSelfieUri("");
         } else {
             user.setSelfieUri(uri.toString());
         }
