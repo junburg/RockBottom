@@ -8,15 +8,24 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.junburg.moon.rockbottom.R;
@@ -29,6 +38,8 @@ import com.tsengvn.typekit.TypekitContextWrapper;
  */
 
 public class AccountSettingActivity extends AppCompatActivity {
+
+    private static final String TAG = "AccountSettingActivity";
 
     // Widgets
     private TextView accountSettingEmailTxt, accountSettingLogoutTxt, accountSettingDeleteAccountTxt;
@@ -43,8 +54,8 @@ public class AccountSettingActivity extends AppCompatActivity {
 
     // Variables
     private String userEmail;
-    private ProgressDialog progressDialog;
-    private String uid;
+    private AuthCredential credential;
+    private Context context;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,9 +63,10 @@ public class AccountSettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account_setting);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-        uid = firebaseUser.getUid();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
+        context = AccountSettingActivity.this;
+        firebaseMethods = new FirebaseMethods(context);
         userEmail = firebaseUser.getEmail();
 
         accountSettingEmailTxt = (TextView) findViewById(R.id.account_setting_email_txt);
@@ -98,30 +110,7 @@ public class AccountSettingActivity extends AppCompatActivity {
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(final DialogInterface dialogInterface, int i) {
-                                progressDialog = new ProgressDialog(AccountSettingActivity.this);
-                                progressDialog.setMessage("탈퇴 처리중입니다");
-                                progressDialog.show();
-
-                                firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            databaseReference.child("user_study_condition").child(uid).removeValue();
-                                            firebaseMethods.deleteSelfieImg(uid);
-                                            databaseReference.child("users").child(uid).removeValue();
-                                            progressDialog.dismiss();
-                                            Snackbar.make(getWindow().getDecorView().getRootView()
-                                                    , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
-                                            startActivity(new Intent(AccountSettingActivity.this, LoginActivity.class));
-
-                                        } else {
-                                            progressDialog.dismiss();
-                                            Snackbar.make(getWindow().getDecorView().getRootView()
-                                                    , "탈퇴가 정상적으로 처리되지 않았습니다. ahn428@gmail.com으로 문의해주세요! 죄송합니다 :(", Snackbar.LENGTH_LONG).show();
-
-                                        }
-                                    }
-                                });
+                                reauthenticateForDeletingUser();
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -141,10 +130,87 @@ public class AccountSettingActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (firebaseUser == null) {
                     Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 }
 
             }
         };
+    }
+
+    private void reauthenticateForDeletingUser() {
+        if (firebaseAuth.getCurrentUser() != null) {
+            firebaseUser.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                @Override
+                public void onComplete(@NonNull Task<GetTokenResult> task) {
+                    if (task.isSuccessful()) {
+
+                        String token = task.getResult().getToken();
+
+                        if (firebaseUser.getProviders() != null && firebaseUser.getProviders().get(0).equals("google.com")) {
+
+                            credential = GoogleAuthProvider.getCredential(token, null);
+
+                            firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    final String uid = firebaseUser.getUid();
+                                    firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Log.d(TAG, "onComplete: " + task.isSuccessful());
+                                            if (task.isSuccessful()) {
+                                                databaseReference.child("user_study_condition").child(uid).removeValue();
+                                                databaseReference.child("users").child(uid).removeValue();
+                                                firebaseMethods.deleteSelfieImg(uid);
+                                                Snackbar.make(getWindow().getDecorView().getRootView()
+                                                        , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
+                                                Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+
+                                            } else {
+                                                Toast.makeText(AccountSettingActivity.this, "탈퇴실패", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+
+                        } else if (firebaseUser.getProviders() != null && firebaseUser.isEmailVerified()) {
+                            credential = EmailAuthProvider.getCredential(token, null);
+                            firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    final String uid = firebaseUser.getUid();
+                                    firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Log.d(TAG, "onComplete: " + task.isSuccessful());
+                                            if (task.isSuccessful()) {
+                                                databaseReference.child("user_study_condition").child(uid).removeValue();
+                                                firebaseMethods.deleteSelfieImg(uid);
+                                                databaseReference.child("users").child(uid).removeValue();
+                                                Snackbar.make(getWindow().getDecorView().getRootView()
+                                                        , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
+                                            } else {
+                                                Toast.makeText(AccountSettingActivity.this, "fuck", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+
+
+                    }
+
+                }
+
+            });
+        }
+
+
     }
 
     @Override

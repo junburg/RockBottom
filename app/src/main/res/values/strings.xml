@@ -119,6 +119,7 @@
     <string name="dialog_edit_info_confirm_txt">확인</string>
     <string name="dialog_edit_info_cancel_txt">취소</string>
     <string name="dialog_edit_info_selfie_cancel_txt">뒤로가기</string>
+    <string name="dialog_edit_info_progress_txt">검사</string>
 
     <!-- Account Setting String Data -->
     <string name="account_setting_email">계정 이메일</string>

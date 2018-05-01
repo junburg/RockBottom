@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -62,6 +63,7 @@ public class MyInfoFragment extends Fragment {
     private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authStateListener;
+    private ValueEventListener valueEventListener;
     private DatabaseReference databaseReference;
     private FirebaseMethods firebaseMethods;
     private FirebaseUser firebaseUser;
@@ -178,7 +180,7 @@ public class MyInfoFragment extends Fragment {
         progressDialog.setMessage("정보를 가져오고 있습니다");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 setupProfileInfo(firebaseMethods.setProfileInfo(dataSnapshot), progressDialog);
@@ -189,7 +191,8 @@ public class MyInfoFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+
 
     }
 
@@ -198,8 +201,7 @@ public class MyInfoFragment extends Fragment {
     public void onStart() {
         super.onStart();
         auth.addAuthStateListener(authStateListener);
-
-
+        databaseReference.addValueEventListener(valueEventListener);
 
     }
 
@@ -210,6 +212,7 @@ public class MyInfoFragment extends Fragment {
         if (authStateListener != null) {
             auth.removeAuthStateListener(authStateListener);
         }
+        databaseReference.removeEventListener(valueEventListener);
     }
 
 
