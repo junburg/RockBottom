@@ -54,6 +54,7 @@ public class FirebaseMethods {
     private boolean firstEmailLogin;
     private String uid;
     private List<Chapter> chapterList = new ArrayList<>();
+
     // Firebase
     private FirebaseAuth auth;
     private FirebaseDatabase firebaseDatabase;
@@ -139,22 +140,17 @@ public class FirebaseMethods {
                             if (!task.isSuccessful()) {
                                 Snackbar
                                         .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
-                                                , "로그인 실패"
+                                                , "로그인에 실패했습니다. 다시 시도해주세요 :)"
                                                 , Snackbar.LENGTH_SHORT)
                                         .show();
                             } else {
                                 if (user.isEmailVerified()) {
-                                    isFirstEmailLogin(user.getUid());
-                                    if (firstEmailLogin == true) {
-                                        Intent intent = new Intent(context, InputInfoActivity.class);
-                                        context.startActivity(intent);
-                                    }
                                     Intent intent = new Intent(context, MainActivity.class);
                                     context.startActivity(intent);
                                 } else {
                                     Snackbar
                                             .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
-                                                    , "이메일 인증 메일을 확인하지 않으셨어요"
+                                                    , "이메일 인증 메일을 확인하지 않으셨어요 :("
                                                     , Snackbar.LENGTH_SHORT)
                                             .show();
                                 }
@@ -166,40 +162,40 @@ public class FirebaseMethods {
 
     }
 
-    private void isFirstEmailLogin(String uid) {
-        databaseReference = databaseReference.child("users").child(uid);
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onDataChange1: " + dataSnapshot.getValue());
-                User user = dataSnapshot.getValue(User.class);
-                if (user == null) {
-                    firstEmailLogin = true;
-                } else {
-                    firstEmailLogin = false;
-                }
-            }
+    public void firstEmailLogin(String email, String password) {
+        ValidationCheck validationCheck = new ValidationCheck(context);
+        if (validationCheck.isEmailString(email)
+                && validationCheck.blankStringCheck(email, password)
+                && validationCheck.isPasswordPattern(password)) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        Log.d(TAG, "isFirstEmailLogin: " + firstEmailLogin);
+            auth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            FirebaseUser user = auth.getCurrentUser();
+                            if (!task.isSuccessful()) {
+                                Snackbar
+                                        .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
+                                                , "로그인 실패했습니다. 다시 시도해주세요 :)"
+                                                , Snackbar.LENGTH_SHORT)
+                                        .show();
+                            } else {
+                                if (user.isEmailVerified()) {
+                                    Intent intent = new Intent(context, InputInfoActivity.class);
+                                    context.startActivity(intent);
+                                } else {
+                                    Snackbar
+                                            .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
+                                                    , "이메일 인증 메일을 확인하지 않으셨어요 :("
+                                                    , Snackbar.LENGTH_SHORT)
+                                            .show();
+                                }
+                            }
+                        }
+                    });
+        }
     }
 
-//    private void initEmailLogin(String uid) {
-//        User userData = new User();
-//        userData.setSelfieUri("");
-//        userData.setNickName("닉네임을 수정해주세요");
-//        userData.setMessage("메세지를 입력해주세요");
-//        userData.setTeamName("소속을 수정해주세요");
-//        userData.setGithub("깃헙 주소를 수정해주세요");
-//        userData.setPoints(0);
-//        userData.setRanking(0);
-//        databaseReference.child("users").child(uid).setValue(userData);
-//
-//    }
 
     public User setProfileInfo(DataSnapshot dataSnapshot) {
         User user = new User();
@@ -207,6 +203,11 @@ public class FirebaseMethods {
             if (ds.getKey().equals("users")) {
                 try {
                     Log.d(TAG, "uid: " + uid);
+                    user.setEmail(
+                            ds.child(uid)
+                                    .getValue(User.class)
+                                    .getEmail()
+                    );
                     user.setSelfieUri(
                             ds.child(uid)
                                     .getValue(User.class)
@@ -292,9 +293,15 @@ public class FirebaseMethods {
         if (deleteRef != null) {
             deleteRef.delete();
         }
-        firebaseDatabase.getReference().child("users").child(uid).child("selfieUri").setValue("");
+        databaseReference.child("users").child(uid).child("selfieUri").setValue("");
 
+    }
 
+    public void deleteSelfieImgOnlyStorage(String uid) {
+        StorageReference deleteRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
+        if (deleteRef != null) {
+            deleteRef.delete();
+        }
     }
 
     public void initUserLearnSettings(final String uid) {
@@ -317,25 +324,25 @@ public class FirebaseMethods {
 
     public void initUserConditionSetting(final String uid) {
         Log.d(TAG, "initUserConditionSetting: " + "come");
-            final Map<String, Object> chapterMap = new HashMap<>();
-            databaseReference.child("subject").addValueEventListener(new ValueEventListener() {
+        final Map<String, Object> chapterMap = new HashMap<>();
+        databaseReference.child("subject").addValueEventListener(new ValueEventListener() {
 
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        Subject subject = ds.getValue(Subject.class);
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Subject subject = ds.getValue(Subject.class);
 
-                        Map<String, Object> nameMap = new HashMap<>();
-                        nameMap.put("name", subject.getName());
-                        databaseReference.child("user_study_condition").child(uid).child(subject.getSubject_id()).setValue(nameMap);
-                    }
+                    Map<String, Object> nameMap = new HashMap<>();
+                    nameMap.put("name", subject.getName());
+                    databaseReference.child("user_study_condition").child(uid).child(subject.getSubject_id()).setValue(nameMap);
                 }
+            }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                }
-            });
+            }
+        });
 
     }
 
@@ -344,7 +351,7 @@ public class FirebaseMethods {
         databaseReference.child("user_study_condition").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue() == null) {
+                if (dataSnapshot.getValue() == null) {
                     Log.d(TAG, "null: " + "null");
                     initUserConditionSetting(uid);
                 }
@@ -356,8 +363,6 @@ public class FirebaseMethods {
             }
         });
     }
-
-
 
 
 }

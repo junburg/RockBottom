@@ -52,10 +52,11 @@ public class EmailSignUpActivity extends AppCompatActivity{
         firebaseMethods = new FirebaseMethods(context);
         validationCheck = new ValidationCheck(context);
 
+        final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
         emailLoginSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(emailLoginSignUpBtn.getWindowToken(), 0);
 
                 email = emailLoginEmailTxt.getText().toString();
@@ -69,9 +70,8 @@ public class EmailSignUpActivity extends AppCompatActivity{
                         ) {
 
                     firebaseMethods.registerNewEmail(email, password);
+
                 }
-
-
             }
         });
 

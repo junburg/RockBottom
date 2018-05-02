@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         finish();
 
                 } else {
-                    Snackbar.make(getWindow().getDecorView().getRootView(), "환영합니다 :)", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(getWindow().getDecorView().getRootView(), "환영합니다 :)", 350).show();
                 }
             }
         };

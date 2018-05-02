@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,10 +29,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.util.DataExistCallback;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 /**
  * Created by Junburg on 2018. 4. 17..
@@ -39,11 +43,6 @@ import java.util.List;
 
 public class EditInfoDialogFragment extends DialogFragment {
     private static final String TAG = "EditInfoDialogFragment";
-
-    public interface DoubleCheckCallback {
-        void onDoubleCheck(boolean doubleCheck);
-
-    }
 
     public interface EditInfoDialogFragmentListener {
         void onEditInfoClick(DialogFragment dialog, String targetTxt, String editText, int position);
@@ -100,15 +99,19 @@ public class EditInfoDialogFragment extends DialogFragment {
             dialogEditInfoDoubleCheckBtn.setVisibility(View.VISIBLE);
         }
 
+        final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+
         dialogEditInfoConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                imm.hideSoftInputFromWindow(dialogEditInfoConfirmBtn.getWindowToken(),0);
                 if (checkOk && bundle.getString("targetString").equals("닉네임")) {
                     confirmEditInfo();
-                } else if(bundle.getString("targetString").equals("닉네임")){
+                } else if (bundle.getString("targetString").equals("닉네임")) {
                     dialogEditInfoProgressTxt.setVisibility(View.VISIBLE);
                     dialogEditInfoProgressTxt.setText("중복검사를 다시 해주세요");
-                } else{
+                } else {
                     confirmEditInfo();
                 }
             }
@@ -124,18 +127,19 @@ public class EditInfoDialogFragment extends DialogFragment {
         dialogEditInfoDoubleCheckBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                imm.hideSoftInputFromWindow(dialogEditInfoDoubleCheckBtn.getWindowToken(),0);
                 if (dialogEditInfoEditTxt.getText().length() > 20 || dialogEditInfoEditTxt.getText().toString().equals("")) {
                     dialogEditInfoProgressTxt.setText("닉네임은 공백과 20자 이상은 허용하지 않아요 :)");
                     dialogEditInfoEditTxt.setVisibility(View.VISIBLE);
-                } else if(bundle.getString("editString").equals(dialogEditInfoEditTxt.getText().toString())) {
+                } else if (bundle.getString("editString").equals(dialogEditInfoEditTxt.getText().toString())) {
                     dialogEditInfoProgressTxt.setText("사용가능한 닉네임입니다 :)");
                     dialogEditInfoEditTxt.setVisibility(View.VISIBLE);
                     checkOk = true;
-                } else{
-                    nickNameDoubleCheck(dialogEditInfoEditTxt.getText().toString(), new DoubleCheckCallback() {
+                } else {
+                    nickNameDoubleCheck(dialogEditInfoEditTxt.getText().toString(), new DataExistCallback() {
                         @Override
-                        public void onDoubleCheck(boolean doubleCheck) {
-                            if (doubleCheck) {
+                        public void onDataExistCheck(boolean check) {
+                            if (check) {
 
                                 dialogEditInfoProgressTxt.setVisibility(View.VISIBLE);
                                 dialogEditInfoProgressTxt.setText("중복되는 닉네임이 존재합니다");
@@ -198,7 +202,7 @@ public class EditInfoDialogFragment extends DialogFragment {
 
     }
 
-    public void nickNameDoubleCheck(final String nickName, final DoubleCheckCallback doubleCheckCallback) {
+    public void nickNameDoubleCheck(final String nickName, final DataExistCallback dataExistCallback) {
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
         final ProgressDialog progressDialog = new ProgressDialog(getActivity());
@@ -211,7 +215,7 @@ public class EditInfoDialogFragment extends DialogFragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean doubleCheck = dataSnapshot.exists();
-                doubleCheckCallback.onDoubleCheck(doubleCheck);
+                dataExistCallback.onDataExistCheck(doubleCheck);
                 progressDialog.dismiss();
             }
 

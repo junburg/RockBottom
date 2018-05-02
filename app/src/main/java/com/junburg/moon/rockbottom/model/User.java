@@ -6,6 +6,7 @@ package com.junburg.moon.rockbottom.model;
 
 public class User {
 
+    private String email;
     private String selfieUri;
     private String nickName;
     private String message;
@@ -16,6 +17,14 @@ public class User {
 
     public User() {
 
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getSelfieUri() {
@@ -72,5 +81,19 @@ public class User {
 
     public void setRanking(int ranking) {
         this.ranking = ranking;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", selfieUri='" + selfieUri + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", message='" + message + '\'' +
+                ", teamName='" + teamName + '\'' +
+                ", github='" + github + '\'' +
+                ", points=" + points +
+                ", ranking=" + ranking +
+                '}';
     }
 }

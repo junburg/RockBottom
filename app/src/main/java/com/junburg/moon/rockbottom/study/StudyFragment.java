@@ -3,6 +3,7 @@ package com.junburg.moon.rockbottom.study;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -78,6 +79,8 @@ public class StudyFragment extends Fragment {
         String videoUriPath = "android.resource://" + getActivity().getPackageName() + "/" + R.raw.study_video;
         Uri uri = Uri.parse(videoUriPath);
         studyVideo.setVideoURI(uri);
+//        AudioManager am = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+//        am.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         studyVideo.start();
         studyVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override

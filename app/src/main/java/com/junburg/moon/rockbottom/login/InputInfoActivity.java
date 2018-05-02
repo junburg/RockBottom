@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -16,11 +17,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -31,7 +36,13 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -39,6 +50,9 @@ import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.main.MainActivity;
 import com.junburg.moon.rockbottom.model.User;
+import com.junburg.moon.rockbottom.myinfo.EditInfoActivity;
+import com.junburg.moon.rockbottom.myinfo.EditInfoDialogFragment;
+import com.junburg.moon.rockbottom.util.DataExistCallback;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
 import com.tsengvn.typekit.TypekitContextWrapper;
 
@@ -60,6 +74,7 @@ public class InputInfoActivity extends AppCompatActivity {
     protected boolean isGlideUsed = false;
     private ValidationCheck validationCheck;
     private Context context;
+    private boolean checkOk;
 
     // View
     protected ImageView inputInfoSelfieImg;
@@ -69,13 +84,17 @@ public class InputInfoActivity extends AppCompatActivity {
     private TextInputEditText inputInfoGithubEdit;
     private Button inputInfoDoneBtn;
     private ProgressDialog progressDialog;
+    private TextView inputInfoDoubleCheckTxt;
 
     // Firebase
     private FirebaseAuth auth;
+    private FirebaseUser firebaseUser;
     private FirebaseDatabase database;
     private FirebaseStorage storage;
     private String uid;
     private FirebaseMethods firebaseMethods;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
 
 
     @Override
@@ -86,6 +105,7 @@ public class InputInfoActivity extends AppCompatActivity {
         uid = auth.getCurrentUser().getUid();
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
+        firebaseUser = auth.getCurrentUser();
         context = InputInfoActivity.this;
         validationCheck = new ValidationCheck(context);
         firebaseMethods = new FirebaseMethods(context);
@@ -104,7 +124,23 @@ public class InputInfoActivity extends AppCompatActivity {
                     dialog.setCancelable(false);
                     dialog.show();
                 } else {
-                    pickUpPicture();
+                    boolean galleryPermission = ContextCompat.checkSelfPermission(view.getContext()
+                            , Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+
+                    if (galleryPermission) {
+                        pickUpPicture();
+                    } else {
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(InputInfoActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            ActivityCompat.requestPermissions(InputInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+                        } else {
+                            Snackbar.make(getWindow().getDecorView().getRootView()
+                                    , "사진을 등록을 위해선 권한 설정이 필요합니다. 설정에서 권한을 부여해주세요", Snackbar.LENGTH_LONG).show();
+
+                        }
+                        ActivityCompat.requestPermissions(InputInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+                    }
                 }
             }
         });
@@ -123,13 +159,43 @@ public class InputInfoActivity extends AppCompatActivity {
                         , inputInfoTeamNameEdit, inputInfoGithubEdit);
                 Log.d("length", lengthCheck + "");
 
-                if ((nickNameEmptyCheck & lengthCheck) == false) {
-                    Snackbar.make(view, "공백과 길이를 확인해주세요. 닉네임은 필수입니다 :)", Snackbar.LENGTH_SHORT).show();
-                } else {
-                    userInitialize();
-                    Snackbar.make(view, "정보 확인 완료 :)", Snackbar.LENGTH_SHORT).show();
+                if (!checkOk) {
+                    Snackbar.make(view, "닉네임 중복검사를 해주세요 :)", Snackbar.LENGTH_SHORT).show();
 
+                } else {
+                    if ((nickNameEmptyCheck & lengthCheck) == false) {
+                        Snackbar.make(view, "공백과 길이를 확인해주세요. 닉네임은 필수입니다 :)", Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        userInitialize();
+                        Snackbar.make(view, "정보 확인 완료 :)", Snackbar.LENGTH_SHORT).show();
+
+                    }
                 }
+            }
+        });
+        final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputInfoDoubleCheckTxt = (TextView) findViewById(R.id.input_info_double_check_txt);
+        inputInfoDoubleCheckTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                nickNameDoubleCheck(inputInfoNickNameEdit.getText().toString(), new DataExistCallback() {
+                    @Override
+                    public void onDataExistCheck(boolean check) {
+                        inputMethodManager.hideSoftInputFromWindow(inputInfoDoubleCheckTxt.getWindowToken(), 0);
+                        if (inputInfoNickNameEdit.getText().length() > 20 || inputInfoNickNameEdit.getText().toString().equals("")) {
+                            Snackbar.make(view, "닉네임은 공백과 20자 이상은 허용하지 않아요 :)", Snackbar.LENGTH_SHORT).show();
+
+                        } else {
+                            if (check) {
+                                Snackbar.make(view, "중복되는 닉네임이 존재합니다 :)", Snackbar.LENGTH_SHORT).show();
+                                checkOk = false;
+                            } else {
+                                Snackbar.make(view, "사용가능한 닉네임 입니다 :)", Snackbar.LENGTH_SHORT).show();
+                                checkOk = true;
+                            }
+                        }
+                    }
+                });
             }
         });
 
@@ -217,7 +283,7 @@ public class InputInfoActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                     startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
-
+                    finish();
                 }
             });
         }
@@ -230,6 +296,7 @@ public class InputInfoActivity extends AppCompatActivity {
         } else {
             user.setSelfieUri(uri.toString());
         }
+        user.setEmail(firebaseUser.getEmail().toString());
         user.setNickName(inputInfoNickNameEdit.getText().toString());
         user.setMessage(inputInfoMessageEdit.getText().toString());
         user.setTeamName(inputInfoTeamNameEdit.getText().toString());
@@ -241,8 +308,44 @@ public class InputInfoActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1 && grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickUpPicture();
+            }
+        }
+    }
+
+    @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
+    }
+
+    private void nickNameDoubleCheck(final String nickName, final DataExistCallback dataExtistCallback) {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+        final ProgressDialog progressDialog = new ProgressDialog(InputInfoActivity.this);
+        progressDialog.setMessage("중복 검사중입니다");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        Query query = databaseReference.child("users").orderByChild("nickName").equalTo(nickName);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean doubleCheck = dataSnapshot.exists();
+                dataExtistCallback.onDataExistCheck(doubleCheck);
+                progressDialog.dismiss();
+            }
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
 }

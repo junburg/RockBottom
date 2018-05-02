@@ -162,7 +162,7 @@ public class AccountSettingActivity extends AppCompatActivity {
                                             if (task.isSuccessful()) {
                                                 databaseReference.child("user_study_condition").child(uid).removeValue();
                                                 databaseReference.child("users").child(uid).removeValue();
-                                                firebaseMethods.deleteSelfieImg(uid);
+                                                firebaseMethods.deleteSelfieImgOnlyStorage(uid);
                                                 Snackbar.make(getWindow().getDecorView().getRootView()
                                                         , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
                                                 Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
