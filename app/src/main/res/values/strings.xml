@@ -26,6 +26,7 @@
     <string name ="email_login_check_password_txt">비밀번호 확인</string>
     <string name ="email_login_sign_in_txt">로그인</string>
     <string name ="email_login_sign_up_txt">새로운 계정 만들기</string>
+    <string name ="email_login_password_find_txt">비밀번호 변경 또는 찾기</string>
     <string name ="email_sign_up_txt">가입하기</string>
 
     <!-- Input Information String Data -->
@@ -127,5 +128,11 @@
     <string name="account_setting_password_edit_txt">비밀번호 변경</string>
     <string name="account_setting_logout_txt">로그아웃</string>
     <string name="account_setting_delete_account_txt">회원탈퇴</string>
+
+    <!-- Password Find String Data -->
+    <string name="dialog_password_find_confirm_txt">변경 메일 보내기</string>
+    <string name="dialog_password_find_cancel_txt">취소</string>
+    <string name="dialog_password_find_target_txt">비밀번호 찾기 또는 변경</string>
+    <string name="dialog_password_find_edit_hint_txt">가입한 이메일 계정을 입력해주세요</string>
 
 </resources>

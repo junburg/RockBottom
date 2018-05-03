@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -87,7 +88,7 @@ public class InputInfoActivity extends AppCompatActivity {
     private TextView inputInfoDoubleCheckTxt;
 
     // Firebase
-    private FirebaseAuth auth;
+    private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase database;
     private FirebaseStorage storage;
@@ -95,20 +96,22 @@ public class InputInfoActivity extends AppCompatActivity {
     private FirebaseMethods firebaseMethods;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_info);
-        auth = FirebaseAuth.getInstance();
-        uid = auth.getCurrentUser().getUid();
+        firebaseAuth = FirebaseAuth.getInstance();
+        uid = firebaseAuth.getCurrentUser().getUid();
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
-        firebaseUser = auth.getCurrentUser();
+        firebaseUser = firebaseAuth.getCurrentUser();
         context = InputInfoActivity.this;
         validationCheck = new ValidationCheck(context);
         firebaseMethods = new FirebaseMethods(context);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
         }
@@ -199,6 +202,20 @@ public class InputInfoActivity extends AppCompatActivity {
             }
         });
 
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if( user != null) {
+
+                } else {
+                    Intent intent = new Intent(InputInfoActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }
+        };
+
     }
 
     @Override
@@ -255,6 +272,10 @@ public class InputInfoActivity extends AppCompatActivity {
             selfieUri = null;
             User user = setUserData(selfieUri);
             database.getReference().child("users").child(uid).setValue(user);
+            firebaseMethods.initUserConditionSetting(uid);
+            progressDialog.dismiss();
+            startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
+            finish();
 
         } else {
             StorageReference storageReference = storage.getReferenceFromUrl("gs://rockbottom-2bc4e.appspot.com");
@@ -274,7 +295,6 @@ public class InputInfoActivity extends AppCompatActivity {
                     User user = setUserData(downloadUrl);
                     Log.d(TAG, "onSuccess: " + user.toString());
                     database.getReference().child("users").child(uid).setValue(user);
-                    firebaseMethods.initUserLearnSettings(uid);
                     firebaseMethods.initUserConditionSetting(uid);
                     progressDialog.dismiss();
 
@@ -348,4 +368,28 @@ public class InputInfoActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        firebaseAuth.removeAuthStateListener(authStateListener);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        AuthUI.getInstance().signOut(this).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Intent intent = new Intent(InputInfoActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+    }
 }

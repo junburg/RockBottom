@@ -3,11 +3,13 @@ package com.junburg.moon.rockbottom.study;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,6 +32,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
+import com.junburg.moon.rockbottom.login.LoginActivity;
 import com.junburg.moon.rockbottom.model.Chapter;
 import com.junburg.moon.rockbottom.model.Subject;
 
@@ -55,6 +58,7 @@ public class StudyFragment extends Fragment {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private FirebaseMethods firebaseMethods;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     private List<Subject> subjectList;
     private Context context;
@@ -96,14 +100,24 @@ public class StudyFragment extends Fragment {
         studyRecyclerAdapter = new StudyRecyclerAdapter(subjectList, getContext(), fm);
         studyRecycler.setAdapter(studyRecyclerAdapter);
 
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if(user != null) {
+
+                } else {
+
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }
+        };
+
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        studyVideo.start();
-    }
 
     private void getStudyData() {
 
@@ -141,5 +155,19 @@ public class StudyFragment extends Fragment {
                 progressDialog.dismiss();
             }
         });
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        firebaseAuth.removeAuthStateListener(authStateListener);
     }
 }

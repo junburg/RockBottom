@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.glide.GlideMethods;
+import com.junburg.moon.rockbottom.login.LoginActivity;
 import com.junburg.moon.rockbottom.model.User;
 
 import java.util.ArrayList;
@@ -57,6 +59,7 @@ public class RankingFragment extends Fragment {
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     // Widgets
     private TextView rankingTeamNameTxt, rankingNickNameTxt, rankingMessageTxt, rankingNumberTxt
@@ -100,6 +103,21 @@ public class RankingFragment extends Fragment {
                 setRankingUser(position);
             }
         });
+
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if (user != null) {
+
+                } else {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }
+        };
 
         return view;
     }
@@ -184,6 +202,18 @@ public class RankingFragment extends Fragment {
         }
         rankingNumberTxt.setText(position + 1 + numAppend);
         rankingCollapsingToolbarLayout.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        firebaseAuth.removeAuthStateListener(authStateListener);
     }
 }
 

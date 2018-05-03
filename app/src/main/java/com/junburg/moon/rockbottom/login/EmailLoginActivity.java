@@ -4,10 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.View;
@@ -15,9 +14,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
-import com.junburg.moon.rockbottom.main.MainActivity;
 import com.junburg.moon.rockbottom.util.DataExistCallback;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
 import com.tsengvn.typekit.TypekitContextWrapper;
@@ -40,7 +35,7 @@ public class EmailLoginActivity extends AppCompatActivity {
 
     // Widgets
     private TextInputEditText emailLoginEmailTxt, emailLoginPasswordTxt;
-    private TextView emailLoginSignUpBtn;
+    private TextView emailLoginSignUpBtn, emailLoginPasswordFindBtn;
     private Button emailLoginSignInBtn;
 
     // Variables
@@ -82,6 +77,16 @@ public class EmailLoginActivity extends AppCompatActivity {
             }
         });
 
+        emailLoginPasswordFindBtn = (TextView) findViewById(R.id.email_login_password_find_btn);
+        emailLoginPasswordFindBtn.setText(Html.fromHtml("<u>" + getString(R.string.email_login_password_find_txt) + "</u>"));
+        emailLoginPasswordFindBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PasswordFindDialogFragment passwordFindDialogFragment = new PasswordFindDialogFragment();
+                passwordFindDialogFragment.show(getFragmentManager(), "PasswordFindDialogFragment");
+            }
+        });
+
         emailLoginSignInBtn = (Button) findViewById(R.id.email_login_sign_in_btn);
         emailLoginSignInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +97,7 @@ public class EmailLoginActivity extends AppCompatActivity {
                 checkFirstLogin(new DataExistCallback() {
                     @Override
                     public void onDataExistCheck(boolean check) {
-                        if(check) {
+                        if (check) {
                             email = emailLoginEmailTxt.getText().toString();
                             password = emailLoginPasswordTxt.getText().toString();
                             firebaseMethods.loginEmail(email, password);

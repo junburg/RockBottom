@@ -1,6 +1,7 @@
 package com.junburg.moon.rockbottom.myinfo;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,6 +22,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -37,6 +39,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.glide.GlideMethods;
+import com.junburg.moon.rockbottom.login.LoginActivity;
 import com.junburg.moon.rockbottom.model.User;
 import com.tsengvn.typekit.TypekitContextWrapper;
 
@@ -74,6 +77,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
 
     // Firebase
     private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private FirebaseUser firebaseUser;
@@ -116,7 +120,6 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
             public void onClick(View view) {
                 boolean galleryPermission = ContextCompat.checkSelfPermission(view.getContext()
                         , Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-
                 if (galleryPermission) {
                     pickUpPicture();
                 } else {
@@ -150,6 +153,21 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         });
         getIntentFromMyInfo();
 
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+
+                } else {
+                    Intent intent = new Intent(EditInfoActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+
+                }
+            }
+        };
+
 
     }
 
@@ -176,6 +194,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         String message = intent.getStringExtra("message");
         String github = intent.getStringExtra("github");
         String teamName = intent.getStringExtra("teamName");
+        Log.d(TAG, "getIntentFromMyInfo: " + teamName);
         setUserData(selfie, nickName, message, teamName, github);
     }
 
@@ -200,7 +219,19 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
     }
 
     private void setUserData(String selfie, String nickName, String message, String teamName, String github) {
-        glideMethods.setProfileImage(selfie, editInfoSelfieImg);
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("정보를 가져오고 있습니다");
+        progressDialog.show();
+        if(message.equals("")) {
+            message = "메세지를 입력해보세요";
+        }
+        if(teamName.equals("")) {
+            teamName = "소속을 입력해보세요";
+        }
+        if(github.equals("")) {
+            github = "Github 아이디를 입력해보세요";
+        }
+        glideMethods.setProfileImage(selfie, editInfoSelfieImg, progressDialog);
         for (int i = 0; i < 4; i++) {
             editInfoRecyclerData = new EditInfoRecyclerData();
             editDataMap = new HashMap<>();
@@ -228,6 +259,15 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
     public void onEditInfoClick(DialogFragment dialogf, String targetString, String editString, int position) {
         editInfoRecyclerData = new EditInfoRecyclerData();
         editDataMap = new HashMap<>();
+        if(targetString.equals("메세지") && editString.equals("")) {
+            editString = "메세지를 등록해보세요";
+        }
+        if(targetString.equals("소속") && editString.equals("")) {
+            editString = "소속을 등록해보세요";
+        }
+        if(targetString.equals("Github") | editString.equals("")) {
+            editString = "Github 아이디를 등록해보세요";
+        }
         editDataMap.put(targetString, editString);
         editInfoRecyclerData.setEditDataMap(editDataMap);
         editInfoRecyclerAdapter.editItemFromDialog(position, editInfoRecyclerData);
@@ -241,6 +281,18 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
                 pickUpPicture();
             }
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        auth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        auth.removeAuthStateListener(authStateListener);
     }
 
     @Override

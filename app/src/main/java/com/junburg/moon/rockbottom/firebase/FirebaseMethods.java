@@ -146,6 +146,7 @@ public class FirebaseMethods {
                             } else {
                                 if (user.isEmailVerified()) {
                                     Intent intent = new Intent(context, MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     context.startActivity(intent);
                                 } else {
                                     Snackbar
@@ -176,12 +177,13 @@ public class FirebaseMethods {
                             if (!task.isSuccessful()) {
                                 Snackbar
                                         .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
-                                                , "로그인 실패했습니다. 다시 시도해주세요 :)"
+                                                , "로그인 실패했습니다. 이메일과 비밀번호를 다시 확인해주세요 :)"
                                                 , Snackbar.LENGTH_SHORT)
                                         .show();
                             } else {
                                 if (user.isEmailVerified()) {
                                     Intent intent = new Intent(context, InputInfoActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     context.startActivity(intent);
                                 } else {
                                     Snackbar
@@ -261,7 +263,6 @@ public class FirebaseMethods {
     public void setSelfieImg(Uri selfieUri, final String uid) {
         final ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("사진을 등록중입니다.");
-        progressDialog.setCancelable(false);
         progressDialog.show();
         GetPath getPath = new GetPath(context);
         Uri file = Uri.fromFile(new File(getPath.getPathUri(selfieUri)));
@@ -303,28 +304,26 @@ public class FirebaseMethods {
             deleteRef.delete();
         }
     }
-
-    public void initUserLearnSettings(final String uid) {
-        databaseReference.child("subject").child("chapter").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Chapter chapter = ds.getValue(Chapter.class);
-                    String chapterId = chapter.getChapter_id();
-                    databaseReference.child("user_learn_settings").child(uid).push();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
+//
+//    public void initUserLearnSettings(final String uid) {
+//        databaseReference.child("subject").child("chapter").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+//                    Chapter chapter = ds.getValue(Chapter.class);
+//                    String chapterId = chapter.getChapter_id();
+//                    databaseReference.child("user_learn_settings").child(uid).push();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
     public void initUserConditionSetting(final String uid) {
-        Log.d(TAG, "initUserConditionSetting: " + "come");
-        final Map<String, Object> chapterMap = new HashMap<>();
         databaseReference.child("subject").addValueEventListener(new ValueEventListener() {
 
             @Override
@@ -363,6 +362,8 @@ public class FirebaseMethods {
             }
         });
     }
+
+
 
 
 }

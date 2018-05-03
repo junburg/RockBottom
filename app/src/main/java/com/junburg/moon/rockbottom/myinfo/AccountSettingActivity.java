@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -43,6 +44,7 @@ public class AccountSettingActivity extends AppCompatActivity {
 
     // Widgets
     private TextView accountSettingEmailTxt, accountSettingLogoutTxt, accountSettingDeleteAccountTxt;
+
 
     // Firebases
     private FirebaseAuth firebaseAuth;
@@ -83,9 +85,15 @@ public class AccountSettingActivity extends AppCompatActivity {
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                firebaseAuth.signOut();
-                                Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
-                                startActivity(intent);
+
+                                AuthUI.getInstance().signOut(getApplicationContext()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                    }
+                                });
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -128,9 +136,13 @@ public class AccountSettingActivity extends AppCompatActivity {
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseUser == null) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if (user != null) {
+
+                } else {
                     Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
 
@@ -166,7 +178,7 @@ public class AccountSettingActivity extends AppCompatActivity {
                                                 Snackbar.make(getWindow().getDecorView().getRootView()
                                                         , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
                                                 Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                                                 startActivity(intent);
 
                                             } else {

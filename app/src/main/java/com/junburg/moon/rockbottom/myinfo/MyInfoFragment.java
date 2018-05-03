@@ -54,7 +54,6 @@ public class MyInfoFragment extends Fragment {
     private ProgressDialog progressDialog;
 
     // Variables
-    private String uid;
     private Context context;
     private String selfie, nickName, message, teamName, github;
     private GlideMethods glideMethods;
@@ -90,7 +89,6 @@ public class MyInfoFragment extends Fragment {
         myInfoNickNameTxt = (TextView) view.findViewById(R.id.my_info_nick_name_txt);
         myInfoMessageTxt = (TextView) view.findViewById(R.id.my_info_message_txt);
         myInfoTeamNameTxt = (TextView) view.findViewById(R.id.my_info_team_name_txt);
-
         setupFirebaseAuth();
 
         myInfoGithubBtn = (TextView) view.findViewById(R.id.my_info_github_btn);
@@ -117,6 +115,20 @@ public class MyInfoFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+
+                } else {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }
+        };
         return view;
     }
 
@@ -143,19 +155,29 @@ public class MyInfoFragment extends Fragment {
         selfie = user.getSelfieUri();
         message = user.getMessage();
         teamName = user.getTeamName();
+        teamName = user.getTeamName();
         github = user.getGithub();
     }
 
     private void setupProfileInfo(User user, ProgressDialog progressDialog) {
         Log.d(TAG, "setupProfileInfo: " + user.getSelfieUri());
         putIntentData(user);
-        glideMethods.setCircleProfileImage(user.getSelfieUri(), myInfoSelfieImg);
         myInfoNickNameTxt.setText(user.getNickName());
         myInfoMessageTxt.setText(user.getMessage());
-        myInfoTeamNameTxt.setText(user.getTeamName());
+        if (user.getMessage().equals("")) {
+            myInfoMessageTxt.setText("메세지를 입력해보세요");
+        } else {
+            myInfoMessageTxt.setText(user.getMessage());
+        }
+        if (user.getTeamName().equals("")) {
+            myInfoTeamNameTxt.setText("소속을 입력해보세요");
+        } else {
+            myInfoTeamNameTxt.setText(user.getTeamName());
+        }
         myInfoPointsNumTxt.setText(Integer.toString(user.getPoints()));
         myInfoRankingNumTxt.setText(Integer.toString(user.getRanking()));
-        progressDialog.dismiss();
+        glideMethods.setCircleProfileImageMyInfo(user.getSelfieUri(), myInfoSelfieImg, progressDialog);
+
     }
 
     private void setupFirebaseAuth() {
@@ -171,18 +193,18 @@ public class MyInfoFragment extends Fragment {
 
                 } else {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
                 }
             }
         };
 
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("정보를 가져오고 있습니다");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
         valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setMessage("정보를 가져오고 있습니다");
+                progressDialog.show();
                 setupProfileInfo(firebaseMethods.setProfileInfo(dataSnapshot), progressDialog);
 
             }
