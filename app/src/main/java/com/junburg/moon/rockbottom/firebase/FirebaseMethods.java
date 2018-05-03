@@ -89,15 +89,14 @@ public class FirebaseMethods {
                             progressDialog.dismiss();
                             Toast.makeText(context, "fuck", Toast.LENGTH_SHORT).show();
                         } else if (task.isSuccessful()) {
-                            sendVerificationEmail();
-                            progressDialog.dismiss();
+                            sendVerificationEmail(progressDialog);
                         }
                     }
                 });
 
     }
 
-    private void sendVerificationEmail() {
+    private void sendVerificationEmail(final ProgressDialog progressDialog) {
         FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
             user.sendEmailVerification()
@@ -112,6 +111,8 @@ public class FirebaseMethods {
                                                 , "인증 메일을 보냈습니다! 확인 후 로그인 하세요 :)"
                                                 , Snackbar.LENGTH_SHORT)
                                         .show();
+                                progressDialog.dismiss();
+
                             } else {
                                 Snackbar
                                         .make(
@@ -120,13 +121,14 @@ public class FirebaseMethods {
                                                 , "해당 이메일로 인증 메일을 발송할 수 없습니다."
                                                 , Snackbar.LENGTH_SHORT)
                                         .show();
+                                progressDialog.dismiss();
                             }
                         }
                     });
         }
     }
 
-    public void loginEmail(String email, String password) {
+    public void loginEmail(String email, String password, final ProgressDialog progressDialog) {
         ValidationCheck validationCheck = new ValidationCheck(context);
         if (validationCheck.isEmailString(email)
                 && validationCheck.blankStringCheck(email, password)
@@ -143,17 +145,20 @@ public class FirebaseMethods {
                                                 , "로그인에 실패했습니다. 다시 시도해주세요 :)"
                                                 , Snackbar.LENGTH_SHORT)
                                         .show();
+                                progressDialog.dismiss();
                             } else {
                                 if (user.isEmailVerified()) {
                                     Intent intent = new Intent(context, MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     context.startActivity(intent);
+                                    progressDialog.dismiss();
                                 } else {
                                     Snackbar
                                             .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
                                                     , "이메일 인증 메일을 확인하지 않으셨어요 :("
                                                     , Snackbar.LENGTH_SHORT)
                                             .show();
+                                    progressDialog.dismiss();
                                 }
                             }
                         }
@@ -163,7 +168,7 @@ public class FirebaseMethods {
 
     }
 
-    public void firstEmailLogin(String email, String password) {
+    public void firstEmailLogin(String email, String password, final ProgressDialog progressDialog) {
         ValidationCheck validationCheck = new ValidationCheck(context);
         if (validationCheck.isEmailString(email)
                 && validationCheck.blankStringCheck(email, password)
@@ -180,17 +185,20 @@ public class FirebaseMethods {
                                                 , "로그인 실패했습니다. 이메일과 비밀번호를 다시 확인해주세요 :)"
                                                 , Snackbar.LENGTH_SHORT)
                                         .show();
+                                progressDialog.dismiss();
                             } else {
                                 if (user.isEmailVerified()) {
                                     Intent intent = new Intent(context, InputInfoActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     context.startActivity(intent);
+                                    progressDialog.dismiss();
                                 } else {
                                     Snackbar
                                             .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
                                                     , "이메일 인증 메일을 확인하지 않으셨어요 :("
                                                     , Snackbar.LENGTH_SHORT)
                                             .show();
+                                    progressDialog.dismiss();
                                 }
                             }
                         }

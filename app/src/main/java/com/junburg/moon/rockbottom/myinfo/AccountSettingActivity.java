@@ -24,6 +24,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -118,7 +119,21 @@ public class AccountSettingActivity extends AppCompatActivity {
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(final DialogInterface dialogInterface, int i) {
-                                reauthenticateForDeletingUser();
+                                final String uid = firebaseUser.getUid();
+
+                                AuthUI.getInstance()
+                                        .delete(AccountSettingActivity.this)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                        deleteUserInfo(uid);
+                                                } else {
+                                                    reauthenticateForDeletingUser();
+                                                }
+                                            }
+                                        });
+
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -167,19 +182,13 @@ public class AccountSettingActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     final String uid = firebaseUser.getUid();
+
                                     firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             Log.d(TAG, "onComplete: " + task.isSuccessful());
                                             if (task.isSuccessful()) {
-                                                databaseReference.child("user_study_condition").child(uid).removeValue();
-                                                databaseReference.child("users").child(uid).removeValue();
-                                                firebaseMethods.deleteSelfieImgOnlyStorage(uid);
-                                                Snackbar.make(getWindow().getDecorView().getRootView()
-                                                        , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
-                                                Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                                                startActivity(intent);
+                                                deleteUserInfo(uid);
 
                                             } else {
                                                 Toast.makeText(AccountSettingActivity.this, "탈퇴실패", Toast.LENGTH_SHORT).show();
@@ -190,28 +199,8 @@ public class AccountSettingActivity extends AppCompatActivity {
                             });
 
                         } else if (firebaseUser.getProviders() != null && firebaseUser.isEmailVerified()) {
-                            credential = EmailAuthProvider.getCredential(token, null);
-                            firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    final String uid = firebaseUser.getUid();
-                                    firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            Log.d(TAG, "onComplete: " + task.isSuccessful());
-                                            if (task.isSuccessful()) {
-                                                databaseReference.child("user_study_condition").child(uid).removeValue();
-                                                firebaseMethods.deleteSelfieImg(uid);
-                                                databaseReference.child("users").child(uid).removeValue();
-                                                Snackbar.make(getWindow().getDecorView().getRootView()
-                                                        , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
-                                            } else {
-                                                Toast.makeText(AccountSettingActivity.this, "fuck", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
-                                }
-                            });
+                            Intent intent = new Intent(AccountSettingActivity.this, DeleteEmailAccountActivity.class);
+                            startActivity(intent);
                         }
 
 
@@ -223,6 +212,17 @@ public class AccountSettingActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    private void deleteUserInfo(String uid) {
+        databaseReference.child("user_study_condition").child(uid).removeValue();
+        databaseReference.child("users").child(uid).removeValue();
+        firebaseMethods.deleteSelfieImgOnlyStorage(uid);
+        Snackbar.make(getWindow().getDecorView().getRootView()
+                , "탈퇴 처리되었습니다. 이용해주셔서 감사합니다 :)", Snackbar.LENGTH_LONG).show();
+        Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Override

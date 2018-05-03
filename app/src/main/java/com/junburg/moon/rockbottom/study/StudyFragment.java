@@ -107,7 +107,6 @@ public class StudyFragment extends Fragment {
                 if(user != null) {
 
                 } else {
-
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);

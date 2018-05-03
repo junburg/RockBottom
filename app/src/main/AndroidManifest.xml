@@ -49,6 +49,10 @@
         <activity
             android:name=".myinfo.StudyConditionActivity"
             android:theme="@style/AppTheme2"></activity>
+
+        <activity
+            android:name=".myinfo.DeleteEmailAccountActivity"
+            android:theme="@style/AppTheme2"></activity>
     </application>
 
 </manifest>

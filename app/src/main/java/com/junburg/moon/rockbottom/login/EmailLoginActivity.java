@@ -5,13 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,9 +35,11 @@ import com.tsengvn.typekit.TypekitContextWrapper;
  */
 
 public class EmailLoginActivity extends AppCompatActivity {
+    private static final String TAG = "EmailLoginActivity";
 
     // Widgets
-    private TextInputEditText emailLoginEmailTxt, emailLoginPasswordTxt;
+    private TextInputEditText emailLoginEmailTxt;
+    private TextView emailLoginPasswordTxt;
     private TextView emailLoginSignUpBtn, emailLoginPasswordFindBtn;
     private Button emailLoginSignInBtn;
 
@@ -91,6 +96,10 @@ public class EmailLoginActivity extends AppCompatActivity {
         emailLoginSignInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final ProgressDialog progressDialog = new ProgressDialog(EmailLoginActivity.this);
+                progressDialog.setMessage("로그인중입니다");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(emailLoginSignInBtn.getWindowToken(), 0);
 
@@ -100,11 +109,11 @@ public class EmailLoginActivity extends AppCompatActivity {
                         if (check) {
                             email = emailLoginEmailTxt.getText().toString();
                             password = emailLoginPasswordTxt.getText().toString();
-                            firebaseMethods.loginEmail(email, password);
+                            firebaseMethods.loginEmail(email, password, progressDialog);
                         } else {
                             email = emailLoginEmailTxt.getText().toString();
                             password = emailLoginPasswordTxt.getText().toString();
-                            firebaseMethods.firstEmailLogin(email, password);
+                            firebaseMethods.firstEmailLogin(email, password, progressDialog);
                         }
                     }
                 });
@@ -115,7 +124,7 @@ public class EmailLoginActivity extends AppCompatActivity {
 
     private void checkFirstLogin(final DataExistCallback dataExistCallback) {
         final ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("중복 검사중입니다");
+        progressDialog.setMessage("가입중입니다");
         progressDialog.setCancelable(false);
         progressDialog.show();
         databaseReference.child("users").orderByChild("email")
@@ -125,11 +134,13 @@ public class EmailLoginActivity extends AppCompatActivity {
                 boolean isFirst = dataSnapshot.exists();
                 dataExistCallback.onDataExistCheck(isFirst);
                 progressDialog.dismiss();
+                Log.d(TAG, "isFirst: " + isFirst);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Snackbar.make(getWindow().getDecorView().getRootView(), "다시 가입해주세요", Snackbar.LENGTH_LONG).show();
+                progressDialog.dismiss();
             }
         });
     }
