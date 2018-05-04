@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp">
 
-                <VideoView
+                <com.junburg.moon.rockbottom.util.MutedVideoView
                     android:id="@+id/study_video"
                     android:layout_width="match_parent"
                     android:layout_height="240dp"

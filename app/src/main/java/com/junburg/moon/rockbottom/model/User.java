@@ -13,7 +13,6 @@ public class User {
     private String teamName;
     private String github;
     private int points;
-    private int ranking;
 
     public User() {
 
@@ -75,14 +74,6 @@ public class User {
         this.points = points;
     }
 
-    public int getRanking() {
-        return ranking;
-    }
-
-    public void setRanking(int ranking) {
-        this.ranking = ranking;
-    }
-
     @Override
     public String toString() {
         return "User{" +
@@ -93,7 +84,6 @@ public class User {
                 ", teamName='" + teamName + '\'' +
                 ", github='" + github + '\'' +
                 ", points=" + points +
-                ", ranking=" + ranking +
                 '}';
     }
 }

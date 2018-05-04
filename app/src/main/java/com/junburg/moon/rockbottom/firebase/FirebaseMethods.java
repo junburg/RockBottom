@@ -32,6 +32,7 @@ import com.junburg.moon.rockbottom.main.MainActivity;
 import com.junburg.moon.rockbottom.model.Chapter;
 import com.junburg.moon.rockbottom.model.Subject;
 import com.junburg.moon.rockbottom.model.User;
+import com.junburg.moon.rockbottom.util.DataExistCallback;
 import com.junburg.moon.rockbottom.util.GetPath;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
 
@@ -57,6 +58,7 @@ public class FirebaseMethods {
 
     // Firebase
     private FirebaseAuth auth;
+    private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private FirebaseStorage firebaseStorage;
@@ -65,6 +67,7 @@ public class FirebaseMethods {
     public FirebaseMethods(Context context) {
         this.context = context;
         auth = FirebaseAuth.getInstance();
+        firebaseUser = auth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
         firebaseStorage = FirebaseStorage.getInstance();
@@ -207,8 +210,8 @@ public class FirebaseMethods {
     }
 
 
-    public User setProfileInfo(DataSnapshot dataSnapshot) {
-        User user = new User();
+    public User setProfileInfo(final DataSnapshot dataSnapshot) {
+        final User user = new User();
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
             if (ds.getKey().equals("users")) {
                 try {
@@ -253,18 +256,13 @@ public class FirebaseMethods {
                                     .getValue(User.class)
                                     .getPoints()
                     );
-
-                    user.setRanking(
-                            ds.child(uid)
-                                    .getValue(User.class)
-                                    .getRanking()
-                    );
                 } catch (NullPointerException e) {
                     Log.d(TAG, "setProfileInfoNullException: " + e.getMessage());
                 }
             }
 
         }
+
         return user;
     }
 
@@ -331,7 +329,7 @@ public class FirebaseMethods {
 //        });
 //    }
 
-    public void initUserConditionSetting(final String uid) {
+    public void initUserConditionSetting(final String uid, final ProgressDialog progressDialog) {
         databaseReference.child("subject").addValueEventListener(new ValueEventListener() {
 
             @Override
@@ -343,6 +341,7 @@ public class FirebaseMethods {
                     nameMap.put("name", subject.getName());
                     databaseReference.child("user_study_condition").child(uid).child(subject.getSubject_id()).setValue(nameMap);
                 }
+                progressDialog.dismiss();
             }
 
             @Override
@@ -354,13 +353,12 @@ public class FirebaseMethods {
     }
 
     public void checkUserConditionSetting(final String uid) {
-        Log.d(TAG, "checkUserConditionSetting: " + "ok");
         databaseReference.child("user_study_condition").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
                     Log.d(TAG, "null: " + "null");
-                    initUserConditionSetting(uid);
+                    initUserConditionSetting(uid, new ProgressDialog(context));
                 }
             }
 
@@ -371,9 +369,22 @@ public class FirebaseMethods {
         });
     }
 
+    public void checkUserSetting(String uid, final DataExistCallback dataExistCallback) {
+        databaseReference.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+                    dataExistCallback.onDataExistCheck(false);
+                }
 
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+    }
 }
 
 

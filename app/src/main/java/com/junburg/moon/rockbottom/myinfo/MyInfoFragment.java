@@ -24,12 +24,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.glide.GlideMethods;
 import com.junburg.moon.rockbottom.login.LoginActivity;
 import com.junburg.moon.rockbottom.model.User;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -48,6 +51,7 @@ public class MyInfoFragment extends Fragment {
     private TextView myInfoNickNameTxt;
     private TextView myInfoMessageTxt;
     private TextView myInfoTeamNameTxt;
+    private TextView myInfoGithubTxt;
     private TextView myInfoGithubBtn;
     private TextView myInfoEditProfileBtn;
     private TextView myInfoStudyConditionBtn;
@@ -57,6 +61,7 @@ public class MyInfoFragment extends Fragment {
     private Context context;
     private String selfie, nickName, message, teamName, github;
     private GlideMethods glideMethods;
+    private User user;
 
     // Firebase
     private FirebaseDatabase firebaseDatabase;
@@ -155,11 +160,11 @@ public class MyInfoFragment extends Fragment {
         selfie = user.getSelfieUri();
         message = user.getMessage();
         teamName = user.getTeamName();
-        teamName = user.getTeamName();
         github = user.getGithub();
     }
 
     private void setupProfileInfo(User user, ProgressDialog progressDialog) {
+        this.user = user;
         Log.d(TAG, "setupProfileInfo: " + user.getSelfieUri());
         putIntentData(user);
         myInfoNickNameTxt.setText(user.getNickName());
@@ -174,8 +179,7 @@ public class MyInfoFragment extends Fragment {
         } else {
             myInfoTeamNameTxt.setText(user.getTeamName());
         }
-        myInfoPointsNumTxt.setText(Integer.toString(user.getPoints()));
-        myInfoRankingNumTxt.setText(Integer.toString(user.getRanking()));
+        myInfoPointsNumTxt.setText(Integer.toString(user.getPoints()) + "pts");
         glideMethods.setCircleProfileImageMyInfo(user.getSelfieUri(), myInfoSelfieImg, progressDialog);
 
     }
@@ -206,6 +210,7 @@ public class MyInfoFragment extends Fragment {
                 progressDialog.setMessage("정보를 가져오고 있습니다");
                 progressDialog.show();
                 setupProfileInfo(firebaseMethods.setProfileInfo(dataSnapshot), progressDialog);
+                getUserRanking();
 
             }
 
@@ -215,6 +220,35 @@ public class MyInfoFragment extends Fragment {
             }
         };
 
+
+    }
+
+    private void getUserRanking() {
+        final Query query = databaseReference.child("users").orderByChild("points");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int i = 0;
+                int all = (int) dataSnapshot.getChildrenCount();
+                Log.d(TAG, "all: " + all);
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+
+                    String nickName = ds.child("nickName").getValue(String.class);
+                    if (nickName.equals(user.getNickName())) {
+                        int userPlace = i;
+                        myInfoRankingNumTxt.setText(Integer.toString(all - userPlace) + "위");
+                        break;
+                    } else {
+                        i++;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 

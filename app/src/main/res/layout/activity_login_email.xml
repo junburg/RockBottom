@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/email_login_background_img"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/intro_background" />
+    <!--<ImageView-->
+        <!--android:id="@+id/email_login_background_img"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--android:src="@drawable/intro_background" />-->
 
     <ImageView
         android:id="@+id/email_login_logo_img"
@@ -58,6 +58,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/email_login_password_txt"
             android:inputType="textPassword" />
+        
     </android.support.design.widget.TextInputLayout>
 
 

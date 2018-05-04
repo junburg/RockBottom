@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -35,6 +36,7 @@ import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.login.LoginActivity;
 import com.junburg.moon.rockbottom.model.Chapter;
 import com.junburg.moon.rockbottom.model.Subject;
+import com.junburg.moon.rockbottom.util.MutedVideoView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +49,7 @@ import static android.content.ContentValues.TAG;
 
 public class StudyFragment extends Fragment {
 
-    private VideoView studyVideo;
+    private MutedVideoView studyVideo;
     private RecyclerView studyRecycler;
     private StudyRecyclerAdapter studyRecyclerAdapter;
     private ProgressDialog progressDialog;
@@ -79,12 +81,10 @@ public class StudyFragment extends Fragment {
         firebaseMethods.checkUserConditionSetting(firebaseUser.getUid());
         getStudyData();
 
-        studyVideo = (VideoView) view.findViewById(R.id.study_video);
+        studyVideo = (MutedVideoView) view.findViewById(R.id.study_video);
         String videoUriPath = "android.resource://" + getActivity().getPackageName() + "/" + R.raw.study_video;
         Uri uri = Uri.parse(videoUriPath);
         studyVideo.setVideoURI(uri);
-//        AudioManager am = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
-//        am.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         studyVideo.start();
         studyVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override

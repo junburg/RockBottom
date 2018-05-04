@@ -206,7 +206,7 @@ public class InputInfoActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if( user != null) {
+                if (user != null) {
 
                 } else {
                     Intent intent = new Intent(InputInfoActivity.this, LoginActivity.class);
@@ -272,8 +272,7 @@ public class InputInfoActivity extends AppCompatActivity {
             selfieUri = null;
             User user = setUserData(selfieUri);
             database.getReference().child("users").child(uid).setValue(user);
-            firebaseMethods.initUserConditionSetting(uid);
-            progressDialog.dismiss();
+            firebaseMethods.initUserConditionSetting(uid, progressDialog);
             startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
             finish();
 
@@ -285,6 +284,8 @@ public class InputInfoActivity extends AppCompatActivity {
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
+                    Snackbar.make(getWindow().getDecorView().getRootView(), "다시 한번 시도해주세요!", Snackbar.LENGTH_LONG).show();
 
                 }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -295,13 +296,7 @@ public class InputInfoActivity extends AppCompatActivity {
                     User user = setUserData(downloadUrl);
                     Log.d(TAG, "onSuccess: " + user.toString());
                     database.getReference().child("users").child(uid).setValue(user);
-                    firebaseMethods.initUserConditionSetting(uid);
-                    progressDialog.dismiss();
-
-                }
-            }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    firebaseMethods.initUserConditionSetting(uid, progressDialog);
                     startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
                     finish();
                 }
@@ -322,7 +317,6 @@ public class InputInfoActivity extends AppCompatActivity {
         user.setTeamName(inputInfoTeamNameEdit.getText().toString());
         user.setGithub(inputInfoGithubEdit.getText().toString());
         user.setPoints(0);
-        user.setRanking(0);
 
         return user;
     }

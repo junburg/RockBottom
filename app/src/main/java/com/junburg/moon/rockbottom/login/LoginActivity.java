@@ -34,7 +34,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.main.MainActivity;
+import com.junburg.moon.rockbottom.util.DataExistCallback;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 import com.tsengvn.typekit.TypekitContextWrapper;
 
@@ -59,9 +61,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     // Firebase
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseMethods firebaseMethods;
 
     // Google
     private GoogleApiClient mGoogleApiClient;
+
+    private Context context;
 
 
     @Override
@@ -69,7 +74,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         auth = FirebaseAuth.getInstance();
-
+        context = LoginActivity.this;
+        firebaseMethods = new FirebaseMethods(context);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -102,8 +108,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        finish();
+                        firebaseMethods.checkUserSetting(firebaseAuth.getUid(), new DataExistCallback() {
+                            @Override
+                            public void onDataExistCheck(boolean check) {
+                                if(check) {
+                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                    finish();
+                                } else {
+                                    startActivity(new Intent(LoginActivity.this, InputInfoActivity.class));
+                                    finish();
+                                }
+                            }
+                        });
+
 
                 } else {
                     Snackbar.make(getWindow().getDecorView().getRootView(), "환영합니다 :)", 350).show();

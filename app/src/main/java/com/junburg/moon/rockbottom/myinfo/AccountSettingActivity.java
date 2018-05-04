@@ -174,34 +174,34 @@ public class AccountSettingActivity extends AppCompatActivity {
 
                         String token = task.getResult().getToken();
 
-                        if (firebaseUser.getProviders() != null && firebaseUser.getProviders().get(0).equals("google.com")) {
-
-                            credential = GoogleAuthProvider.getCredential(token, null);
-
-                            firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    final String uid = firebaseUser.getUid();
-
-                                    firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            Log.d(TAG, "onComplete: " + task.isSuccessful());
-                                            if (task.isSuccessful()) {
-                                                deleteUserInfo(uid);
-
-                                            } else {
-                                                Toast.makeText(AccountSettingActivity.this, "탈퇴실패", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-
-                        } else if (firebaseUser.getProviders() != null && firebaseUser.isEmailVerified()) {
+//                        if (firebaseUser.getProviders() != null && firebaseUser.getProviders().get(0).equals("google.com")) {
+//
+//                            credential = GoogleAuthProvider.getCredential(token, null);
+//
+//                            firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<Void> task) {
+//                                    final String uid = firebaseUser.getUid();
+//
+//                                    firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<Void> task) {
+//                                            Log.d(TAG, "onComplete: " + task.isSuccessful());
+//                                            if (task.isSuccessful()) {
+//                                                deleteUserInfo(uid);
+//
+//                                            } else {
+//                                                Toast.makeText(AccountSettingActivity.this, "탈퇴실패", Toast.LENGTH_SHORT).show();
+//                                            }
+//                                        }
+//                                    });
+//                                }
+//                            });
+//
+//                        } else if (firebaseUser.getProviders() != null && firebaseUser.isEmailVerified()) {
                             Intent intent = new Intent(AccountSettingActivity.this, DeleteEmailAccountActivity.class);
                             startActivity(intent);
-                        }
+//                        }
 
 
                     }

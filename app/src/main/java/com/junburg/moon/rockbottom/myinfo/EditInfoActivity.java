@@ -265,7 +265,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         if(targetString.equals("소속") && editString.equals("")) {
             editString = "소속을 등록해보세요";
         }
-        if(targetString.equals("Github") | editString.equals("")) {
+        if(targetString.equals("Github") && editString.equals("")) {
             editString = "Github 아이디를 등록해보세요";
         }
         editDataMap.put(targetString, editString);
