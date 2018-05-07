@@ -106,7 +106,7 @@
                     android:layout_below="@id/ranking_layout_2"
                     android:layout_centerHorizontal="true"
                     android:layout_marginLeft="20dp"
-                    android:background="@color/transparent"
+                    android:background="@android:color/transparent"
                     android:text="@string/ranking_github_txt"
                     android:textColor="@color/white"
                     android:textSize="14sp" />

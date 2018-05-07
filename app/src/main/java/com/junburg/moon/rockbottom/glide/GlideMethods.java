@@ -1,16 +1,7 @@
 package com.junburg.moon.rockbottom.glide;
 
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -20,9 +11,6 @@ import com.bumptech.glide.request.target.Target;
 import com.junburg.moon.rockbottom.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by Junburg on 2018. 4. 17..

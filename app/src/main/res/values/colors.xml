@@ -10,6 +10,5 @@
     <color name="colorDarkerGray">@android:color/darker_gray</color>
     <color name="white">@android:color/white</color>
     <color name="cardBackground">#73e2e2e2</color>
-    <color name="transparent">#00ffffff</color>
 
 </resources>

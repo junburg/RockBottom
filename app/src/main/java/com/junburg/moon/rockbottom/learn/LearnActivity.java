@@ -5,14 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,8 +21,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.login.LoginActivity;
-import com.junburg.moon.rockbottom.main.MainActivity;
-import com.junburg.moon.rockbottom.model.Learn;
 import com.junburg.moon.rockbottom.util.ProcessContent;
 import com.tsengvn.typekit.TypekitContextWrapper;
 
@@ -119,7 +115,7 @@ public class LearnActivity extends AppCompatActivity {
     private void getLearnData() {
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
-        databaseReference.child("learn").child(chapterId).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("learn").child(subjectId).child(chapterId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {

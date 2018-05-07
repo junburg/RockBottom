@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -51,8 +52,6 @@ import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.firebase.FirebaseMethods;
 import com.junburg.moon.rockbottom.main.MainActivity;
 import com.junburg.moon.rockbottom.model.User;
-import com.junburg.moon.rockbottom.myinfo.EditInfoActivity;
-import com.junburg.moon.rockbottom.myinfo.EditInfoDialogFragment;
 import com.junburg.moon.rockbottom.util.DataExistCallback;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
 import com.tsengvn.typekit.TypekitContextWrapper;
