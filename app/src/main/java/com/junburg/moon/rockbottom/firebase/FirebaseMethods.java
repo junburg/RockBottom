@@ -52,12 +52,10 @@ public class FirebaseMethods {
 
     // Variables
     private Context context;
-    private boolean firstEmailLogin;
     private String uid;
-    private List<Chapter> chapterList = new ArrayList<>();
 
     // Firebase
-    private FirebaseAuth auth;
+    private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
@@ -66,14 +64,14 @@ public class FirebaseMethods {
 
     public FirebaseMethods(Context context) {
         this.context = context;
-        auth = FirebaseAuth.getInstance();
-        firebaseUser = auth.getCurrentUser();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReferenceFromUrl("gs://rockbottom-2bc4e.appspot.com");
-        if (auth.getCurrentUser() != null) {
-            uid = auth.getCurrentUser().getUid();
+        if (firebaseAuth.getCurrentUser() != null) {
+            uid = firebaseAuth.getCurrentUser().getUid();
         } else {
 
         }
@@ -84,7 +82,7 @@ public class FirebaseMethods {
         final ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("가입 진행중 입니다");
         progressDialog.show();
-        auth.createUserWithEmailAndPassword(email, password)
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -100,7 +98,7 @@ public class FirebaseMethods {
     }
 
     private void sendVerificationEmail(final ProgressDialog progressDialog) {
-        FirebaseUser user = auth.getCurrentUser();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
             user.sendEmailVerification()
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -137,11 +135,11 @@ public class FirebaseMethods {
                 && validationCheck.blankStringCheck(email, password)
                 && validationCheck.isPasswordPattern(password)) {
 
-            auth.signInWithEmailAndPassword(email, password)
+            firebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            FirebaseUser user = auth.getCurrentUser();
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
                             if (!task.isSuccessful()) {
                                 Snackbar
                                         .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
@@ -177,11 +175,11 @@ public class FirebaseMethods {
                 && validationCheck.blankStringCheck(email, password)
                 && validationCheck.isPasswordPattern(password)) {
 
-            auth.signInWithEmailAndPassword(email, password)
+            firebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            FirebaseUser user = auth.getCurrentUser();
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
                             if (!task.isSuccessful()) {
                                 Snackbar
                                         .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
