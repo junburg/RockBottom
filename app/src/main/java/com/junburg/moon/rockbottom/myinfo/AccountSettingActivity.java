@@ -73,7 +73,13 @@ public class AccountSettingActivity extends AppCompatActivity {
         userEmail = firebaseUser.getEmail();
 
         accountSettingEmailTxt = (TextView) findViewById(R.id.account_setting_email_txt);
-        accountSettingEmailTxt.setText(userEmail);
+        if(userEmail != null) {
+            accountSettingEmailTxt.setText(userEmail);
+        } else {
+            if(firebaseUser.getProviders().get(0).equals("facebook.com")) {
+                accountSettingEmailTxt.setText("페이스북");
+            }
+        }
 
         accountSettingLogoutTxt = (TextView) findViewById(R.id.account_setting_logout_txt);
         accountSettingLogoutTxt.setOnClickListener(new View.OnClickListener() {
@@ -127,7 +133,7 @@ public class AccountSettingActivity extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                        deleteUserInfo(uid);
+                                                    deleteUserInfo(uid);
                                                 } else {
                                                     reauthenticateForDeletingUser();
                                                 }
@@ -173,45 +179,12 @@ public class AccountSettingActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
 
                         String token = task.getResult().getToken();
-
-//                        if (firebaseUser.getProviders() != null && firebaseUser.getProviders().get(0).equals("google.com")) {
-//
-//                            credential = GoogleAuthProvider.getCredential(token, null);
-//
-//                            firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    final String uid = firebaseUser.getUid();
-//
-//                                    firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                        @Override
-//                                        public void onComplete(@NonNull Task<Void> task) {
-//                                            Log.d(TAG, "onComplete: " + task.isSuccessful());
-//                                            if (task.isSuccessful()) {
-//                                                deleteUserInfo(uid);
-//
-//                                            } else {
-//                                                Toast.makeText(AccountSettingActivity.this, "탈퇴실패", Toast.LENGTH_SHORT).show();
-//                                            }
-//                                        }
-//                                    });
-//                                }
-//                            });
-//
-//                        } else if (firebaseUser.getProviders() != null && firebaseUser.isEmailVerified()) {
-                            Intent intent = new Intent(AccountSettingActivity.this, DeleteEmailAccountActivity.class);
-                            startActivity(intent);
-//                        }
-
-
+                        Intent intent = new Intent(AccountSettingActivity.this, DeleteEmailAccountActivity.class);
+                        startActivity(intent);
                     }
-
                 }
-
             });
         }
-
-
     }
 
     private void deleteUserInfo(String uid) {

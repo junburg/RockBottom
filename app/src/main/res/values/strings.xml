@@ -2,6 +2,10 @@
     <!-- Application Name -->
     <string name="app_name">RockBottom</string>
 
+    <!-- Facebook Login -->
+    <string name="facebook_app_id">1948907428477566</string>
+    <string name="fb_login_protocol_scheme">fb1948907428477566</string>
+
     <!-- Login String Data -->
     <string name="login_google_txt">구글 아이디로 로그인</string>
     <string name="login_facebook_txt">페이스북 아이디로 로그인</string>

@@ -310,7 +310,12 @@ public class InputInfoActivity extends AppCompatActivity {
         } else {
             user.setSelfieUri(uri.toString());
         }
-        user.setEmail(firebaseUser.getEmail().toString());
+        if(firebaseUser.getEmail() == null) {
+            user.setEmail("");
+        } else {
+            user.setEmail(firebaseUser.getEmail().toString());
+        }
+
         user.setNickName(inputInfoNickNameEdit.getText().toString());
         user.setMessage(inputInfoMessageEdit.getText().toString());
         user.setTeamName(inputInfoTeamNameEdit.getText().toString());
