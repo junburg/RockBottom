@@ -29,6 +29,7 @@ public class GlideMethods {
             imgView.setImageResource(R.drawable.intro_background);
             progressDialog.dismiss();
         } else {
+            imgView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Glide.with(context)
                     .load(selfieUri)
                     .crossFade()
@@ -40,7 +41,9 @@ public class GlideMethods {
 
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            progressDialog.dismiss();
+                            if(progressDialog != null) {
+                                progressDialog.dismiss();
+                            }
                             return false;
 
                         }
@@ -56,6 +59,7 @@ public class GlideMethods {
             Glide.with(context)
                     .load(selfieUri)
                     .crossFade()
+                    .dontAnimate()
                     .into(imgView);
         }
     }
@@ -68,6 +72,7 @@ public class GlideMethods {
             Glide.with(context)
                     .load(selfieUri)
                     .crossFade()
+                    .dontAnimate()
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {

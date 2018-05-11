@@ -73,10 +73,10 @@ public class AccountSettingActivity extends AppCompatActivity {
         userEmail = firebaseUser.getEmail();
 
         accountSettingEmailTxt = (TextView) findViewById(R.id.account_setting_email_txt);
-        if(userEmail != null) {
+        if (userEmail != null) {
             accountSettingEmailTxt.setText(userEmail);
         } else {
-            if(firebaseUser.getProviders().get(0).equals("facebook.com")) {
+            if (firebaseUser.getProviders().get(0).equals("facebook.com")) {
                 accountSettingEmailTxt.setText("페이스북");
             }
         }
@@ -135,7 +135,17 @@ public class AccountSettingActivity extends AppCompatActivity {
                                                 if (task.isSuccessful()) {
                                                     deleteUserInfo(uid);
                                                 } else {
-                                                    reauthenticateForDeletingUser();
+                                                    if (firebaseUser.getProviders() != null
+                                                            && (firebaseUser.getProviders().get(0).equals("facebook.com")
+                                                            || firebaseUser.getProviders().get(0).equals("google.com"))) {
+
+                                                        Snackbar.make(getWindow().getDecorView().getRootView()
+                                                                , "로그아웃 후 재로그인 하시고 5분안에 다시 회원탈퇴 해주세요.", Snackbar.LENGTH_LONG).show();
+
+                                                    } else {
+                                                        reauthenticateForDeletingUser();
+                                                    }
+
                                                 }
                                             }
                                         });

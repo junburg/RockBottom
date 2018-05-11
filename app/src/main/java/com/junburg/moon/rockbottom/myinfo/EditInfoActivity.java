@@ -203,10 +203,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         if (requestCode == GALLERY_CODE && resultCode == RESULT_OK) {
             selfieUri = data.getData();
             firebaseMethods.setSelfieImg(selfieUri, uid);
-            Glide.with(this)
-                    .load(selfieUri)
-                    .crossFade()
-                    .into(editInfoSelfieImg);
+            glideMethods.setProfileImage(selfieUri.toString(), editInfoSelfieImg, null);
 
         }
     }

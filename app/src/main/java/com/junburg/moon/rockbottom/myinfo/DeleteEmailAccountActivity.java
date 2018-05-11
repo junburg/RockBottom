@@ -61,6 +61,7 @@ public class DeleteEmailAccountActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String password = deleteEmailAccountEditTxt.getText().toString();
+
                 if (firebaseUser.getProviders() != null && firebaseUser.getProviders().get(0).equals("google.com")) {
                     deleteGoogleUserInfo(password);
                 }
