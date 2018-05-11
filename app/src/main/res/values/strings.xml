@@ -2,7 +2,7 @@
     <!-- Application Name -->
     <string name="app_name">RockBottom</string>
 
-    <!-- Facebook Login -->
+    <!-- Facebook Login Data-->
     <string name="facebook_app_id">1948907428477566</string>
     <string name="fb_login_protocol_scheme">fb1948907428477566</string>
 
