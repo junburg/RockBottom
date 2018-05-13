@@ -20,7 +20,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -29,7 +28,6 @@ import com.junburg.moon.rockbottom.login.EmailLoginActivity;
 import com.junburg.moon.rockbottom.login.EmailSignUpActivity;
 import com.junburg.moon.rockbottom.login.InputInfoActivity;
 import com.junburg.moon.rockbottom.main.MainActivity;
-import com.junburg.moon.rockbottom.model.Chapter;
 import com.junburg.moon.rockbottom.model.Subject;
 import com.junburg.moon.rockbottom.model.User;
 import com.junburg.moon.rockbottom.util.DataExistCallback;
@@ -37,9 +35,7 @@ import com.junburg.moon.rockbottom.util.GetPath;
 import com.junburg.moon.rockbottom.util.ValidationCheck;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static android.content.ContentValues.TAG;
@@ -62,6 +58,11 @@ public class FirebaseMethods {
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
 
+    /**
+     * Context 전달 및 Firebase 관련 인스턴스 생성
+     *
+     * @param context
+     */
     public FirebaseMethods(Context context) {
         this.context = context;
         firebaseAuth = FirebaseAuth.getInstance();
@@ -77,30 +78,43 @@ public class FirebaseMethods {
         }
     }
 
-
+    /**
+     * 이메일 계정으로 가입
+     * @param email
+     * @param password
+     */
     public void registerNewEmail(String email, String password) {
         final ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("가입 진행중 입니다");
+        progressDialog.setMessage("이메일 계정으로 가입 중입니다");
         progressDialog.show();
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (!task.isSuccessful()) {
-                            progressDialog.dismiss();
-                            Toast.makeText(context, "fuck", Toast.LENGTH_SHORT).show();
-                        } else if (task.isSuccessful()) {
+                        if (task.isSuccessful()) {
                             sendVerificationEmail(progressDialog);
+                        } else {
+                            progressDialog.dismiss();
+                            Snackbar
+                                    .make(
+                                            ((EmailSignUpActivity) context).getWindow()
+                                                    .getDecorView().findViewById(android.R.id.content)
+                                            , "가입에 실패했습니다. 다시 시도해주시거나 ahn428@gmail.com으로 문의해주세요."
+                                            , Snackbar.LENGTH_SHORT)
+                                    .show();
                         }
                     }
                 });
 
     }
 
+    /**
+     * 이메일 계정으로 회원가입시 인증메일 발송
+     * @param progressDialog
+     */
     private void sendVerificationEmail(final ProgressDialog progressDialog) {
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null) {
-            user.sendEmailVerification()
+        if (firebaseUser != null) {
+            firebaseUser.sendEmailVerification()
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -109,7 +123,7 @@ public class FirebaseMethods {
                                         .make(
                                                 ((EmailSignUpActivity) context).getWindow()
                                                         .getDecorView().findViewById(android.R.id.content)
-                                                , "인증 메일을 보냈습니다! 확인 후 로그인 하세요 :)"
+                                                , "인증 메일을 보냈습니다! 확인 후 로그인 해주세요 :)"
                                                 , Snackbar.LENGTH_SHORT)
                                         .show();
                                 progressDialog.dismiss();
@@ -119,7 +133,7 @@ public class FirebaseMethods {
                                         .make(
                                                 ((EmailSignUpActivity) context).getWindow()
                                                         .getDecorView().findViewById(android.R.id.content)
-                                                , "해당 이메일로 인증 메일을 발송할 수 없습니다."
+                                                , "해당 이메일로 인증 메일을 발송할 수 없습니다. 문의는 ahn428@gmail.com로 해주세요."
                                                 , Snackbar.LENGTH_SHORT)
                                         .show();
                                 progressDialog.dismiss();
@@ -129,7 +143,16 @@ public class FirebaseMethods {
         }
     }
 
+    /**
+     * 이메일 계정으로 로그인
+     * MainActivity로 이동
+     * @param email
+     * @param password
+     * @param progressDialog
+     */
     public void loginEmail(String email, String password, final ProgressDialog progressDialog) {
+
+        // 입력 정보에 대한 유효성 체크
         ValidationCheck validationCheck = new ValidationCheck(context);
         if (validationCheck.isEmailString(email)
                 && validationCheck.blankStringCheck(email, password)
@@ -139,7 +162,6 @@ public class FirebaseMethods {
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
                             if (!task.isSuccessful()) {
                                 Snackbar
                                         .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
@@ -148,7 +170,7 @@ public class FirebaseMethods {
                                         .show();
                                 progressDialog.dismiss();
                             } else {
-                                if (user.isEmailVerified()) {
+                                if (firebaseUser.isEmailVerified()) {
                                     Intent intent = new Intent(context, MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     context.startActivity(intent);
@@ -156,7 +178,7 @@ public class FirebaseMethods {
                                 } else {
                                     Snackbar
                                             .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
-                                                    , "이메일 인증 메일을 확인하지 않으셨어요 :("
+                                                    , "인증 메일을 확인하지 않으셨어요 :("
                                                     , Snackbar.LENGTH_SHORT)
                                             .show();
                                     progressDialog.dismiss();
@@ -164,12 +186,19 @@ public class FirebaseMethods {
                             }
                         }
                     });
-
         }
-
     }
 
+    /**
+     * 이메일로 회원가입 후, 첫 로그인인지 확인
+     * 회원 정보를 입력하는 InputInfoActivity로 이동
+     * @param email
+     * @param password
+     * @param progressDialog
+     */
     public void firstEmailLogin(String email, String password, final ProgressDialog progressDialog) {
+
+        // 입력한 정보에 대한 유효성 체크
         ValidationCheck validationCheck = new ValidationCheck(context);
         if (validationCheck.isEmailString(email)
                 && validationCheck.blankStringCheck(email, password)
@@ -179,7 +208,6 @@ public class FirebaseMethods {
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
                             if (!task.isSuccessful()) {
                                 Snackbar
                                         .make(((EmailLoginActivity) context).getWindow().getDecorView().getRootView()
@@ -188,7 +216,7 @@ public class FirebaseMethods {
                                         .show();
                                 progressDialog.dismiss();
                             } else {
-                                if (user.isEmailVerified()) {
+                                if (firebaseUser.isEmailVerified()) {
                                     Intent intent = new Intent(context, InputInfoActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     context.startActivity(intent);
@@ -208,6 +236,11 @@ public class FirebaseMethods {
     }
 
 
+    /**
+     * 데이터베이스에서 회원 정보 Get, User 객체에 정보를 Set
+     * @param dataSnapshot
+     * @return
+     */
     public User setProfileInfo(final DataSnapshot dataSnapshot) {
         final User user = new User();
         for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -264,14 +297,24 @@ public class FirebaseMethods {
         return user;
     }
 
+    /**
+     * 사용자 프로필 이미지를 Firebase Storage에 저장
+     * @param selfieUri
+     * @param uid
+     */
     public void setSelfieImg(Uri selfieUri, final String uid) {
         final ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("사진을 등록중입니다.");
         progressDialog.show();
+
+        // 사진 경로 체크
         GetPath getPath = new GetPath(context);
         Uri file = Uri.fromFile(new File(getPath.getPathUri(selfieUri)));
-        Log.d(TAG, "setSelfieImg: " + file.toString());
+
+        // Firebase Storage 저장 경로
         StorageReference riversRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
+
+        // 해당 경로에 이미지가 존재하면 삭제하고 새로운 이미지 저장
         if (riversRef != null) {
             riversRef.delete();
         }
@@ -292,49 +335,40 @@ public class FirebaseMethods {
         });
     }
 
+    /**
+     * 사용자 프로필 이미지 Firebase Storage, Database에서 삭제
+     * @param uid
+     */
     public void deleteSelfieImg(String uid) {
-        Log.d(TAG, "deleteSelfieImg: " + uid.toString());
         StorageReference deleteRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
         if (deleteRef != null) {
             deleteRef.delete();
         }
         databaseReference.child("users").child(uid).child("selfieUri").setValue("");
-
     }
 
+    /**
+     * Firebase Storage에서만 사용자 프로필 이미지 삭제
+     * @param uid
+     */
     public void deleteSelfieImgOnlyStorage(String uid) {
         StorageReference deleteRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
         if (deleteRef != null) {
             deleteRef.delete();
         }
     }
-//
-//    public void initUserLearnSettings(final String uid) {
-//        databaseReference.child("subject").child("chapter").addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-//                    Chapter chapter = ds.getValue(Chapter.class);
-//                    String chapterId = chapter.getChapter_id();
-//                    databaseReference.child("user_learn_settings").child(uid).push();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
 
+    /**
+     * Firebase Database에 사용자 학습현황을 초기화
+     * @param uid
+     * @param progressDialog
+     */
     public void initUserConditionSetting(final String uid, final ProgressDialog progressDialog) {
         databaseReference.child("subject").addValueEventListener(new ValueEventListener() {
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Subject subject = ds.getValue(Subject.class);
-
                     Map<String, Object> nameMap = new HashMap<>();
                     nameMap.put("name", subject.getName());
                     databaseReference.child("user_study_condition").child(uid).child(subject.getSubject_id()).setValue(nameMap);
@@ -350,12 +384,15 @@ public class FirebaseMethods {
 
     }
 
+    /**
+     * Firebase Database에 사용자 학습현황이 세팅되었는지 확인
+     * @param uid
+     */
     public void checkUserConditionSetting(final String uid) {
         databaseReference.child("user_study_condition").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
-                    Log.d(TAG, "null: " + "null");
                     initUserConditionSetting(uid, new ProgressDialog(context));
                 }
             }
@@ -367,6 +404,11 @@ public class FirebaseMethods {
         });
     }
 
+    /**
+     * Firebase Database에 사용자 정보가 세팅되었는지 확인
+     * @param uid
+     * @param dataExistCallback
+     */
     public void checkUserSetting(String uid, final DataExistCallback dataExistCallback) {
         databaseReference.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

@@ -24,11 +24,19 @@ public class GlideMethods {
         this.context = context;
     }
 
+    /**
+     * EditInfoActivity의 프로필 이미지를 Set
+     * @param selfieUri
+     * @param imgView
+     * @param progressDialog
+     */
     public void setProfileImage(String selfieUri, ImageView imgView, final ProgressDialog progressDialog) {
+        // 사용자 이미지 정보가 없으면 기본 이미지로 대체
         if (selfieUri.equals("")) {
             imgView.setImageResource(R.drawable.intro_background);
             progressDialog.dismiss();
         } else {
+            // ImgView의 ScaleType을 CentorCrop으로 고정(변경되는 이슈가 있음)
             imgView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Glide.with(context)
                     .load(selfieUri)
@@ -52,6 +60,12 @@ public class GlideMethods {
         }
     }
 
+
+    /**
+     * 둥근 사용자 프로필 이미지 Set (RankingFragment에서 사용)
+     * @param selfieUri
+     * @param imgView
+     */
     public void setCircleProfileImage(String selfieUri, CircleImageView imgView) {
         if (selfieUri.equals("")) {
             imgView.setImageResource(R.drawable.intro_background);
@@ -59,11 +73,17 @@ public class GlideMethods {
             Glide.with(context)
                     .load(selfieUri)
                     .crossFade()
-                    .dontAnimate()
                     .into(imgView);
         }
     }
 
+
+    /**
+     * 둥근 사용자 프로필 이미지 Set (MyInfoFragment에서 사용)
+     * @param selfieUri
+     * @param imgView
+     * @param progressDialog
+     */
     public void setCircleProfileImageMyInfo(String selfieUri, CircleImageView imgView, final ProgressDialog progressDialog) {
         if (selfieUri.equals("")) {
             imgView.setImageResource(R.drawable.intro_background);
@@ -72,7 +92,6 @@ public class GlideMethods {
             Glide.with(context)
                     .load(selfieUri)
                     .crossFade()
-                    .dontAnimate()
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
