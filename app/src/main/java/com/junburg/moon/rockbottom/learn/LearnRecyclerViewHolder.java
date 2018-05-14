@@ -11,6 +11,7 @@ import com.junburg.moon.rockbottom.R;
  */
 
 public class LearnRecyclerViewHolder extends RecyclerView.ViewHolder {
+
     protected TextView learnSubjectTxt;
     protected TextView learnContentTxt;
 

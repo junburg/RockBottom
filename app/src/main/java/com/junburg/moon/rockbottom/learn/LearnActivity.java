@@ -147,7 +147,7 @@ public class LearnActivity extends AppCompatActivity {
                     String content = ds.getValue(String.class);
                     Map<String, String> contentMap = processContent.divideContent(content);
                     searchMap(contentMap);
-                    learnRecyclerAdapter.setData(titleList, bodyList);
+                    learnRecyclerAdapter.updateData(titleList, bodyList);
                 }
             }
 
@@ -159,7 +159,7 @@ public class LearnActivity extends AppCompatActivity {
     }
 
     /**
-     * Map에 저장된 데이터를 List에 구분해서 add
+     * Map에 저장된 데이터를 List에 구분하여 add
      * @param contentMap
      */
     private void searchMap(Map<String, String> contentMap) {
@@ -180,14 +180,14 @@ public class LearnActivity extends AppCompatActivity {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
 
-    // Add authStateListener
+    // AuthStateListener 추가
     @Override
     protected void onStart() {
         super.onStart();
         firebaseAuth.addAuthStateListener(authStateListener);
     }
 
-    // Remove authStateListener
+    // AuthStateListener 제거
     @Override
     protected void onResume() {
         super.onResume();

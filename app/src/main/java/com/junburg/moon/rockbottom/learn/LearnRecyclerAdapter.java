@@ -31,6 +31,12 @@ public class LearnRecyclerAdapter extends RecyclerView.Adapter<LearnRecyclerView
         return holder;
     }
 
+    /**
+     * titleList -> 제목
+     * bodyList -> 본문
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(LearnRecyclerViewHolder holder, int position) {
         holder.learnSubjectTxt.setText(titleList.get(position));
@@ -43,10 +49,14 @@ public class LearnRecyclerAdapter extends RecyclerView.Adapter<LearnRecyclerView
         return (null != titleList ? titleList.size() : 0);
     }
 
-    public void setData(List<String> titleList, List<String> bodyList) {
+    /**
+     * 제목, 본문 List Update
+     * @param titleList
+     * @param bodyList
+     */
+    public void updateData(List<String> titleList, List<String> bodyList) {
         this.titleList = titleList;
         this.bodyList = bodyList;
         notifyDataSetChanged();
-
     }
 }
