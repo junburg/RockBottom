@@ -37,19 +37,27 @@ import java.util.Map;
 public class LearnActivity extends AppCompatActivity {
 
     private static final String TAG = "LearnActivity";
+
+    // Widgets
     private RecyclerView learnRecycler;
-    private LearnRecyclerAdapter learnRecyclerAdapter;
     private Button learnDoneBtn;
     private Button learnLaterBtn;
+
+    // Adapters
+    private LearnRecyclerAdapter learnRecyclerAdapter;
+
+    // Variables
     private Intent intent;
     private String chapterId;
     private String subjectId;
     private int position;
-    private String content;
-    private ProcessContent processContent;
     private List<String> titleList;
     private List<String> bodyList;
 
+    // Util
+    private ProcessContent processContent;
+
+    // Firebase
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
@@ -60,23 +68,8 @@ public class LearnActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        processContent = new ProcessContent();
-        intent = getIntent();
-        chapterId = intent.getStringExtra("chapterId");
-        subjectId = intent.getStringExtra("subjectId");
-        position = intent.getIntExtra("position", 0);
-        Log.d(TAG, "onCreate: " + chapterId + position);
+        initSetup();
         getLearnData();
-
-        learnRecycler = (RecyclerView)findViewById(R.id.learn_recycler);
-        learnRecycler.setHasFixedSize(true);
-        learnRecycler.setLayoutManager(new LinearLayoutManager(this));
-        learnRecyclerAdapter = new LearnRecyclerAdapter(titleList, bodyList);
-        learnRecycler.setAdapter(learnRecyclerAdapter);
-        learnDoneBtn = (Button)findViewById(R.id.learn_done_btn);
-        learnLaterBtn = (Button)findViewById(R.id.learn_later_btn);
 
         learnDoneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +89,26 @@ public class LearnActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    /**
+     * Initialize view, firebase, util, intent
+     */
+    private void initSetup() {
+        // View Setup
+        learnRecycler = (RecyclerView)findViewById(R.id.learn_recycler);
+        learnRecycler.setHasFixedSize(true);
+        learnRecycler.setLayoutManager(new LinearLayoutManager(this));
+        learnRecyclerAdapter = new LearnRecyclerAdapter(titleList, bodyList);
+        learnRecycler.setAdapter(learnRecyclerAdapter);
+        learnDoneBtn = (Button)findViewById(R.id.learn_done_btn);
+        learnLaterBtn = (Button)findViewById(R.id.learn_later_btn);
+
+        // Firebase Setup
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -109,9 +122,21 @@ public class LearnActivity extends AppCompatActivity {
                 }
             }
         };
+
+        // Util Setup
+        processContent = new ProcessContent();
+
+        // Intent
+        intent = getIntent();
+        chapterId = intent.getStringExtra("chapterId");
+        subjectId = intent.getStringExtra("subjectId");
+        position = intent.getIntExtra("position", 0);
     }
 
 
+    /**
+     * Firebase Database로 부터 LearnActivity에서 사용할 데이터 Get
+     */
     private void getLearnData() {
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
@@ -120,13 +145,9 @@ public class LearnActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
                     String content = ds.getValue(String.class);
-                    Map<String, String> contentMap = new HashMap<>();
-                    contentMap = processContent.divideContent(content);
+                    Map<String, String> contentMap = processContent.divideContent(content);
                     searchMap(contentMap);
-                    Log.d(TAG, "onDataChange: " + titleList.toString());
-                    Log.d(TAG, "onDataChange: " + bodyList.toString());
                     learnRecyclerAdapter.setData(titleList, bodyList);
-
                 }
             }
 
@@ -137,10 +158,15 @@ public class LearnActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Map에 저장된 데이터를 List에 구분해서 add
+     * @param contentMap
+     */
     private void searchMap(Map<String, String> contentMap) {
         titleList = new ArrayList<>();
         bodyList = new ArrayList<>();
         Iterator<String> iterator = contentMap.keySet().iterator();
+
         while (iterator.hasNext()) {
             String title = (String)iterator.next();
             titleList.add(title);
@@ -148,17 +174,20 @@ public class LearnActivity extends AppCompatActivity {
         }
     }
 
+    // Typekit for font
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
 
+    // Add authStateListener
     @Override
     protected void onStart() {
         super.onStart();
         firebaseAuth.addAuthStateListener(authStateListener);
     }
 
+    // Remove authStateListener
     @Override
     protected void onResume() {
         super.onResume();
