@@ -174,7 +174,10 @@ public class LearnActivity extends AppCompatActivity {
         }
     }
 
-    // Typekit for font
+    /**
+     * Typekit for font
+     * @param newBase
+     */
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));

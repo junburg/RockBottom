@@ -48,39 +48,30 @@ public class EmailLoginActivity extends AppCompatActivity {
     private boolean checkOk;
 
     // Firebase
-    private FirebaseAuth auth;
+    private FirebaseAuth firebaseAuth;
     private FirebaseMethods firebaseMethods;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
-    private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_email);
-        context = EmailLoginActivity.this;
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        firebaseMethods = new FirebaseMethods(context);
 
-        emailLoginEmailTxt = (TextInputEditText) findViewById(R.id.email_login_email_txt);
-        emailLoginPasswordTxt = (TextInputEditText) findViewById(R.id.email_login_password_txt);
+        initSetup();
 
-        emailLoginSignUpBtn = (TextView) findViewById(R.id.email_login_sign_up_btn);
+
         emailLoginSignUpBtn.setText(Html.fromHtml("<u>" + getString(R.string.email_login_sign_up_txt) + "</u>"));
         emailLoginSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent intent = new Intent(EmailLoginActivity.this, EmailSignUpActivity.class);
                 startActivity(intent);
             }
         });
 
-        emailLoginPasswordFindBtn = (TextView) findViewById(R.id.email_login_password_find_btn);
+        // 비밀번호 변경 Dialog 띄우기
         emailLoginPasswordFindBtn.setText(Html.fromHtml("<u>" + getString(R.string.email_login_password_find_txt) + "</u>"));
         emailLoginPasswordFindBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +81,7 @@ public class EmailLoginActivity extends AppCompatActivity {
             }
         });
 
-        emailLoginSignInBtn = (Button) findViewById(R.id.email_login_sign_in_btn);
+        // 이메일 로그인
         emailLoginSignInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,6 +92,7 @@ public class EmailLoginActivity extends AppCompatActivity {
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(emailLoginSignInBtn.getWindowToken(), 0);
 
+                // DataExistCallback 값에 따라 첫 로그인 유무 check
                 checkFirstLogin(new DataExistCallback() {
                     @Override
                     public void onDataExistCheck(boolean check) {
@@ -120,6 +112,34 @@ public class EmailLoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initialize
+     */
+    private void initSetup() {
+
+        // Context
+        context = EmailLoginActivity.this;
+
+        // View
+        emailLoginEmailTxt = (TextInputEditText) findViewById(R.id.email_login_email_txt);
+        emailLoginPasswordTxt = (TextInputEditText) findViewById(R.id.email_login_password_txt);
+        emailLoginSignUpBtn = (TextView) findViewById(R.id.email_login_sign_up_btn);
+        emailLoginPasswordFindBtn = (TextView) findViewById(R.id.email_login_password_find_btn);
+        emailLoginSignInBtn = (Button) findViewById(R.id.email_login_sign_in_btn);
+
+        // Firebase
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseMethods = new FirebaseMethods(context);
+
+    }
+
+    /**
+     * 이메일 계정으로 가입한 사용자가 처음 로그인했는지 Check
+     * @param dataExistCallback
+     */
     private void checkFirstLogin(final DataExistCallback dataExistCallback) {
         final ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("가입중입니다");
@@ -143,6 +163,10 @@ public class EmailLoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Typekit for font
+     * @param newBase
+     */
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));

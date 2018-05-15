@@ -340,6 +340,11 @@ public class InputInfoActivity extends AppCompatActivity {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
     }
 
+    /**
+     * 닉네임 중복검사
+     * @param nickName
+     * @param dataExtistCallback
+     */
     private void nickNameDoubleCheck(final String nickName, final DataExistCallback dataExtistCallback) {
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
@@ -366,12 +371,18 @@ public class InputInfoActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * AuthStateListener 추가
+     */
     @Override
     protected void onStart() {
         super.onStart();
         firebaseAuth.addAuthStateListener(authStateListener);
     }
 
+    /**
+     * AuthStateListener 삭제
+     */
     @Override
     protected void onResume() {
         super.onResume();

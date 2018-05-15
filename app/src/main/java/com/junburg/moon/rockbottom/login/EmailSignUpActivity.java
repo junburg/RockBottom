@@ -25,15 +25,14 @@ public class EmailSignUpActivity extends AppCompatActivity{
     // Widgets
     private TextInputEditText emailLoginEmailTxt, emailLoginPasswordTxt, emailLoginCheckPasswordTxt;
     private Button emailLoginSignUpBtn;
-    private ProgressDialog progressDialog;
     private ValidationCheck validationCheck;
 
     // Variables
     private String email, password, checkPassword;
     private Context context;
+    private InputMethodManager inputMethodManager;
 
     // Firebase
-    private FirebaseAuth auth;
     private FirebaseMethods firebaseMethods;
 
 
@@ -42,15 +41,9 @@ public class EmailSignUpActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up_email);
 
-        emailLoginEmailTxt = (TextInputEditText)findViewById(R.id.email_login_email_txt);
-        emailLoginPasswordTxt = (TextInputEditText)findViewById(R.id.email_login_password_txt);
-        emailLoginCheckPasswordTxt = (TextInputEditText)findViewById(R.id.email_login_check_password_txt);
-        emailLoginSignUpBtn = (Button)findViewById(R.id.email_login_sign_up_btn);
-        context = EmailSignUpActivity.this;
-        firebaseMethods = new FirebaseMethods(context);
-        validationCheck = new ValidationCheck(context);
+        initSetup();
 
-        final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
         emailLoginSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +68,28 @@ public class EmailSignUpActivity extends AppCompatActivity{
 
     }
 
+    /**
+     * Initialize
+     */
+    private void initSetup() {
+        // Context
+        context = EmailSignUpActivity.this;
+
+        // View
+        emailLoginEmailTxt = (TextInputEditText)findViewById(R.id.email_login_email_txt);
+        emailLoginPasswordTxt = (TextInputEditText)findViewById(R.id.email_login_password_txt);
+        emailLoginCheckPasswordTxt = (TextInputEditText)findViewById(R.id.email_login_check_password_txt);
+        emailLoginSignUpBtn = (Button)findViewById(R.id.email_login_sign_up_btn);
+
+        // Util
+        firebaseMethods = new FirebaseMethods(context);
+        validationCheck = new ValidationCheck(context);
+    }
+
+    /**
+     * Typekit for font
+     * @param newBase
+     */
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
