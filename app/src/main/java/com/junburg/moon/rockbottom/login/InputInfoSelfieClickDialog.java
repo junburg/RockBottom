@@ -30,6 +30,7 @@ public class InputInfoSelfieClickDialog extends Dialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_input_info_selfie_click);
 
+        // 사진삭제 클릭 -> Glide 사용여부 false로 초기화
         inputInfoSelfieDeleteTxt = (TextView)findViewById(R.id.dialog_selfie_delete_txt);
         inputInfoSelfieDeleteTxt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,6 +40,8 @@ public class InputInfoSelfieClickDialog extends Dialog {
                 dismiss();
             }
         });
+
+        // 뒤로가기 클릭 -> dismiss
         dialogSelfieBackTxt = (TextView)findViewById(R.id.dialog_selfie_back_txt);
         dialogSelfieBackTxt.setOnClickListener(new View.OnClickListener() {
             @Override

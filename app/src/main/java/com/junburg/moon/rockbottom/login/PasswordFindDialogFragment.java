@@ -30,9 +30,11 @@ import com.junburg.moon.rockbottom.util.DataExistCallback;
 
 public class PasswordFindDialogFragment extends DialogFragment {
 
-    private TextView dialogPasswordFindTargetTxt, dialogPasswordFindProgressTxt, dialogPasswordFindConfirmTxt, dialogPasswordFindCancelTxt;
+    // Widgets
+    private TextView dialogPasswordFindProgressTxt, dialogPasswordFindConfirmTxt, dialogPasswordFindCancelTxt;
     private EditText dialogPasswordFindEditTxt;
 
+    // View
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
@@ -41,15 +43,10 @@ public class PasswordFindDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_password_find, container);
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
 
-        dialogPasswordFindEditTxt = (EditText) view.findViewById(R.id.dialog_password_find_edit_txt);
-        dialogPasswordFindConfirmTxt = (TextView) view.findViewById(R.id.dialog_password_find_confirm_btn);
-        dialogPasswordFindCancelTxt = (TextView) view.findViewById(R.id.dialog_password_find_cancel_btn);
-        dialogPasswordFindProgressTxt = (TextView) view.findViewById(R.id.dialog_password_find_progress_txt);
+        initSetup(view);
 
+        // 이메일 정보를 확인하고 비밀번호 변경 메일을 전송함
         dialogPasswordFindConfirmTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -99,6 +96,27 @@ public class PasswordFindDialogFragment extends DialogFragment {
         return view;
     }
 
+    /**
+     * Initialize fragment
+     * @param view
+     */
+    private void initSetup(View view) {
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+
+        dialogPasswordFindEditTxt = (EditText) view.findViewById(R.id.dialog_password_find_edit_txt);
+        dialogPasswordFindConfirmTxt = (TextView) view.findViewById(R.id.dialog_password_find_confirm_btn);
+        dialogPasswordFindCancelTxt = (TextView) view.findViewById(R.id.dialog_password_find_cancel_btn);
+        dialogPasswordFindProgressTxt = (TextView) view.findViewById(R.id.dialog_password_find_progress_txt);
+
+    }
+
+    /**
+     * 비밀번호 변경 메일을 전송하기 전에 존재하는 이메일인지 여부 체크
+     * @param email
+     * @param dataExistCallback
+     */
     public void checkExistEmail(String email, final DataExistCallback dataExistCallback) {
         Query query = databaseReference.child("users").orderByChild("email").equalTo(email);
         query.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -20,6 +20,11 @@ public class IntroPagerAdpater extends FragmentPagerAdapter{
         super(fm);
     }
 
+    /**
+     * Index에 해당하는 데이터를 Set한 프래그먼트 생성, 반환
+     * @param position
+     * @return
+     */
     @Override
     public Fragment getItem(int position) {
         return new IntroFragment().newInstance(image[position], subject[position], content[position]);

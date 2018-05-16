@@ -21,6 +21,13 @@ public class IntroFragment extends Fragment {
     private TextView introSubjectTxt;
     private TextView introContentTxt;
 
+    /**
+     * 이미지 Url, 제목, 본문 데이터를 Set하고 프래그먼트 생성, 반환
+     * @param imageUrl
+     * @param subject
+     * @param content
+     * @return
+     */
     public static IntroFragment newInstance(int imageUrl, int subject, int content) {
 
         Bundle args = new Bundle();

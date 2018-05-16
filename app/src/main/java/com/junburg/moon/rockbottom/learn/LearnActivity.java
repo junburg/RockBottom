@@ -92,7 +92,7 @@ public class LearnActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize view, firebase, util, intent
+     * Initialize activity
      */
     private void initSetup() {
         // View Setup

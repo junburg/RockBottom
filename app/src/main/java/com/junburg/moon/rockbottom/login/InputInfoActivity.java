@@ -65,8 +65,9 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  */
 
 public class InputInfoActivity extends AppCompatActivity {
-    private static final String TAG = "InputInfoActivity";
+
     // Constants
+    private static final String TAG = "InputInfoActivity";
     private static final int GALLERY_CODE = 10;
 
     // Variables
@@ -75,8 +76,9 @@ public class InputInfoActivity extends AppCompatActivity {
     private ValidationCheck validationCheck;
     private Context context;
     private boolean checkOk;
+    private InputMethodManager inputMethodManager;
 
-    // View
+    // Widgets
     protected ImageView inputInfoSelfieImg;
     private TextInputEditText inputInfoNickNameEdit;
     private TextInputEditText inputInfoMessageEdit;
@@ -102,20 +104,16 @@ public class InputInfoActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_info);
-        firebaseAuth = FirebaseAuth.getInstance();
-        uid = firebaseAuth.getCurrentUser().getUid();
-        database = FirebaseDatabase.getInstance();
-        storage = FirebaseStorage.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        context = InputInfoActivity.this;
-        validationCheck = new ValidationCheck(context);
-        firebaseMethods = new FirebaseMethods(context);
+        initSetup();
 
+        // 사용자 권한 체크
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
         }
 
-        inputInfoSelfieImg = (ImageView) findViewById(R.id.input_info_selfie_img);
+        // Glide 사용여부를 체크(ImgView에 사진이 set 되었는가를 체크)
+        // Glide 사용 o -> 사진삭제 다이얼로그
+        // Gilde 사용 x -> 권한 체크 후 갤러리로 이동
         inputInfoSelfieImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,11 +144,8 @@ public class InputInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        inputInfoNickNameEdit = (TextInputEditText) findViewById(R.id.input_info_nick_name_edit_txt);
-        inputInfoMessageEdit = (TextInputEditText) findViewById(R.id.input_info_message_edit_txt);
-        inputInfoTeamNameEdit = (TextInputEditText) findViewById(R.id.input_info_team_name_edit_txt);
-        inputInfoGithubEdit = (TextInputEditText) findViewById(R.id.input_info_github_edit_txt);
-        inputInfoDoneBtn = (Button) findViewById(R.id.input_info_done_btn);
+
+        // 사용자 정보 입력 값에 대한 중복검사 완료 유무와 유효성 체크
         inputInfoDoneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -175,8 +170,8 @@ public class InputInfoActivity extends AppCompatActivity {
                 }
             }
         });
-        final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        inputInfoDoubleCheckTxt = (TextView) findViewById(R.id.input_info_double_check_txt);
+
+        // 닉네임 값에 대한 중복검사
         inputInfoDoubleCheckTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -201,6 +196,23 @@ public class InputInfoActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    /**
+     * Initialize activity
+     */
+    private void initSetup() {
+
+        // Context
+        context = InputInfoActivity.this;
+
+        // Firebase
+        firebaseAuth = FirebaseAuth.getInstance();
+        uid = firebaseAuth.getCurrentUser().getUid();
+        database = FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -215,8 +227,31 @@ public class InputInfoActivity extends AppCompatActivity {
             }
         };
 
+        // View
+        inputInfoSelfieImg = (ImageView) findViewById(R.id.input_info_selfie_img);
+        inputInfoNickNameEdit = (TextInputEditText) findViewById(R.id.input_info_nick_name_edit_txt);
+        inputInfoMessageEdit = (TextInputEditText) findViewById(R.id.input_info_message_edit_txt);
+        inputInfoTeamNameEdit = (TextInputEditText) findViewById(R.id.input_info_team_name_edit_txt);
+        inputInfoGithubEdit = (TextInputEditText) findViewById(R.id.input_info_github_edit_txt);
+        inputInfoDoneBtn = (Button) findViewById(R.id.input_info_done_btn);
+        inputInfoDoubleCheckTxt = (TextView) findViewById(R.id.input_info_double_check_txt);
+
+        // Util
+        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        validationCheck = new ValidationCheck(context);
+        firebaseMethods = new FirebaseMethods(context);
+
+
+
     }
 
+    /**
+     * 갤러리 액티비티에서 넘겨준 값을 받아 이미지 Set
+     * 이미지 Set -> isGlideUsed = true (Glide사용 여부 -> 이미지 Set여부 판별)
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GALLERY_CODE && resultCode == RESULT_OK) {
@@ -240,6 +275,9 @@ public class InputInfoActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 갤러리 액티비티로 이동
+     */
     private void pickUpPicture() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
@@ -247,18 +285,26 @@ public class InputInfoActivity extends AppCompatActivity {
         startActivityForResult(intent, GALLERY_CODE);
     }
 
+    /**
+     * 이미지 경로 획득
+     * @param uri
+     * @return
+     */
     public String getPath(Uri uri) {
         String[] proj = {MediaStore.Images.Media.DATA};
         CursorLoader cursorLoader = new CursorLoader(this, uri, proj, null, null, null);
-
         Cursor cursor = cursorLoader.loadInBackground();
-        int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 
+        int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
 
         return cursor.getString(index);
     }
 
+    /**
+     * 프로필 이미지 Set 여부에 따라 사용자 정보 initialize
+     *
+     */
     public void userInitialize() {
 
         Log.d("isGlideUsed?", isGlideUsed + "");
@@ -303,6 +349,11 @@ public class InputInfoActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * User 객체 생성 후, 사용자 정보 데이터 Set
+     * @param uri
+     * @return
+     */
     private User setUserData(Uri uri) {
         User user = new User();
         if (selfieUri == null) {
@@ -325,6 +376,12 @@ public class InputInfoActivity extends AppCompatActivity {
         return user;
     }
 
+    /**
+     * 권한 체크 여부 확인 ->  갤러리 액티비티로 이동
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -335,6 +392,10 @@ public class InputInfoActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Typekit for font
+     * @param newBase
+     */
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
@@ -389,15 +450,22 @@ public class InputInfoActivity extends AppCompatActivity {
         firebaseAuth.removeAuthStateListener(authStateListener);
     }
 
+    /**
+     * TODO
+     */
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         AuthUI.getInstance().signOut(this).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                Intent intent = new Intent(InputInfoActivity.this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                if(task.isSuccessful()) {
+                    Intent intent = new Intent(InputInfoActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } else {
+
+                }
             }
         });
     }

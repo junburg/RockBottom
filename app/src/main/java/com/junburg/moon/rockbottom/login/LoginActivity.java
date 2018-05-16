@@ -57,7 +57,7 @@ import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
-    // Final
+    // Constant
     private static final int RC_SIGN_IN = 10;
 
     // Widgets
@@ -88,27 +88,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        auth = FirebaseAuth.getInstance();
-        context = LoginActivity.this;
-        firebaseMethods = new FirebaseMethods(context);
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+        initSetup();
 
-        loginBackgroundImg = (ImageView) findViewById(R.id.login_background_img);
-        loginIndicator = (InkPageIndicator) findViewById(R.id.login_indicator);
-        loginBackgroundImg.setColorFilter(Color.parseColor("#BDBDBD"), PorterDuff.Mode.MULTIPLY);
-        loginViewPager = (ViewPager) findViewById(R.id.login_view_pager);
-        IntroPagerAdpater adapter = new IntroPagerAdpater(getFragmentManager());
-        loginViewPager.setAdapter(adapter);
-        loginIndicator.setViewPager(loginViewPager);
-        loginGoogleBtn = (LinearLayout) findViewById(R.id.login_google_btn);
         loginGoogleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -117,9 +99,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         });
 
-        callbackManager = CallbackManager.Factory.create();
-
-        loginFacebookBtn = (LinearLayout) findViewById(R.id.login_facebook_btn);
         loginFacebookBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,6 +123,29 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         });
 
+
+        loginEmailBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, EmailLoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+    }
+
+    /**
+     * Initialize activity
+     */
+    private void initSetup() {
+
+        // Context
+        context = LoginActivity.this;
+
+        // Firebase
+        auth = FirebaseAuth.getInstance();
+        firebaseMethods = new FirebaseMethods(context);
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -169,25 +171,46 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         };
 
+        // View
+        loginBackgroundImg = (ImageView) findViewById(R.id.login_background_img);
+        loginIndicator = (InkPageIndicator) findViewById(R.id.login_indicator);
+        loginBackgroundImg.setColorFilter(Color.parseColor("#BDBDBD"), PorterDuff.Mode.MULTIPLY);
+        loginViewPager = (ViewPager) findViewById(R.id.login_view_pager);
+        IntroPagerAdpater adapter = new IntroPagerAdpater(getFragmentManager());
+        loginViewPager.setAdapter(adapter);
+        loginIndicator.setViewPager(loginViewPager);
+        loginGoogleBtn = (LinearLayout) findViewById(R.id.login_google_btn);
+        loginFacebookBtn = (LinearLayout) findViewById(R.id.login_facebook_btn);
         loginEmailBtn = (TextView) findViewById(R.id.login_email_btn);
         loginEmailBtn.setText(Html.fromHtml("<u>" + getString(R.string.login_email_txt) + "</u>"));
-        loginEmailBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, EmailLoginActivity.class);
-                startActivity(intent);
-            }
-        });
 
+        // Google Login
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        // Facebook Login
+        callbackManager = CallbackManager.Factory.create();
     }
 
+    /**
+     * Google, Facebook 로그인 액티비티 Result 처리
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("로그인 중입니다");
         progressDialog.show();
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        // GoogleLogin
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
@@ -202,6 +225,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     }
 
+    /**
+     * Google 로그인 인증 뒤 처리
+     * @param acct
+     */
     private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
         final AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         auth.signInWithCredential(credential)
@@ -228,6 +255,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     }
 
+    /**
+     * Facebook 로그인 인증 뒤 처리
+     * @param token
+     */
     private void handleFacebookAccessToken(AccessToken token) {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         auth.signInWithCredential(credential)
@@ -252,11 +283,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 });
     }
 
+
+    /**
+     * 구글 로그인 인증 실패시 처리
+     * @param connectionResult
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
 
+    /**
+     * AuthStateListener 추가
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -264,12 +303,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     }
 
+    /**
+     * AuthStateListener 제거
+     */
     @Override
     protected void onStop() {
         super.onStop();
         auth.removeAuthStateListener(authStateListener);
     }
 
+    /**
+     * Typekit for font
+     * @param newBase
+     */
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));

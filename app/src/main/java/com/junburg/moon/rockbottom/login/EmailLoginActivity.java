@@ -113,7 +113,7 @@ public class EmailLoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize
+     * Initialize activity
      */
     private void initSetup() {
 

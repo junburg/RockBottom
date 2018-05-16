@@ -69,7 +69,7 @@ public class EmailSignUpActivity extends AppCompatActivity{
     }
 
     /**
-     * Initialize
+     * Initialize activity
      */
     private void initSetup() {
         // Context
