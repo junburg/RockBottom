@@ -38,26 +38,26 @@ public class LearnActivity extends AppCompatActivity {
 
     private static final String TAG = "LearnActivity";
 
-    // Widgets
+    // Views
     private RecyclerView learnRecycler;
     private Button learnDoneBtn;
     private Button learnLaterBtn;
 
-    // Adapters
+    // Adapter
     private LearnRecyclerAdapter learnRecyclerAdapter;
 
     // Variables
-    private Intent intent;
     private String chapterId;
     private String subjectId;
     private int position;
+
+    // Objects
+    private ProcessContent processContent;
     private List<String> titleList;
     private List<String> bodyList;
+    private Intent intent;
 
-    // Util
-    private ProcessContent processContent;
-
-    // Firebase
+    // Firebases
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
@@ -69,16 +69,13 @@ public class LearnActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
         initSetup();
+        viewSetting();
         getLearnData();
 
         learnDoneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                databaseReference.child("user_study_condition")
-                        .child(firebaseUser.getUid())
-                        .child(subjectId).child(chapterId).setValue(true);
-                finish();
-
+                setConditionData();
             }
         });
 
@@ -95,16 +92,12 @@ public class LearnActivity extends AppCompatActivity {
      * Initialize activity
      */
     private void initSetup() {
-        // View Setup
-        learnRecycler = (RecyclerView)findViewById(R.id.learn_recycler);
-        learnRecycler.setHasFixedSize(true);
-        learnRecycler.setLayoutManager(new LinearLayoutManager(this));
-        learnRecyclerAdapter = new LearnRecyclerAdapter(titleList, bodyList);
-        learnRecycler.setAdapter(learnRecyclerAdapter);
-        learnDoneBtn = (Button)findViewById(R.id.learn_done_btn);
-        learnLaterBtn = (Button)findViewById(R.id.learn_later_btn);
+        // Views
+        learnRecycler = (RecyclerView) findViewById(R.id.learn_recycler);
+        learnDoneBtn = (Button) findViewById(R.id.learn_done_btn);
+        learnLaterBtn = (Button) findViewById(R.id.learn_later_btn);
 
-        // Firebase Setup
+        // Firebases
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -133,6 +126,17 @@ public class LearnActivity extends AppCompatActivity {
         position = intent.getIntExtra("position", 0);
     }
 
+    /**
+     * Set view
+     */
+    private void viewSetting() {
+
+        learnRecycler.setHasFixedSize(true);
+        learnRecycler.setLayoutManager(new LinearLayoutManager(this));
+        learnRecyclerAdapter = new LearnRecyclerAdapter(titleList, bodyList);
+        learnRecycler.setAdapter(learnRecyclerAdapter);
+    }
+
 
     /**
      * Firebase Database로 부터 LearnActivity에서 사용할 데이터 Get
@@ -143,7 +147,7 @@ public class LearnActivity extends AppCompatActivity {
         databaseReference.child("learn").child(subjectId).child(chapterId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     String content = ds.getValue(String.class);
                     Map<String, String> contentMap = processContent.divideContent(content);
                     searchMap(contentMap);
@@ -158,6 +162,13 @@ public class LearnActivity extends AppCompatActivity {
         });
     }
 
+    private void setConditionData() {
+        databaseReference.child("user_study_condition")
+                .child(firebaseUser.getUid())
+                .child(subjectId).child(chapterId).setValue(true);
+        finish();
+    }
+
     /**
      * Map에 저장된 데이터를 List에 구분하여 add
      * @param contentMap
@@ -168,7 +179,7 @@ public class LearnActivity extends AppCompatActivity {
         Iterator<String> iterator = contentMap.keySet().iterator();
 
         while (iterator.hasNext()) {
-            String title = (String)iterator.next();
+            String title = (String) iterator.next();
             titleList.add(title);
             bodyList.add(contentMap.get(title));
         }
