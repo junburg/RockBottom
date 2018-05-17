@@ -33,19 +33,18 @@ import com.tsengvn.typekit.TypekitContextWrapper;
  */
 
 public class EmailLoginActivity extends AppCompatActivity {
+
+    // Constant
     private static final String TAG = "EmailLoginActivity";
 
-    // Widgets
+    // Views
     private TextInputEditText emailLoginEmailTxt;
     private TextView emailLoginPasswordTxt;
     private TextView emailLoginSignUpBtn, emailLoginPasswordFindBtn;
     private Button emailLoginSignInBtn;
 
-    // Variables
+    // Variable
     private String email, password;
-    private ValidationCheck validationCheck;
-    private Context context;
-    private boolean checkOk;
 
     // Firebase
     private FirebaseAuth firebaseAuth;
@@ -54,6 +53,8 @@ public class EmailLoginActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseUser firebaseUser;
 
+    // Objects
+    private Context context;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

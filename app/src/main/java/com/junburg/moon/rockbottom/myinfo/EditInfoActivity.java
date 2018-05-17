@@ -56,17 +56,10 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
     // Constant
     private static final int GALLERY_CODE = 11;
 
-    // Variables
-    private ArrayList<EditInfoRecyclerData> dataList = new ArrayList<>();
-    private Map<String, String> editDataMap;
-    private EditInfoRecyclerData editInfoRecyclerData;
-    private Uri selfieUri;
-    private User user;
-    private Intent intent;
-    private GlideMethods glideMethods;
-    private Context context;
+    // Variable
+    private String uid;
 
-    // Widgets
+    // Views
     private RecyclerView editInfoRecyclerView;
     private Toolbar editInfoToolbar;
     private ImageView editInfoSelfieImg;
@@ -75,67 +68,37 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
     private EditInfoRecyclerAdapter editInfoRecyclerAdapter;
     private TextView editInfoAccountSettingsTxt;
 
-    // Firebase
-    private FirebaseAuth auth;
+    // Firebases
+    private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseDatabase database;
-    private DatabaseReference databaseReference;
-    private FirebaseUser firebaseUser;
-    private String uid;
-    private FirebaseStorage storage;
     private FirebaseMethods firebaseMethods;
+
+    // Objects
+    private Intent intent;
+    private GlideMethods glideMethods;
+    private Context context;
+    private ArrayList<EditInfoRecyclerData> dataList = new ArrayList<>();
+    private Map<String, String> editDataMap;
+    private EditInfoRecyclerData editInfoRecyclerData;
+    private Uri selfieUri;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_info);
-        auth = FirebaseAuth.getInstance();
-        uid = auth.getCurrentUser().getUid();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference();
-        storage = FirebaseStorage.getInstance();
-        context = EditInfoActivity.this;
-        firebaseMethods = new FirebaseMethods(context);
-        glideMethods = new GlideMethods(context);
 
-        editInfoCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.edit_info_collapsing_tool_bar_layout);
-        editInfoCollapsingToolbarLayout.setTitle("프로필 설정");
-        editInfoCollapsingToolbarLayout.setExpandedTitleMarginBottom(140);
-        editInfoToolbar = (Toolbar) findViewById(R.id.edit_info_tool_bar);
-        setSupportActionBar(editInfoToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        editInfoSelfieImg = (ImageView) findViewById(R.id.edit_info_selfie_img);
-        editInfoSelfieEditBtn = (Button) findViewById(R.id.edit_info_selfie_edit_btn);
-        editInfoSelfieDeleteBtn = (Button) findViewById(R.id.edit_info_selfie_delete_btn);
-        editInfoRecyclerView = (RecyclerView) findViewById(R.id.edit_info_recycler);
-        editInfoAccountSettingsTxt = (TextView) findViewById(R.id.edit_info_account_settings_txt);
-        editInfoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        FragmentManager fm = getSupportFragmentManager();
-        editInfoRecyclerAdapter = new EditInfoRecyclerAdapter(dataList, context, fm);
-        editInfoRecyclerView.setAdapter(editInfoRecyclerAdapter);
+        initSetup();
+        viewSetting();
+        getIntentFromMyInfo();
+
         editInfoSelfieEditBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean galleryPermission = ContextCompat.checkSelfPermission(view.getContext()
-                        , Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-                if (galleryPermission) {
-                    pickUpPicture();
-                } else {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(EditInfoActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        ActivityCompat.requestPermissions(EditInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
-                    } else {
-                        Snackbar.make(getWindow().getDecorView().getRootView()
-                                , "사진을 등록을 위해선 권한 설정이 필요합니다. 설정에서 권한을 부여해주세요", Snackbar.LENGTH_LONG).show();
-
-                    }
-                    ActivityCompat.requestPermissions(EditInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
-                }
+                galleryPermission(view);
             }
         });
+
         editInfoSelfieDeleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -143,7 +106,6 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
             }
         });
 
-        editInfoAccountSettingsTxt.setText(Html.fromHtml("<u>" + getResources().getString(R.string.edit_info_account_settings_txt) + "</u>"));
         editInfoAccountSettingsTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,8 +113,19 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
                 startActivity(intent);
             }
         });
-        getIntentFromMyInfo();
+    }
 
+    /**
+     * Initialize activity
+     */
+    private void initSetup() {
+        // Context
+        context = EditInfoActivity.this;
+
+        //Firebase
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseMethods = new FirebaseMethods(context);
+        uid = firebaseAuth.getCurrentUser().getUid();
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -168,9 +141,67 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
             }
         };
 
+        // Util
+        glideMethods = new GlideMethods(context);
+
+        // View
+        editInfoCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.edit_info_collapsing_tool_bar_layout);
+        editInfoToolbar = (Toolbar) findViewById(R.id.edit_info_tool_bar);
+        editInfoSelfieImg = (ImageView) findViewById(R.id.edit_info_selfie_img);
+        editInfoSelfieEditBtn = (Button) findViewById(R.id.edit_info_selfie_edit_btn);
+        editInfoSelfieDeleteBtn = (Button) findViewById(R.id.edit_info_selfie_delete_btn);
+        editInfoRecyclerView = (RecyclerView) findViewById(R.id.edit_info_recycler);
+        editInfoAccountSettingsTxt = (TextView) findViewById(R.id.edit_info_account_settings_txt);
 
     }
 
+    /**
+     * Set view
+     */
+    private void viewSetting() {
+        editInfoCollapsingToolbarLayout.setTitle("프로필 설정");
+        editInfoCollapsingToolbarLayout.setExpandedTitleMarginBottom(140);
+
+        setSupportActionBar(editInfoToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        editInfoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        FragmentManager fm = getSupportFragmentManager();
+        editInfoRecyclerAdapter = new EditInfoRecyclerAdapter(dataList, context, fm);
+        editInfoRecyclerView.setAdapter(editInfoRecyclerAdapter);
+
+        editInfoAccountSettingsTxt.setText(Html.fromHtml("<u>" + getResources().getString(R.string.edit_info_account_settings_txt) + "</u>"));
+
+    }
+
+    /**
+     * 갤러리 사용 권한 획득
+     * @param view
+     */
+    private void galleryPermission(View view) {
+        boolean galleryPermission = ContextCompat.checkSelfPermission(view.getContext()
+                , Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        if (galleryPermission) {
+            pickUpPicture();
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(EditInfoActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(EditInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+            } else {
+                Snackbar.make(getWindow().getDecorView().getRootView()
+                        , "사진을 등록을 위해선 권한 설정이 필요합니다. 설정에서 권한을 부여해주세요", Snackbar.LENGTH_LONG).show();
+
+            }
+            ActivityCompat.requestPermissions(EditInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+        }
+    }
+
+    /**
+     * 뒤로가기 아이콘 사용
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -181,12 +212,18 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * 사용자 프로필 이미지 삭제
+     */
     private void deleteUserSelfie() {
         editInfoSelfieImg.setImageResource(R.drawable.intro_background);
         editInfoSelfieImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
         firebaseMethods.deleteSelfieImg(uid);
     }
 
+    /**
+     * 인텐트 획득 후 사용자 정보 Set
+     */
     private void getIntentFromMyInfo() {
         intent = getIntent();
         String selfie = intent.getStringExtra("selfieUri");
@@ -198,6 +235,12 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         setUserData(selfie, nickName, message, teamName, github);
     }
 
+    /**
+     * 갤러리에서 선택된 프로필 이미지를 Firebase와 ImgView에 Set
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GALLERY_CODE && resultCode == RESULT_OK) {
@@ -208,6 +251,9 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         }
     }
 
+    /**
+     * 갤러리 액티비티로 이동
+     */
     private void pickUpPicture() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
@@ -215,6 +261,14 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         startActivityForResult(intent, GALLERY_CODE);
     }
 
+    /**
+     * 사용자 정보 리사이클러 뷰에 Set
+     * @param selfie
+     * @param nickName
+     * @param message
+     * @param teamName
+     * @param github
+     */
     private void setUserData(String selfie, String nickName, String message, String teamName, String github) {
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("정보를 가져오고 있습니다");
@@ -251,7 +305,13 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         }
     }
 
-
+    /**
+     * 사용자 정보 수정 다이얼로그로 부터 받아온 데이터를 통해 리사이클러 뷰 Set
+     * @param dialogf
+     * @param targetString
+     * @param editString
+     * @param position
+     */
     @Override
     public void onEditInfoClick(DialogFragment dialogf, String targetString, String editString, int position) {
         editInfoRecyclerData = new EditInfoRecyclerData();
@@ -270,6 +330,12 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         editInfoRecyclerAdapter.editItemFromDialog(position, editInfoRecyclerData);
     }
 
+    /**
+     * 권한 체크 여부 확인 ->  갤러리 액티비티로 이동
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -280,18 +346,28 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         }
     }
 
+    /**
+     * AuthStateListener 추가
+     */
     @Override
     protected void onStart() {
         super.onStart();
-        auth.addAuthStateListener(authStateListener);
+        firebaseAuth.addAuthStateListener(authStateListener);
     }
 
+    /**
+     * AuthStateListener 제거
+     */
     @Override
     protected void onResume() {
         super.onResume();
-        auth.removeAuthStateListener(authStateListener);
+        firebaseAuth.removeAuthStateListener(authStateListener);
     }
 
+    /**
+     * Typekit for font
+     * @param newBase
+     */
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));

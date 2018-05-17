@@ -32,9 +32,11 @@ import com.junburg.moon.rockbottom.login.LoginActivity;
 
 public class DeleteEmailAccountActivity extends AppCompatActivity {
 
+    // Views
     private EditText deleteEmailAccountEditTxt;
     private Button deleteEmailAccountConfirmBtn, deleteEmailAccountCanecelBtn;
 
+    // Firebases
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser firebaseUser;
@@ -42,39 +44,25 @@ public class DeleteEmailAccountActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseMethods firebaseMethods;
 
+    // Variable
     private Context context;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_email_account);
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
-        context = DeleteEmailAccountActivity.this;
-        firebaseMethods = new FirebaseMethods(context);
 
-        deleteEmailAccountEditTxt = (EditText) findViewById(R.id.delete_email_account_edit_txt);
-        deleteEmailAccountConfirmBtn = (Button) findViewById(R.id.delete_email_account_confirm_btn);
+        initSetup();
+
         deleteEmailAccountConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String password = deleteEmailAccountEditTxt.getText().toString();
-
-                if (firebaseUser.getProviders() != null && firebaseUser.getProviders().get(0).equals("google.com")) {
-                    deleteGoogleUserInfo(password);
-                }
-
-                if (firebaseUser.getProviders() != null && firebaseUser.isEmailVerified()) {
-                    deleteEmailUserInfo(password);
-                }
+                deleteEmailAccount();
 
             }
 
         });
 
-        deleteEmailAccountCanecelBtn = (Button) findViewById(R.id.delete_email_account_cancel_btn);
         deleteEmailAccountCanecelBtn.setOnClickListener(new View.OnClickListener()
 
         {
@@ -84,6 +72,20 @@ public class DeleteEmailAccountActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    private void initSetup() {
+
+        // Context
+        context = DeleteEmailAccountActivity.this;
+
+        // Firebase
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+        firebaseMethods = new FirebaseMethods(context);
         authStateListener = new FirebaseAuth.AuthStateListener()
 
         {
@@ -98,33 +100,34 @@ public class DeleteEmailAccountActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             }
+        };
+
+        // View
+        deleteEmailAccountEditTxt = (EditText) findViewById(R.id.delete_email_account_edit_txt);
+        deleteEmailAccountConfirmBtn = (Button) findViewById(R.id.delete_email_account_confirm_btn);
+        deleteEmailAccountCanecelBtn = (Button) findViewById(R.id.delete_email_account_cancel_btn);
+    }
+
+    /**
+     * 사용자 입력 비밀번호를 바탕으로 이메일 재인증 후 탈퇴
+     */
+    private void deleteEmailAccount() {
+        String password = deleteEmailAccountEditTxt.getText().toString();
+
+        if (firebaseUser.getProviders() != null && firebaseUser.isEmailVerified()) {
+            AuthCredential credential = GoogleAuthProvider.getCredential(firebaseUser.getEmail(), password);
+            firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    deleteProcess();
+                }
+            });
         }
-
-        ;
     }
 
-    private void deleteEmailUserInfo(String password) {
-
-        AuthCredential credential = GoogleAuthProvider.getCredential(firebaseUser.getEmail(), password);
-        firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                deleteProcess();
-            }
-        });
-    }
-
-    private void deleteGoogleUserInfo(String password) {
-
-        AuthCredential credential = EmailAuthProvider.getCredential(firebaseUser.getEmail(), password);
-        firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                deleteProcess();
-            }
-        });
-    }
-
+    /**
+     * 이메일 탈퇴와 함께 데이터베이스의 정보 삭제
+     */
     private void deleteProcess() {
         final String uid = firebaseUser.getUid();
         firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -147,12 +150,18 @@ public class DeleteEmailAccountActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * AuthStateListener 추가
+     */
     @Override
     protected void onStart() {
         super.onStart();
         firebaseAuth.addAuthStateListener(authStateListener);
     }
 
+    /**
+     * AuthStateListener 제거
+     */
     @Override
     protected void onResume() {
         super.onResume();

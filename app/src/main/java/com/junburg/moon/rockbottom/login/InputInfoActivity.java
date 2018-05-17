@@ -71,14 +71,13 @@ public class InputInfoActivity extends AppCompatActivity {
     private static final int GALLERY_CODE = 10;
 
     // Variables
-    private Uri selfieUri;
     protected boolean isGlideUsed = false;
     private ValidationCheck validationCheck;
     private Context context;
     private boolean checkOk;
     private InputMethodManager inputMethodManager;
 
-    // Widgets
+    // Views
     protected ImageView inputInfoSelfieImg;
     private TextInputEditText inputInfoNickNameEdit;
     private TextInputEditText inputInfoMessageEdit;
@@ -88,16 +87,18 @@ public class InputInfoActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private TextView inputInfoDoubleCheckTxt;
 
-    // Firebase
+    // Firebases
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
-    private FirebaseDatabase database;
-    private FirebaseStorage storage;
+    private FirebaseStorage firebaseStorage;
     private String uid;
     private FirebaseMethods firebaseMethods;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private FirebaseAuth.AuthStateListener authStateListener;
+
+    // Objects
+    private Uri selfieUri;
 
 
     @Override
@@ -210,8 +211,8 @@ public class InputInfoActivity extends AppCompatActivity {
         // Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         uid = firebaseAuth.getCurrentUser().getUid();
-        database = FirebaseDatabase.getInstance();
-        storage = FirebaseStorage.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -316,13 +317,13 @@ public class InputInfoActivity extends AppCompatActivity {
         if (isGlideUsed == false) {
             selfieUri = null;
             User user = setUserData(selfieUri);
-            database.getReference().child("users").child(uid).setValue(user);
+            firebaseDatabase.getReference().child("users").child(uid).setValue(user);
             firebaseMethods.initUserConditionSetting(uid, progressDialog);
             startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
             finish();
 
         } else {
-            StorageReference storageReference = storage.getReferenceFromUrl("gs://rockbottom-2bc4e.appspot.com");
+            StorageReference storageReference = firebaseStorage.getReferenceFromUrl("gs://rockbottom-2bc4e.appspot.com");
             Uri file = Uri.fromFile(new File(getPath(selfieUri)));
             StorageReference riversRef = storageReference.child("users/" + "selfieImages/" + uid + "_selfie");
             UploadTask uploadTask = riversRef.putFile(file);
@@ -340,7 +341,7 @@ public class InputInfoActivity extends AppCompatActivity {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     User user = setUserData(downloadUrl);
                     Log.d(TAG, "onSuccess: " + user.toString());
-                    database.getReference().child("users").child(uid).setValue(user);
+                    firebaseDatabase.getReference().child("users").child(uid).setValue(user);
                     firebaseMethods.initUserConditionSetting(uid, progressDialog);
                     startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
                     finish();
@@ -451,7 +452,7 @@ public class InputInfoActivity extends AppCompatActivity {
     }
 
     /**
-     * TODO
+     * 뒤로가기 버튼을 누르면 로그아웃 후 MainActivity로 이동
      */
     @Override
     public void onBackPressed() {

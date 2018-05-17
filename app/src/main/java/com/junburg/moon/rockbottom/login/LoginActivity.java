@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     // Constant
     private static final int RC_SIGN_IN = 10;
 
-    // Widgets
+    // Views
     private LinearLayout loginGoogleBtn;
     private LinearLayout loginFacebookBtn;
     private TextView loginEmailBtn;
@@ -69,8 +69,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private InkPageIndicator loginIndicator;
     private ProgressDialog progressDialog;
 
-    // Firebase
-    private FirebaseAuth auth;
+    // Firebases
+    private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseMethods firebaseMethods;
 
@@ -90,6 +90,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_login);
 
         initSetup();
+        viewSetting();
 
         loginGoogleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,24 +103,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         loginFacebookBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("email", "public_profile"));
-                LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        handleFacebookAccessToken(loginResult.getAccessToken());
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        Snackbar.make(getWindow().getDecorView().getRootView(), "페이스북 인증에 실패하였습니다", Snackbar.LENGTH_SHORT).show();
-
-                    }
-
-                    @Override
-                    public void onError(FacebookException error) {
-                    }
-                });
+                facebookLoginSetting();
             }
         });
 
@@ -144,7 +128,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         context = LoginActivity.this;
 
         // Firebase
-        auth = FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
         firebaseMethods = new FirebaseMethods(context);
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -176,13 +160,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         loginIndicator = (InkPageIndicator) findViewById(R.id.login_indicator);
         loginBackgroundImg.setColorFilter(Color.parseColor("#BDBDBD"), PorterDuff.Mode.MULTIPLY);
         loginViewPager = (ViewPager) findViewById(R.id.login_view_pager);
-        IntroPagerAdpater adapter = new IntroPagerAdpater(getFragmentManager());
-        loginViewPager.setAdapter(adapter);
-        loginIndicator.setViewPager(loginViewPager);
         loginGoogleBtn = (LinearLayout) findViewById(R.id.login_google_btn);
         loginFacebookBtn = (LinearLayout) findViewById(R.id.login_facebook_btn);
         loginEmailBtn = (TextView) findViewById(R.id.login_email_btn);
-        loginEmailBtn.setText(Html.fromHtml("<u>" + getString(R.string.login_email_txt) + "</u>"));
 
         // Google Login
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -199,8 +179,37 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         callbackManager = CallbackManager.Factory.create();
     }
 
+    private void viewSetting() {
+        IntroPagerAdpater adapter = new IntroPagerAdpater(getFragmentManager());
+        loginViewPager.setAdapter(adapter);
+        loginIndicator.setViewPager(loginViewPager);
+        loginEmailBtn.setText(Html.fromHtml("<u>" + getString(R.string.login_email_txt) + "</u>"));
+
+    }
+
+    private void facebookLoginSetting() {
+        LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("email", "public_profile"));
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Snackbar.make(getWindow().getDecorView().getRootView(), "페이스북 인증에 실패하였습니다", Snackbar.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+            }
+        });
+    }
+
     /**
      * Google, Facebook 로그인 액티비티 Result 처리
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -231,7 +240,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      */
     private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
         final AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        auth.signInWithCredential(credential)
+        firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -257,11 +266,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     /**
      * Facebook 로그인 인증 뒤 처리
+     *
      * @param token
      */
     private void handleFacebookAccessToken(AccessToken token) {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        auth.signInWithCredential(credential)
+        firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -286,6 +296,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     /**
      * 구글 로그인 인증 실패시 처리
+     *
      * @param connectionResult
      */
     @Override
@@ -299,7 +310,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     protected void onStart() {
         super.onStart();
-        auth.addAuthStateListener(authStateListener);
+        firebaseAuth.addAuthStateListener(authStateListener);
 
     }
 
@@ -309,11 +320,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     protected void onStop() {
         super.onStop();
-        auth.removeAuthStateListener(authStateListener);
+        firebaseAuth.removeAuthStateListener(authStateListener);
     }
 
     /**
      * Typekit for font
+     *
      * @param newBase
      */
     @Override

@@ -17,6 +17,7 @@ import com.junburg.moon.rockbottom.R;
 
 public class IntroFragment extends Fragment {
 
+    // Views
     private ImageView introImg;
     private TextView introSubjectTxt;
     private TextView introContentTxt;

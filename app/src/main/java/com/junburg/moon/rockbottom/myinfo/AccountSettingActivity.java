@@ -41,11 +41,12 @@ import com.tsengvn.typekit.TypekitContextWrapper;
 
 public class AccountSettingActivity extends AppCompatActivity {
 
-    private static final String TAG = "AccountSettingActivity";
-
-    // Widgets
+    // Views
     private TextView accountSettingEmailTxt, accountSettingLogoutTxt, accountSettingDeleteAccountTxt;
 
+    // Variables
+    private String userEmail;
+    private Context context;
 
     // Firebases
     private FirebaseAuth firebaseAuth;
@@ -55,122 +56,51 @@ public class AccountSettingActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseMethods firebaseMethods;
 
-    // Variables
-    private String userEmail;
-    private AuthCredential credential;
-    private Context context;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_setting);
+
+        initSetup();
+        viewSetting();
+
+        accountSettingLogoutTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userSignOut();
+            }
+        });
+
+        accountSettingDeleteAccountTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userDelete();
+            }
+        });
+
+
+    }
+
+    /**
+     * Initialize activity
+     */
+    private void initSetup() {
+
+        // Context
+        context = AccountSettingActivity.this;
+
+        // Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
-        context = AccountSettingActivity.this;
         firebaseMethods = new FirebaseMethods(context);
-        userEmail = firebaseUser.getEmail();
-
-        accountSettingEmailTxt = (TextView) findViewById(R.id.account_setting_email_txt);
-        if (userEmail != null) {
-            accountSettingEmailTxt.setText(userEmail);
-        } else {
-            if (firebaseUser.getProviders().get(0).equals("facebook.com")) {
-                accountSettingEmailTxt.setText("페이스북");
-            }
-        }
-
-        accountSettingLogoutTxt = (TextView) findViewById(R.id.account_setting_logout_txt);
-        accountSettingLogoutTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(AccountSettingActivity.this
-                        , R.style.AlertDialogStyle);
-                builder.setTitle("로그아웃")
-                        .setMessage("정말 로그아웃 하시겠어요?")
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                                AuthUI.getInstance().signOut(getApplicationContext()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intent);
-                                    }
-                                });
-                            }
-                        })
-                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-        });
-        accountSettingDeleteAccountTxt = (TextView) findViewById(R.id.account_setting_delete_account_txt);
-        accountSettingDeleteAccountTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(AccountSettingActivity.this
-                        , R.style.AlertDialogStyle);
-                builder.setTitle("회원탈퇴")
-                        .setMessage("정말 탈퇴하시겠어요? 계정 관련 정보는 모두 소멸됩니다")
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface dialogInterface, int i) {
-                                final String uid = firebaseUser.getUid();
-
-                                AuthUI.getInstance()
-                                        .delete(AccountSettingActivity.this)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    deleteUserInfo(uid);
-                                                } else {
-                                                    if (firebaseUser.getProviders() != null
-                                                            && (firebaseUser.getProviders().get(0).equals("facebook.com")
-                                                            || firebaseUser.getProviders().get(0).equals("google.com"))) {
-
-                                                        Snackbar.make(getWindow().getDecorView().getRootView()
-                                                                , "로그아웃 후 재로그인 하시고 5분안에 다시 회원탈퇴 해주세요.", Snackbar.LENGTH_LONG).show();
-
-                                                    } else {
-                                                        reauthenticateForDeletingUser();
-                                                    }
-
-                                                }
-                                            }
-                                        });
-
-                            }
-                        })
-                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-        });
-
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-
                 if (user != null) {
-
                 } else {
                     Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -179,8 +109,114 @@ public class AccountSettingActivity extends AppCompatActivity {
 
             }
         };
+
+        // Views
+        accountSettingEmailTxt = (TextView) findViewById(R.id.account_setting_email_txt);
+        accountSettingLogoutTxt = (TextView) findViewById(R.id.account_setting_logout_txt);
+        accountSettingDeleteAccountTxt = (TextView) findViewById(R.id.account_setting_delete_account_txt);
+
     }
 
+    /**
+     * Set view
+     */
+    private void viewSetting() {
+        userEmail = firebaseUser.getEmail();
+        if (userEmail != null) {
+            accountSettingEmailTxt.setText(userEmail);
+        } else {
+            if (firebaseUser.getProviders().get(0).equals("facebook.com")) {
+                accountSettingEmailTxt.setText("페이스북");
+            }
+        }
+    }
+
+    /**
+     * 사용자 로그아웃
+     */
+    private void userSignOut() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AccountSettingActivity.this
+                , R.style.AlertDialogStyle);
+        builder.setTitle("로그아웃")
+                .setMessage("정말 로그아웃 하시겠어요?")
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        AuthUI.getInstance().signOut(getApplicationContext()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Intent intent = new Intent(AccountSettingActivity.this, LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * 사용자 탈퇴
+     */
+    private void userDelete() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AccountSettingActivity.this
+                , R.style.AlertDialogStyle);
+        builder.setTitle("회원탈퇴")
+                .setMessage("정말 탈퇴하시겠어요? 계정 관련 정보는 모두 소멸됩니다")
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialogInterface, int i) {
+                        final String uid = firebaseUser.getUid();
+
+                        AuthUI.getInstance()
+                                .delete(AccountSettingActivity.this)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            deleteUserInfo(uid);
+                                        } else {
+                                            if (firebaseUser.getProviders() != null
+                                                    && (firebaseUser.getProviders().get(0).equals("facebook.com")
+                                                    || firebaseUser.getProviders().get(0).equals("google.com"))) {
+
+                                                Snackbar.make(getWindow().getDecorView().getRootView()
+                                                        , "로그아웃 후 재로그인 하시고 5분안에 다시 회원탈퇴 해주세요.", Snackbar.LENGTH_LONG).show();
+
+                                            } else {
+                                                reauthenticateForDeletingUser();
+                                            }
+
+                                        }
+                                    }
+                                });
+
+                    }
+                })
+                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * 사용자 탈퇴를 위한 재인증 절차
+     * 이메일 계정일 경우 비밀번호 확인 후 탈퇴 할 수있도록 액티비티 이동
+     */
     private void reauthenticateForDeletingUser() {
         if (firebaseAuth.getCurrentUser() != null) {
             firebaseUser.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
@@ -197,6 +233,10 @@ public class AccountSettingActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 데이터베이스에서 사용자 정보 삭제
+     * @param uid
+     */
     private void deleteUserInfo(String uid) {
         databaseReference.child("user_study_condition").child(uid).removeValue();
         databaseReference.child("users").child(uid).removeValue();
@@ -208,18 +248,29 @@ public class AccountSettingActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * AuthStateListener 추가
+     */
     @Override
     protected void onStart() {
         super.onStart();
         firebaseAuth.addAuthStateListener(authStateListener);
     }
 
+    /**
+     * AuthStateListener 제거
+     */
     @Override
     protected void onStop() {
         super.onStop();
         firebaseAuth.removeAuthStateListener(authStateListener);
     }
 
+    /**
+     * Typekit for font
+     *
+     * @param newBase
+     */
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));

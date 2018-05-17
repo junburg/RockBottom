@@ -17,7 +17,11 @@ import org.w3c.dom.Text;
  */
 
 public class InputInfoSelfieClickDialog extends Dialog {
+
+    // Views
     private TextView inputInfoSelfieDeleteTxt, dialogSelfieBackTxt;
+
+    // Object
     private Context context;
 
     public InputInfoSelfieClickDialog(@NonNull Context context) {

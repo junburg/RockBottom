@@ -30,11 +30,11 @@ import com.junburg.moon.rockbottom.util.DataExistCallback;
 
 public class PasswordFindDialogFragment extends DialogFragment {
 
-    // Widgets
+    // Views
     private TextView dialogPasswordFindProgressTxt, dialogPasswordFindConfirmTxt, dialogPasswordFindCancelTxt;
     private EditText dialogPasswordFindEditTxt;
 
-    // View
+    // Firebases
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
@@ -46,43 +46,10 @@ public class PasswordFindDialogFragment extends DialogFragment {
 
         initSetup(view);
 
-        // 이메일 정보를 확인하고 비밀번호 변경 메일을 전송함
         dialogPasswordFindConfirmTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-
-                if (dialogPasswordFindEditTxt.getText().equals("")) {
-                    dialogPasswordFindProgressTxt.setText("올바른 형식의 이메일을 입력해주세요 :)");
-                    dialogPasswordFindProgressTxt.setVisibility(View.VISIBLE);
-                } else {
-                    final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-                    progressDialog.setMessage("확인중입니다");
-                    progressDialog.setCancelable(false);
-                    progressDialog.show();
-                    checkExistEmail(dialogPasswordFindEditTxt.getText().toString(), new DataExistCallback() {
-                        @Override
-                        public void onDataExistCheck(boolean check) {
-                            if (check) {
-                                firebaseAuth.sendPasswordResetEmail(dialogPasswordFindEditTxt.getText().toString())
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    progressDialog.dismiss();
-                                                    dialogPasswordFindProgressTxt.setText("해당 계정으로 변경 메일을 보냈습니다. 확인해주세요 :)");
-                                                    dialogPasswordFindProgressTxt.setVisibility(View.VISIBLE);
-                                                    progressDialog.dismiss();
-                                                }
-                                            }
-                                        });
-                            } else {
-                                dialogPasswordFindProgressTxt.setText("등록되지 않은 이메일 입니다 :(");
-                                dialogPasswordFindProgressTxt.setVisibility(View.VISIBLE);
-                                progressDialog.dismiss();
-                            }
-                        }
-                    });
-                }
+                passwordChange();
             }
         });
 
@@ -98,6 +65,7 @@ public class PasswordFindDialogFragment extends DialogFragment {
 
     /**
      * Initialize fragment
+     *
      * @param view
      */
     private void initSetup(View view) {
@@ -113,7 +81,46 @@ public class PasswordFindDialogFragment extends DialogFragment {
     }
 
     /**
+     * 비밀번호 변경 메일 전송
+     */
+    private void passwordChange() {
+        if (dialogPasswordFindEditTxt.getText().equals("")) {
+            dialogPasswordFindProgressTxt.setText("올바른 형식의 이메일을 입력해주세요 :)");
+            dialogPasswordFindProgressTxt.setVisibility(View.VISIBLE);
+        } else {
+            final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("확인중입니다");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+            checkExistEmail(dialogPasswordFindEditTxt.getText().toString(), new DataExistCallback() {
+                @Override
+                public void onDataExistCheck(boolean check) {
+                    if (check) {
+                        firebaseAuth.sendPasswordResetEmail(dialogPasswordFindEditTxt.getText().toString())
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            progressDialog.dismiss();
+                                            dialogPasswordFindProgressTxt.setText("해당 계정으로 변경 메일을 보냈습니다. 확인해주세요 :)");
+                                            dialogPasswordFindProgressTxt.setVisibility(View.VISIBLE);
+                                            progressDialog.dismiss();
+                                        }
+                                    }
+                                });
+                    } else {
+                        dialogPasswordFindProgressTxt.setText("등록되지 않은 이메일 입니다 :(");
+                        dialogPasswordFindProgressTxt.setVisibility(View.VISIBLE);
+                        progressDialog.dismiss();
+                    }
+                }
+            });
+        }
+    }
+
+    /**
      * 비밀번호 변경 메일을 전송하기 전에 존재하는 이메일인지 여부 체크
+     *
      * @param email
      * @param dataExistCallback
      */

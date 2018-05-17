@@ -22,19 +22,20 @@ import com.tsengvn.typekit.TypekitContextWrapper;
 
 public class EmailSignUpActivity extends AppCompatActivity{
 
-    // Widgets
+    // Views
     private TextInputEditText emailLoginEmailTxt, emailLoginPasswordTxt, emailLoginCheckPasswordTxt;
     private Button emailLoginSignUpBtn;
-    private ValidationCheck validationCheck;
 
     // Variables
     private String email, password, checkPassword;
-    private Context context;
-    private InputMethodManager inputMethodManager;
 
     // Firebase
     private FirebaseMethods firebaseMethods;
 
+    // Objects
+    private ValidationCheck validationCheck;
+    private InputMethodManager inputMethodManager;
+    private Context context;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

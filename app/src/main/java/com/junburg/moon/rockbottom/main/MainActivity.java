@@ -20,6 +20,7 @@ import com.tsengvn.typekit.TypekitContextWrapper;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Views
     private BottomNavigationView mainBottomNavigationView;
     private Fragment mainFragment;
 
@@ -27,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Replace fragment
         mainBottomNavigationView = (BottomNavigationView) findViewById(R.id.main_bottom_navigation_view);
         mainBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -50,12 +53,10 @@ public class MainActivity extends AppCompatActivity {
         mainBottomNavigationView.setSelectedItemId(R.id.bottom_study);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
-
+    /**
+     * Typekit for font
+     * @param newBase
+     */
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
