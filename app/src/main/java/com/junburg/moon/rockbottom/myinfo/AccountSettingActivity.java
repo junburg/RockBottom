@@ -62,7 +62,7 @@ public class AccountSettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_setting);
 
-        initSetup();
+        initSetting();
         viewSetting();
 
         accountSettingLogoutTxt.setOnClickListener(new View.OnClickListener() {
@@ -83,9 +83,9 @@ public class AccountSettingActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize activity
+     * Initial setting
      */
-    private void initSetup() {
+    private void initSetting() {
 
         // Context
         context = AccountSettingActivity.this;

@@ -34,7 +34,6 @@ public class EmailSignUpActivity extends AppCompatActivity{
 
     // Objects
     private ValidationCheck validationCheck;
-    private InputMethodManager inputMethodManager;
     private Context context;
 
     @Override
@@ -42,49 +41,52 @@ public class EmailSignUpActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up_email);
 
-        initSetup();
-
-        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        initSetting();
 
         emailLoginSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                inputMethodManager.hideSoftInputFromWindow(emailLoginSignUpBtn.getWindowToken(), 0);
-
-                email = emailLoginEmailTxt.getText().toString();
-                password = emailLoginPasswordTxt.getText().toString();
-                checkPassword = emailLoginCheckPasswordTxt.getText().toString();
-
-                if(validationCheck.blankStringCheck(email, password, checkPassword)
-                        && validationCheck.isEmailString(email)
-                        && validationCheck.checkSamePassword(password, checkPassword)
-                        && validationCheck.isPasswordPattern(password)
-                        ) {
-
-                    firebaseMethods.registerNewEmail(email, password);
-
-                }
+                userSignUp();
             }
         });
 
     }
 
     /**
-     * Initialize activity
+     * Initial setting
      */
-    private void initSetup() {
+    private void initSetting() {
         // Context
         context = EmailSignUpActivity.this;
 
         // View
-        emailLoginEmailTxt = (TextInputEditText)findViewById(R.id.email_login_email_txt);
-        emailLoginPasswordTxt = (TextInputEditText)findViewById(R.id.email_login_password_txt);
-        emailLoginCheckPasswordTxt = (TextInputEditText)findViewById(R.id.email_login_check_password_txt);
-        emailLoginSignUpBtn = (Button)findViewById(R.id.email_login_sign_up_btn);
+        emailLoginEmailTxt = (TextInputEditText) findViewById(R.id.email_login_email_txt);
+        emailLoginPasswordTxt = (TextInputEditText) findViewById(R.id.email_login_password_txt);
+        emailLoginCheckPasswordTxt = (TextInputEditText) findViewById(R.id.email_login_check_password_txt);
+        emailLoginSignUpBtn = (Button) findViewById(R.id.email_login_sign_up_btn);
 
         // Util
         firebaseMethods = new FirebaseMethods(context);
         validationCheck = new ValidationCheck(context);
+    }
+
+    private void userSignUp() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(emailLoginSignUpBtn.getWindowToken(), 0);
+
+        email = emailLoginEmailTxt.getText().toString();
+        password = emailLoginPasswordTxt.getText().toString();
+        checkPassword = emailLoginCheckPasswordTxt.getText().toString();
+
+        if(validationCheck.blankStringCheck(email, password, checkPassword)
+                && validationCheck.isEmailString(email)
+                && validationCheck.checkSamePassword(password, checkPassword)
+                && validationCheck.isPasswordPattern(password)
+                ) {
+
+            firebaseMethods.registerNewEmail(email, password);
+
+        }
     }
 
     /**

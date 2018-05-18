@@ -55,15 +55,15 @@ public class EmailLoginActivity extends AppCompatActivity {
 
     // Objects
     private Context context;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_email);
 
-        initSetup();
+        initSetting();
+        viewSetting();
 
-
-        emailLoginSignUpBtn.setText(Html.fromHtml("<u>" + getString(R.string.email_login_sign_up_txt) + "</u>"));
         emailLoginSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,8 +72,6 @@ public class EmailLoginActivity extends AppCompatActivity {
             }
         });
 
-        // 비밀번호 변경 Dialog 띄우기
-        emailLoginPasswordFindBtn.setText(Html.fromHtml("<u>" + getString(R.string.email_login_password_find_txt) + "</u>"));
         emailLoginPasswordFindBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,41 +80,18 @@ public class EmailLoginActivity extends AppCompatActivity {
             }
         });
 
-        // 이메일 로그인
         emailLoginSignInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final ProgressDialog progressDialog = new ProgressDialog(EmailLoginActivity.this);
-                progressDialog.setMessage("로그인중입니다");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(emailLoginSignInBtn.getWindowToken(), 0);
-
-                // DataExistCallback 값에 따라 첫 로그인 유무 check
-                checkFirstLogin(new DataExistCallback() {
-                    @Override
-                    public void onDataExistCheck(boolean check) {
-                        if (check) {
-                            email = emailLoginEmailTxt.getText().toString();
-                            password = emailLoginPasswordTxt.getText().toString();
-                            firebaseMethods.loginEmail(email, password, progressDialog);
-                        } else {
-                            email = emailLoginEmailTxt.getText().toString();
-                            password = emailLoginPasswordTxt.getText().toString();
-                            firebaseMethods.firstEmailLogin(email, password, progressDialog);
-                        }
-                    }
-                });
-
+                userSignIn();
             }
         });
     }
 
     /**
-     * Initialize activity
+     * Initiali setting
      */
-    private void initSetup() {
+    private void initSetting() {
 
         // Context
         context = EmailLoginActivity.this;
@@ -137,8 +112,15 @@ public class EmailLoginActivity extends AppCompatActivity {
 
     }
 
+    private void viewSetting() {
+        emailLoginSignUpBtn.setText(Html.fromHtml("<u>" + getString(R.string.email_login_sign_up_txt) + "</u>"));
+        emailLoginPasswordFindBtn.setText(Html.fromHtml("<u>" + getString(R.string.email_login_password_find_txt) + "</u>"));
+
+    }
+
     /**
      * 이메일 계정으로 가입한 사용자가 처음 로그인했는지 Check
+     *
      * @param dataExistCallback
      */
     private void checkFirstLogin(final DataExistCallback dataExistCallback) {
@@ -164,8 +146,33 @@ public class EmailLoginActivity extends AppCompatActivity {
         });
     }
 
+    private void userSignIn() {
+        final ProgressDialog progressDialog = new ProgressDialog(EmailLoginActivity.this);
+        progressDialog.setMessage("로그인중입니다");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(emailLoginSignInBtn.getWindowToken(), 0);
+
+        checkFirstLogin(new DataExistCallback() {
+            @Override
+            public void onDataExistCheck(boolean check) {
+                if (check) {
+                    email = emailLoginEmailTxt.getText().toString();
+                    password = emailLoginPasswordTxt.getText().toString();
+                    firebaseMethods.loginEmail(email, password, progressDialog);
+                } else {
+                    email = emailLoginEmailTxt.getText().toString();
+                    password = emailLoginPasswordTxt.getText().toString();
+                    firebaseMethods.firstEmailLogin(email, password, progressDialog);
+                }
+            }
+        });
+    }
+
     /**
      * Typekit for font
+     *
      * @param newBase
      */
     @Override

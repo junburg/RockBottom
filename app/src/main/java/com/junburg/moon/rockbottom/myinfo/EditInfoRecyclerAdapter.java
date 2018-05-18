@@ -47,6 +47,7 @@ public class EditInfoRecyclerAdapter extends RecyclerView.Adapter<EditInfoRecycl
         Map<String, String> editInfoDataMap = editInfoData.getEditDataMap();
         Iterator<String> keySetIterator = editInfoDataMap.keySet().iterator();
 
+        // 기본 프로필 정보를 리사이클러 뷰에 Set
         while (keySetIterator.hasNext()) {
             String key = keySetIterator.next();
             holder.editInfoDataListTxt.setText(key);
@@ -57,6 +58,7 @@ public class EditInfoRecyclerAdapter extends RecyclerView.Adapter<EditInfoRecycl
             holder.editInfoDataContentTxt.setText(value);
         }
 
+        // 수정할 정보의 종류에 따라 다이얼로그 프래그먼트에 보낼 정보가 달라짐
         holder.editInfoEditImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,6 +96,12 @@ public class EditInfoRecyclerAdapter extends RecyclerView.Adapter<EditInfoRecycl
         return (editInfoDataList != null) ? editInfoDataList.size() : 0;
     }
 
+    /**
+     * 수정할 정보와 함께 다이얼로그 프래그먼트 생성
+     * @param targetString
+     * @param editString
+     * @param position
+     */
     private void showDialog(String targetString, String editString, int position) {
         EditInfoDialogFragment dialogFragment = new EditInfoDialogFragment();
         Bundle bundle = new Bundle();
@@ -104,6 +112,11 @@ public class EditInfoRecyclerAdapter extends RecyclerView.Adapter<EditInfoRecycl
         dialogFragment.show(fm, "EditInfoDialogFragment");
     }
 
+    /**
+     * 다이얼로그 프래그먼트로 부터 정보를 수정
+     * @param position
+     * @param editInfoRecyclerData
+     */
     protected void editItemFromDialog(int position, EditInfoRecyclerData editInfoRecyclerData) {
         editInfoDataList.set(position, editInfoRecyclerData);
         notifyDataSetChanged();

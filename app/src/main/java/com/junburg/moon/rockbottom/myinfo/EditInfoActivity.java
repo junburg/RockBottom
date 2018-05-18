@@ -52,8 +52,9 @@ import java.util.Map;
  */
 
 public class EditInfoActivity extends AppCompatActivity implements EditInfoDialogFragment.EditInfoDialogFragmentListener {
-    private static final String TAG = "EditInfoActivity";
+
     // Constant
+    private static final String TAG = "EditInfoActivity";
     private static final int GALLERY_CODE = 11;
 
     // Variable
@@ -88,7 +89,7 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_info);
 
-        initSetup();
+        initSetting();
         viewSetting();
         getIntentFromMyInfo();
 
@@ -116,9 +117,9 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
     }
 
     /**
-     * Initialize activity
+     * Initial setting
      */
-    private void initSetup() {
+    private void initSetting() {
         // Context
         context = EditInfoActivity.this;
 

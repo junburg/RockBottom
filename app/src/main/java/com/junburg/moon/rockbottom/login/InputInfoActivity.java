@@ -105,95 +105,28 @@ public class InputInfoActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_info);
-        initSetup();
 
-        // 사용자 권한 체크
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-        }
+        initSetting();
+        checkPermission();
 
-        // Glide 사용여부를 체크(ImgView에 사진이 set 되었는가를 체크)
-        // Glide 사용 o -> 사진삭제 다이얼로그
-        // Gilde 사용 x -> 권한 체크 후 갤러리로 이동
         inputInfoSelfieImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isGlideUsed == true) {
-                    InputInfoSelfieClickDialog dialog
-                            = new InputInfoSelfieClickDialog(InputInfoActivity.this);
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    dialog.setCancelable(false);
-                    dialog.show();
-                } else {
-                    boolean galleryPermission = ContextCompat.checkSelfPermission(view.getContext()
-                            , Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-
-                    if (galleryPermission) {
-                        pickUpPicture();
-                    } else {
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(InputInfoActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                            ActivityCompat.requestPermissions(InputInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
-                        } else {
-                            Snackbar.make(getWindow().getDecorView().getRootView()
-                                    , "사진을 등록을 위해선 권한 설정이 필요합니다. 설정에서 권한을 부여해주세요", Snackbar.LENGTH_LONG).show();
-
-                        }
-                        ActivityCompat.requestPermissions(InputInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
-                    }
-                }
+               setSelfieImg(view);
             }
         });
 
-        // 사용자 정보 입력 값에 대한 중복검사 완료 유무와 유효성 체크
         inputInfoDoneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                boolean nickNameEmptyCheck = validationCheck.infoEmptyCheck(inputInfoNickNameEdit);
-                Log.d("empty", nickNameEmptyCheck + "");
-                boolean lengthCheck = validationCheck.infoLengthCheck(inputInfoNickNameEdit, inputInfoMessageEdit
-                        , inputInfoTeamNameEdit, inputInfoGithubEdit);
-                Log.d("length", lengthCheck + "");
-
-                if (!checkOk) {
-                    Snackbar.make(view, "닉네임 중복검사를 해주세요 :)", Snackbar.LENGTH_SHORT).show();
-
-                } else {
-                    if ((nickNameEmptyCheck & lengthCheck) == false) {
-                        Snackbar.make(view, "공백과 길이를 확인해주세요. 닉네임은 필수입니다 :)", Snackbar.LENGTH_SHORT).show();
-                    } else {
-                        userInitialize();
-                        Snackbar.make(view, "정보 확인 완료 :)", Snackbar.LENGTH_SHORT).show();
-
-                    }
-                }
+                setInputData(view);
             }
         });
 
-        // 닉네임 값에 대한 중복검사
         inputInfoDoubleCheckTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                nickNameDoubleCheck(inputInfoNickNameEdit.getText().toString(), new DataExistCallback() {
-                    @Override
-                    public void onDataExistCheck(boolean check) {
-                        inputMethodManager.hideSoftInputFromWindow(inputInfoDoubleCheckTxt.getWindowToken(), 0);
-                        if (inputInfoNickNameEdit.getText().length() > 20 || inputInfoNickNameEdit.getText().toString().equals("")) {
-                            Snackbar.make(view, "닉네임은 공백과 20자 이상은 허용하지 않아요 :)", Snackbar.LENGTH_SHORT).show();
-
-                        } else {
-                            if (check) {
-                                Snackbar.make(view, "중복되는 닉네임이 존재합니다 :)", Snackbar.LENGTH_SHORT).show();
-                                checkOk = false;
-                            } else {
-                                Snackbar.make(view, "사용가능한 닉네임 입니다 :)", Snackbar.LENGTH_SHORT).show();
-                                checkOk = true;
-                            }
-                        }
-                    }
-                });
+                checkNickName(view);
             }
         });
 
@@ -201,14 +134,14 @@ public class InputInfoActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize activity
+     * Initial setting
      */
-    private void initSetup() {
+    private void initSetting() {
 
         // Context
         context = InputInfoActivity.this;
 
-        // Firebase
+        // Firebases
         firebaseAuth = FirebaseAuth.getInstance();
         uid = firebaseAuth.getCurrentUser().getUid();
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -228,7 +161,7 @@ public class InputInfoActivity extends AppCompatActivity {
             }
         };
 
-        // View
+        // Views
         inputInfoSelfieImg = (ImageView) findViewById(R.id.input_info_selfie_img);
         inputInfoNickNameEdit = (TextInputEditText) findViewById(R.id.input_info_nick_name_edit_txt);
         inputInfoMessageEdit = (TextInputEditText) findViewById(R.id.input_info_message_edit_txt);
@@ -237,43 +170,105 @@ public class InputInfoActivity extends AppCompatActivity {
         inputInfoDoneBtn = (Button) findViewById(R.id.input_info_done_btn);
         inputInfoDoubleCheckTxt = (TextView) findViewById(R.id.input_info_double_check_txt);
 
-        // Util
+        // Objects
         inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         validationCheck = new ValidationCheck(context);
         firebaseMethods = new FirebaseMethods(context);
 
-
-
     }
 
     /**
-     * 갤러리 액티비티에서 넘겨준 값을 받아 이미지 Set
-     * 이미지 Set -> isGlideUsed = true (Glide사용 여부 -> 이미지 Set여부 판별)
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     *  권한 체크
      */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == GALLERY_CODE && resultCode == RESULT_OK) {
-            selfieUri = data.getData();
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("이미지 로딩중 입니다");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-            Glide.with(this)
-                    .load(selfieUri)
-                    .bitmapTransform(new CropCircleTransformation(this))
-                    .crossFade()
-                    .into(new SimpleTarget<GlideDrawable>() {
-                        @Override
-                        public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                            inputInfoSelfieImg.setImageDrawable(resource);
-                            progressDialog.dismiss();
-                            isGlideUsed = true;
-                        }
-                    });
+    private void checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
         }
+    }
+
+    /**
+     * 사용자 프로필 이미지 Set
+     * Glide 사용여부를 체크(ImgView에 사진이 set 되었는가를 체크)
+     * Glide 사용 o -> 사진삭제 다이얼로그
+     * Gilde 사용 x -> 권한 체크 후 갤러리로 이동
+     */
+    private void setSelfieImg(View view) {
+        if (isGlideUsed == true) {
+            InputInfoSelfieClickDialog dialog
+                    = new InputInfoSelfieClickDialog(InputInfoActivity.this);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.setCancelable(false);
+            dialog.show();
+        } else {
+            boolean galleryPermission = ContextCompat.checkSelfPermission(view.getContext()
+                    , Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+
+            if (galleryPermission) {
+                pickUpPicture();
+            } else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(InputInfoActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    ActivityCompat.requestPermissions(InputInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+                } else {
+                    Snackbar.make(getWindow().getDecorView().getRootView()
+                            , "사진을 등록을 위해선 권한 설정이 필요합니다. 설정에서 권한을 부여해주세요", Snackbar.LENGTH_LONG).show();
+
+                }
+                ActivityCompat.requestPermissions(InputInfoActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+            }
+        }
+    }
+
+    /**
+     * 중복검사를 진행했는지 확인, 공백과 길이 확인, 사용자 데이터 Firebase Database에 set
+     * @param view
+     */
+    private void setInputData(View view) {
+
+        boolean nickNameEmptyCheck = validationCheck.infoEmptyCheck(inputInfoNickNameEdit);
+        Log.d("empty", nickNameEmptyCheck + "");
+        boolean lengthCheck = validationCheck.infoLengthCheck(inputInfoNickNameEdit, inputInfoMessageEdit
+                , inputInfoTeamNameEdit, inputInfoGithubEdit);
+        Log.d("length", lengthCheck + "");
+
+        if (!checkOk) {
+            Snackbar.make(view, "닉네임 중복검사를 해주세요 :)", Snackbar.LENGTH_SHORT).show();
+
+        } else {
+            if ((nickNameEmptyCheck & lengthCheck) == false) {
+                Snackbar.make(view, "공백과 길이를 확인해주세요. 닉네임은 필수입니다 :)", Snackbar.LENGTH_SHORT).show();
+            } else {
+                initializeUser();
+                Snackbar.make(view, "정보 확인 완료 :)", Snackbar.LENGTH_SHORT).show();
+
+            }
+        }
+    }
+
+    /**
+     * 닉네임 형식과 중복 체크
+     * @param view
+     */
+    private void checkNickName(final View view) {
+        nickNameDoubleCheck(inputInfoNickNameEdit.getText().toString(), new DataExistCallback() {
+            @Override
+            public void onDataExistCheck(boolean check) {
+                inputMethodManager.hideSoftInputFromWindow(inputInfoDoubleCheckTxt.getWindowToken(), 0);
+                if (inputInfoNickNameEdit.getText().length() > 20 || inputInfoNickNameEdit.getText().toString().equals("")) {
+                    Snackbar.make(view, "닉네임은 공백과 20자 이상은 허용하지 않아요 :)", Snackbar.LENGTH_SHORT).show();
+
+                } else {
+                    if (check) {
+                        Snackbar.make(view, "중복되는 닉네임이 존재합니다 :)", Snackbar.LENGTH_SHORT).show();
+                        checkOk = false;
+                    } else {
+                        Snackbar.make(view, "사용가능한 닉네임 입니다 :)", Snackbar.LENGTH_SHORT).show();
+                        checkOk = true;
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -288,6 +283,7 @@ public class InputInfoActivity extends AppCompatActivity {
 
     /**
      * 이미지 경로 획득
+     *
      * @param uri
      * @return
      */
@@ -304,9 +300,8 @@ public class InputInfoActivity extends AppCompatActivity {
 
     /**
      * 프로필 이미지 Set 여부에 따라 사용자 정보 initialize
-     *
      */
-    public void userInitialize() {
+    public void initializeUser() {
 
         Log.d("isGlideUsed?", isGlideUsed + "");
         final ProgressDialog progressDialog = new ProgressDialog(InputInfoActivity.this);
@@ -352,6 +347,7 @@ public class InputInfoActivity extends AppCompatActivity {
 
     /**
      * User 객체 생성 후, 사용자 정보 데이터 Set
+     *
      * @param uri
      * @return
      */
@@ -362,7 +358,7 @@ public class InputInfoActivity extends AppCompatActivity {
         } else {
             user.setSelfieUri(uri.toString());
         }
-        if(firebaseUser.getEmail() == null) {
+        if (firebaseUser.getEmail() == null) {
             user.setEmail("");
         } else {
             user.setEmail(firebaseUser.getEmail().toString());
@@ -379,6 +375,7 @@ public class InputInfoActivity extends AppCompatActivity {
 
     /**
      * 권한 체크 여부 확인 ->  갤러리 액티비티로 이동
+     *
      * @param requestCode
      * @param permissions
      * @param grantResults
@@ -394,16 +391,8 @@ public class InputInfoActivity extends AppCompatActivity {
     }
 
     /**
-     * Typekit for font
-     * @param newBase
-     */
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
-    }
-
-    /**
      * 닉네임 중복검사
+     *
      * @param nickName
      * @param dataExtistCallback
      */
@@ -434,6 +423,37 @@ public class InputInfoActivity extends AppCompatActivity {
     }
 
     /**
+     * 갤러리 액티비티에서 넘겨준 값을 받아 이미지 Set
+     * 이미지 Set -> isGlideUsed = true (Glide사용 여부 -> 이미지 Set여부 판별)
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GALLERY_CODE && resultCode == RESULT_OK) {
+            selfieUri = data.getData();
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("이미지 로딩중 입니다");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+            Glide.with(this)
+                    .load(selfieUri)
+                    .bitmapTransform(new CropCircleTransformation(this))
+                    .crossFade()
+                    .into(new SimpleTarget<GlideDrawable>() {
+                        @Override
+                        public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                            inputInfoSelfieImg.setImageDrawable(resource);
+                            progressDialog.dismiss();
+                            isGlideUsed = true;
+                        }
+                    });
+        }
+    }
+
+    /**
      * AuthStateListener 추가
      */
     @Override
@@ -460,7 +480,7 @@ public class InputInfoActivity extends AppCompatActivity {
         AuthUI.getInstance().signOut(this).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()) {
+                if (task.isSuccessful()) {
                     Intent intent = new Intent(InputInfoActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
@@ -470,4 +490,15 @@ public class InputInfoActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Typekit for font
+     *
+     * @param newBase
+     */
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(TypekitContextWrapper.wrap(newBase));
+    }
+
 }

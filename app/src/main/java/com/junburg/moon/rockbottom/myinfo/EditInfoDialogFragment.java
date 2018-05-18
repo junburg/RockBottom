@@ -82,7 +82,10 @@ public class EditInfoDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_edit_info, container);
+
         initSetup(view);
+
+        viewSetting();
 
         dialogEditInfoConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +112,7 @@ public class EditInfoDialogFragment extends DialogFragment {
     }
 
     /**
-     * Initialize fragment
+     * Initial setting
      *
      * @param view
      */

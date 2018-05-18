@@ -68,7 +68,8 @@ public class LearnActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
-        initSetup();
+
+        initSetting();
         viewSetting();
         getLearnData();
 
@@ -89,9 +90,9 @@ public class LearnActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize activity
+     * Initial setting
      */
-    private void initSetup() {
+    private void initSetting() {
         // Views
         learnRecycler = (RecyclerView) findViewById(R.id.learn_recycler);
         learnDoneBtn = (Button) findViewById(R.id.learn_done_btn);

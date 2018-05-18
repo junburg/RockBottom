@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        initSetup();
+        initSetting();
         viewSetting();
 
         loginGoogleBtn.setOnClickListener(new View.OnClickListener() {
@@ -120,14 +120,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     /**
-     * Initialize activity
+     * Initial setting
      */
-    private void initSetup() {
+    private void initSetting() {
 
         // Context
         context = LoginActivity.this;
 
-        // Firebase
+        // Firebases
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseMethods = new FirebaseMethods(context);
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -155,7 +155,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         };
 
-        // View
+        // Views
         loginBackgroundImg = (ImageView) findViewById(R.id.login_background_img);
         loginIndicator = (InkPageIndicator) findViewById(R.id.login_indicator);
         loginBackgroundImg.setColorFilter(Color.parseColor("#BDBDBD"), PorterDuff.Mode.MULTIPLY);

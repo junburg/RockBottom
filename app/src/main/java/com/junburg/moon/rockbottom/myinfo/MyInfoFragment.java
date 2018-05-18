@@ -44,33 +44,33 @@ import static android.content.ContentValues.TAG;
 
 public class MyInfoFragment extends Fragment {
 
-    // Widgets
+    // Views
     private CircleImageView myInfoSelfieImg;
     private TextView myInfoPointsNumTxt;
     private TextView myInfoRankingNumTxt;
     private TextView myInfoNickNameTxt;
     private TextView myInfoMessageTxt;
     private TextView myInfoTeamNameTxt;
-    private TextView myInfoGithubTxt;
     private TextView myInfoGithubBtn;
     private TextView myInfoEditProfileBtn;
     private TextView myInfoStudyConditionBtn;
     private ProgressDialog progressDialog;
 
     // Variables
-    private Context context;
     private String selfie, nickName, message, teamName, github;
+
+    // Objects
     private GlideMethods glideMethods;
     private User user;
+    private Context context;
 
-    // Firebase
+    // Firebases
     private FirebaseDatabase firebaseDatabase;
-    private FirebaseAuth auth;
+    private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private ValueEventListener valueEventListener;
     private DatabaseReference databaseReference;
     private FirebaseMethods firebaseMethods;
-    private FirebaseUser firebaseUser;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,36 +83,21 @@ public class MyInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_info, null);
-        context = getActivity();
-        glideMethods = new GlideMethods(context);
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        firebaseMethods = new FirebaseMethods(context);
 
-        myInfoSelfieImg = (CircleImageView) view.findViewById(R.id.my_info_selfie_img);
-        myInfoPointsNumTxt = (TextView) view.findViewById(R.id.my_info_points_number_txt);
-        myInfoRankingNumTxt = (TextView) view.findViewById(R.id.my_info_ranking_number_txt);
-        myInfoNickNameTxt = (TextView) view.findViewById(R.id.my_info_nick_name_txt);
-        myInfoMessageTxt = (TextView) view.findViewById(R.id.my_info_message_txt);
-        myInfoTeamNameTxt = (TextView) view.findViewById(R.id.my_info_team_name_txt);
-        setupFirebaseAuth();
+        initSetting(view);
 
-        myInfoGithubBtn = (TextView) view.findViewById(R.id.my_info_github_btn);
         myInfoGithubBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toMyGithub();
             }
         });
-
-        myInfoEditProfileBtn = (TextView) view.findViewById(R.id.my_info_edit_profile_btn);
         myInfoEditProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toEditInfo();
             }
         });
-
-        myInfoStudyConditionBtn = (TextView) view.findViewById(R.id.my_info_study_condition_btn);
         myInfoStudyConditionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,6 +105,23 @@ public class MyInfoFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        return view;
+    }
+
+    /**
+     * Initial setting
+     * @param view
+     */
+    private void initSetting(View view) {
+
+        // Context
+        context = getActivity();
+
+        // Firebases
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -130,74 +132,6 @@ public class MyInfoFragment extends Fragment {
                 } else {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                }
-            }
-        };
-        return view;
-    }
-
-    private void toEditInfo() {
-
-        Intent intent = new Intent(getActivity(), EditInfoActivity.class);
-        intent.putExtra("selfieUri", selfie);
-        intent.putExtra("nickName", nickName);
-        intent.putExtra("message", message);
-        intent.putExtra("teamName", teamName);
-        intent.putExtra("github", github);
-        startActivity(intent);
-    }
-
-    private void toMyGithub() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.parse("http://github.com/" + github);
-        intent.setData(uri);
-        startActivity(intent);
-    }
-
-    private void putIntentData(User user) {
-        nickName = user.getNickName();
-        selfie = user.getSelfieUri();
-        message = user.getMessage();
-        teamName = user.getTeamName();
-        github = user.getGithub();
-    }
-
-    private void setupProfileInfo(User user, ProgressDialog progressDialog) {
-        this.user = user;
-        Log.d(TAG, "setupProfileInfo: " + user.getSelfieUri());
-        putIntentData(user);
-        myInfoNickNameTxt.setText(user.getNickName());
-        myInfoMessageTxt.setText(user.getMessage());
-        if (user.getMessage().equals("")) {
-            myInfoMessageTxt.setText("메세지를 입력해보세요");
-        } else {
-            myInfoMessageTxt.setText(user.getMessage());
-        }
-        if (user.getTeamName().equals("")) {
-            myInfoTeamNameTxt.setText("소속을 입력해보세요");
-        } else {
-            myInfoTeamNameTxt.setText(user.getTeamName());
-        }
-        myInfoPointsNumTxt.setText(Integer.toString(user.getPoints()) + "pts");
-        glideMethods.setCircleProfileImageMyInfo(user.getSelfieUri(), myInfoSelfieImg, progressDialog);
-
-    }
-
-    private void setupFirebaseAuth() {
-        auth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-
-                if (user != null) {
-
-                } else {
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
                 }
             }
@@ -220,9 +154,90 @@ public class MyInfoFragment extends Fragment {
             }
         };
 
+        // Objects
+        glideMethods = new GlideMethods(context);
+        firebaseMethods = new FirebaseMethods(context);
+
+        // Views
+        myInfoSelfieImg = (CircleImageView) view.findViewById(R.id.my_info_selfie_img);
+        myInfoPointsNumTxt = (TextView) view.findViewById(R.id.my_info_points_number_txt);
+        myInfoRankingNumTxt = (TextView) view.findViewById(R.id.my_info_ranking_number_txt);
+        myInfoNickNameTxt = (TextView) view.findViewById(R.id.my_info_nick_name_txt);
+        myInfoMessageTxt = (TextView) view.findViewById(R.id.my_info_message_txt);
+        myInfoTeamNameTxt = (TextView) view.findViewById(R.id.my_info_team_name_txt);
+        myInfoGithubBtn = (TextView) view.findViewById(R.id.my_info_github_btn);
+        myInfoEditProfileBtn = (TextView) view.findViewById(R.id.my_info_edit_profile_btn);
+        myInfoStudyConditionBtn = (TextView) view.findViewById(R.id.my_info_study_condition_btn);
 
     }
 
+    /**
+     * EditInfoActivity로 이동 시에 넘길 데이터 Set
+     */
+    private void toEditInfo() {
+
+        Intent intent = new Intent(getActivity(), EditInfoActivity.class);
+        intent.putExtra("selfieUri", selfie);
+        intent.putExtra("nickName", nickName);
+        intent.putExtra("message", message);
+        intent.putExtra("teamName", teamName);
+        intent.putExtra("github", github);
+        startActivity(intent);
+    }
+
+    /**
+     * 사용자 Github으로 이동
+     */
+    private void toMyGithub() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.parse("http://github.com/" + github);
+        intent.setData(uri);
+        startActivity(intent);
+    }
+
+    /**
+     * 사용자 프로필 정보를 변수에 Set
+     * @param user
+     */
+    private void setUserData(User user) {
+        nickName = user.getNickName();
+        selfie = user.getSelfieUri();
+        message = user.getMessage();
+        teamName = user.getTeamName();
+        github = user.getGithub();
+    }
+
+    /**
+     * 사용자 프로필 정보를 가져와서 Set
+     * @param user
+     * @param progressDialog
+     */
+    private void setupProfileInfo(User user, ProgressDialog progressDialog) {
+        this.user = user;
+        setUserData(user);
+        myInfoNickNameTxt.setText(user.getNickName());
+        myInfoMessageTxt.setText(user.getMessage());
+        if (user.getMessage().equals("")) {
+            myInfoMessageTxt.setText("메세지를 입력해보세요");
+        } else {
+            myInfoMessageTxt.setText(user.getMessage());
+        }
+        if (user.getTeamName().equals("")) {
+            myInfoTeamNameTxt.setText("소속을 입력해보세요");
+        } else {
+            myInfoTeamNameTxt.setText(user.getTeamName());
+        }
+        myInfoPointsNumTxt.setText(Integer.toString(user.getPoints()) + "pts");
+        glideMethods.setCircleProfileImageMyInfo(user.getSelfieUri(), myInfoSelfieImg, progressDialog);
+
+    }
+
+    /**
+     * 사용자 랭킹 조회를 위한 쿼리
+     * 1. Points를 기준으로 정렬
+     * 2. 사용자 닉네임과 같은 DataSnapshot이 나올때까지 카운팅
+     * 3. 전체 사용자 수에서 카운트 값을 빼고 setText (Firebase가 내림차순을 제공하지 않음, orderByChild -> 오름차순 정렬)
+     */
     private void getUserRanking() {
         final Query query = databaseReference.child("users").orderByChild("points");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -253,20 +268,29 @@ public class MyInfoFragment extends Fragment {
     }
 
 
+    /**
+     * AuthStateListener 추가
+     * AddValueEventListener 추가
+     * ->  EditInfoActivity에서 MyInfoFragment로 돌아왔을때 정보를 다시 갱신해주기 위함
+     */
     @Override
     public void onStart() {
         super.onStart();
-        auth.addAuthStateListener(authStateListener);
+        firebaseAuth.addAuthStateListener(authStateListener);
         databaseReference.addValueEventListener(valueEventListener);
 
     }
 
 
+    /**
+     * AuthStateListener 제거
+     * AddValueEventListener 제거
+     */
     @Override
     public void onStop() {
         super.onStop();
         if (authStateListener != null) {
-            auth.removeAuthStateListener(authStateListener);
+            firebaseAuth.removeAuthStateListener(authStateListener);
         }
         databaseReference.removeEventListener(valueEventListener);
     }

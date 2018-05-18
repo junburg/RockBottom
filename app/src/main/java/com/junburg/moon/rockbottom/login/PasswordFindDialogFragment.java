@@ -44,7 +44,7 @@ public class PasswordFindDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_password_find, container);
 
-        initSetup(view);
+        initSetting(view);
 
         dialogPasswordFindConfirmTxt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,15 +64,17 @@ public class PasswordFindDialogFragment extends DialogFragment {
     }
 
     /**
-     * Initialize fragment
+     * Initial setting
      *
      * @param view
      */
-    private void initSetup(View view) {
+    private void initSetting(View view) {
+        // Firebases
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
 
+        // Views
         dialogPasswordFindEditTxt = (EditText) view.findViewById(R.id.dialog_password_find_edit_txt);
         dialogPasswordFindConfirmTxt = (TextView) view.findViewById(R.id.dialog_password_find_confirm_btn);
         dialogPasswordFindCancelTxt = (TextView) view.findViewById(R.id.dialog_password_find_cancel_btn);

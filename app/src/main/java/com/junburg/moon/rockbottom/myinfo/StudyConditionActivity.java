@@ -36,17 +36,21 @@ import java.util.List;
 
 public class StudyConditionActivity extends AppCompatActivity {
 
+    // Constant
     private static final String TAG = "StudyConditionActivity";
 
+    // Views
     private RecyclerView studyConditionRecycler;
     private Toolbar studyConditionToolbar;
 
+    // Firebases
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private FirebaseAuth.AuthStateListener authStateListener;
 
+    // Objects
     private List<String> subjectNameList;
     private List<Integer> countChapterList;
     private List<Integer> trueChapterList;
@@ -56,30 +60,29 @@ public class StudyConditionActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_study_condition);
+
+        initSetting();
+        viewSetting();
+        getUserStudyCondition(firebaseUser.getUid());
+
+
+    }
+
+    /**
+     * Initial setting
+     */
+    private void initSetting() {
+
+        // Firebases
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
-
-        getUserStudyCondition(firebaseUser.getUid());
-
-        studyConditionToolbar = (Toolbar)findViewById(R.id.study_condition_toolbar);
-        setSupportActionBar(studyConditionToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-
-        studyConditionRecycler = (RecyclerView) findViewById(R.id.study_condition_recycler);
-        studyConditionRecycler.setHasFixedSize(true);
-        studyConditionRecycler.setLayoutManager(new LinearLayoutManager(this));
-        studyConditionRecyclerAdapter = new StudyConditionRecyclerAdapter(subjectNameList, countChapterList, trueChapterList);
-        studyConditionRecycler.setAdapter(studyConditionRecyclerAdapter);
-
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user != null) {
+                if (user != null) {
 
                 } else {
                     Intent intent = new Intent(StudyConditionActivity.this, LoginActivity.class);
@@ -88,6 +91,26 @@ public class StudyConditionActivity extends AppCompatActivity {
                 }
             }
         };
+
+        // Views
+        studyConditionToolbar = (Toolbar) findViewById(R.id.study_condition_toolbar);
+        studyConditionRecycler = (RecyclerView) findViewById(R.id.study_condition_recycler);
+    }
+
+    /**
+     * Set view
+     */
+    private void viewSetting() {
+
+        setSupportActionBar(studyConditionToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        studyConditionRecycler.setHasFixedSize(true);
+        studyConditionRecycler.setLayoutManager(new LinearLayoutManager(this));
+        studyConditionRecyclerAdapter = new StudyConditionRecyclerAdapter(subjectNameList, countChapterList, trueChapterList);
+        studyConditionRecycler.setAdapter(studyConditionRecyclerAdapter);
+
     }
 
     private void getUserStudyCondition(final String uid) {

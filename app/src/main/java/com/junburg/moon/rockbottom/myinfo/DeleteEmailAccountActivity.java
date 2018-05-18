@@ -52,7 +52,7 @@ public class DeleteEmailAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_email_account);
 
-        initSetup();
+        initSetting();
 
         deleteEmailAccountConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +75,10 @@ public class DeleteEmailAccountActivity extends AppCompatActivity {
 
     }
 
-    private void initSetup() {
+    /**
+     * Initial setting
+     */
+    private void initSetting() {
 
         // Context
         context = DeleteEmailAccountActivity.this;
