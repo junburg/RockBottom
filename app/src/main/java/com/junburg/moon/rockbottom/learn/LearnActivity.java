@@ -73,20 +73,6 @@ public class LearnActivity extends AppCompatActivity {
         viewSetting();
         getLearnData();
 
-        learnDoneBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setConditionData();
-            }
-        });
-
-        learnLaterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
     }
 
     /**
@@ -136,6 +122,21 @@ public class LearnActivity extends AppCompatActivity {
         learnRecycler.setLayoutManager(new LinearLayoutManager(this));
         learnRecyclerAdapter = new LearnRecyclerAdapter(titleList, bodyList);
         learnRecycler.setAdapter(learnRecyclerAdapter);
+
+        learnDoneBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setConditionData();
+            }
+        });
+
+        learnLaterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
     }
 
 

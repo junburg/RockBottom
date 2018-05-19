@@ -92,31 +92,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         initSetting();
         viewSetting();
 
-        loginGoogleBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, RC_SIGN_IN);
-            }
-        });
-
-        loginFacebookBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                facebookLoginSetting();
-            }
-        });
-
-
-        loginEmailBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, EmailLoginActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
     }
 
     /**
@@ -179,11 +154,39 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         callbackManager = CallbackManager.Factory.create();
     }
 
+    /**
+     * Set view
+     */
     private void viewSetting() {
         IntroPagerAdpater adapter = new IntroPagerAdpater(getFragmentManager());
         loginViewPager.setAdapter(adapter);
         loginIndicator.setViewPager(loginViewPager);
         loginEmailBtn.setText(Html.fromHtml("<u>" + getString(R.string.login_email_txt) + "</u>"));
+
+        loginGoogleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+        });
+
+        loginFacebookBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                facebookLoginSetting();
+            }
+        });
+
+
+        loginEmailBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, EmailLoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
     }
 

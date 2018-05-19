@@ -47,13 +47,6 @@ import static android.content.ContentValues.TAG;
 
 public class RankingFragment extends Fragment {
 
-    // Variables
-    private RecyclerView rankingRecycler;
-    private RankingRecyclerAdapter rankingRecyclerAdapter;
-    private List<User> userList;
-    private Context context;
-    private GlideMethods glideMethods;
-
     // Firebases
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -61,49 +54,46 @@ public class RankingFragment extends Fragment {
     private DatabaseReference databaseReference;
     private FirebaseAuth.AuthStateListener authStateListener;
 
-    // Widgets
+    // Views
     private TextView rankingTeamNameTxt, rankingNickNameTxt, rankingMessageTxt, rankingNumberTxt
             , rankingPointsTxt, rankingGitHubTxt;
     private CircleImageView rankingSelfieImg;
     private CollapsingToolbarLayout rankingCollapsingToolbarLayout;
     private ProgressDialog progressDialog;
+    private RecyclerView rankingRecycler;
+
+    // Objects
+    private RankingRecyclerAdapter rankingRecyclerAdapter;
+    private List<User> userList;
+    private Context context;
+    private GlideMethods glideMethods;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ranking, null);
-        userList = new ArrayList<>();
+
+        initSeting(view);
+        viewSetting();
+        getRankingData();
+
+        return view;
+    }
+
+    /**
+     * Initial setting
+     * @param view
+     */
+    private void initSeting(View view) {
+
+        // Context
+        context = getActivity();
+
+        // Firebases
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
-        context = getActivity();
-        glideMethods = new GlideMethods(context);
-        rankingCollapsingToolbarLayout = (CollapsingToolbarLayout)view.findViewById(R.id.ranking_collapsing_tool_bar_layout);
-        rankingTeamNameTxt = (TextView) view.findViewById(R.id.ranking_team_name_txt);
-        rankingNickNameTxt = (TextView) view.findViewById(R.id.ranking_nick_name_txt);
-        rankingMessageTxt = (TextView) view.findViewById(R.id.ranking_message_txt);
-        rankingSelfieImg = (CircleImageView) view.findViewById(R.id.ranking_selfie_img);
-        rankingGitHubTxt = (TextView) view.findViewById(R.id.ranking_github_txt);
-
-        rankingGitHubTxt.setText(Html.fromHtml("<u>" + getResources().getString(R.string.ranking_github_txt) + "</u>"));
-        rankingNumberTxt = (TextView) view.findViewById(R.id.ranking_number_txt);
-        rankingPointsTxt = (TextView) view.findViewById(R.id.ranking_points_txt);
-
-        getRankingData();
-
-        rankingRecycler = (RecyclerView) view.findViewById(R.id.ranking_recycler);
-        rankingRecycler.setHasFixedSize(true);
-        rankingRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rankingRecyclerAdapter = new RankingRecyclerAdapter(userList, context, glideMethods);
-        rankingRecycler.setAdapter(rankingRecyclerAdapter);
-        rankingRecyclerAdapter.setOnItemClickListener(new RankingRecyclerViewHolder.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                setRankingUser(position);
-            }
-        });
-
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -119,9 +109,47 @@ public class RankingFragment extends Fragment {
             }
         };
 
-        return view;
+        // Views
+        rankingCollapsingToolbarLayout = (CollapsingToolbarLayout)view.findViewById(R.id.ranking_collapsing_tool_bar_layout);
+        rankingTeamNameTxt = (TextView) view.findViewById(R.id.ranking_team_name_txt);
+        rankingNickNameTxt = (TextView) view.findViewById(R.id.ranking_nick_name_txt);
+        rankingMessageTxt = (TextView) view.findViewById(R.id.ranking_message_txt);
+        rankingSelfieImg = (CircleImageView) view.findViewById(R.id.ranking_selfie_img);
+        rankingGitHubTxt = (TextView) view.findViewById(R.id.ranking_github_txt);
+        rankingNumberTxt = (TextView) view.findViewById(R.id.ranking_number_txt);
+        rankingPointsTxt = (TextView) view.findViewById(R.id.ranking_points_txt);
+        rankingRecycler = (RecyclerView) view.findViewById(R.id.ranking_recycler);
+
+        // Objects
+        glideMethods = new GlideMethods(context);
+        userList = new ArrayList<>();
+
     }
 
+    /**
+     * Set view
+     */
+    private void viewSetting() {
+
+        rankingRecycler.setHasFixedSize(true);
+        rankingRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rankingRecyclerAdapter = new RankingRecyclerAdapter(userList, context, glideMethods);
+        rankingRecycler.setAdapter(rankingRecyclerAdapter);
+
+        rankingGitHubTxt.setText(Html.fromHtml("<u>" + getResources().getString(R.string.ranking_github_txt) + "</u>"));
+
+        rankingRecyclerAdapter.setOnItemClickListener(new RankingRecyclerViewHolder.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                setRankingUser(position);
+            }
+        });
+
+    }
+
+    /**
+     * 상위 10위 까지의 사용자들 정보를 Get
+     */
     private void getRankingData() {
 
         progressDialog = new ProgressDialog(getActivity());
@@ -151,6 +179,10 @@ public class RankingFragment extends Fragment {
 
     }
 
+    /**
+     * 해당 사용자의 깃헙으로 이동
+     * @param github
+     */
     private void toYourGithub(String github) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.parse("http://github.com/" + github);
@@ -158,6 +190,9 @@ public class RankingFragment extends Fragment {
         startActivity(intent);
     }
 
+    /**
+     * 랭킹 1위 사용자의 정보를 Set
+     */
     private void initFirstUser() {
         rankingTeamNameTxt.setText(userList.get(0).getTeamName());
         rankingNickNameTxt.setText(userList.get(0).getNickName());
@@ -173,6 +208,10 @@ public class RankingFragment extends Fragment {
         rankingNumberTxt.setText("1st");
     }
 
+    /**
+     * 해당 사용자의 정보를 Set
+     * @param position
+     */
     private void setRankingUser(final int position) {
         rankingTeamNameTxt.setText(userList.get(position).getTeamName());
         rankingNickNameTxt.setText(userList.get(position).getNickName());
@@ -204,12 +243,18 @@ public class RankingFragment extends Fragment {
         rankingCollapsingToolbarLayout.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * AuthStateListener 추가
+     */
     @Override
     public void onStart() {
         super.onStart();
         firebaseAuth.addAuthStateListener(authStateListener);
     }
 
+    /**
+     * AuthStateListener 제거ㅏ
+     */
     @Override
     public void onResume() {
         super.onResume();

@@ -45,20 +45,7 @@ public class PasswordFindDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_password_find, container);
 
         initSetting(view);
-
-        dialogPasswordFindConfirmTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                passwordChange();
-            }
-        });
-
-        dialogPasswordFindCancelTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
+        viewSetting();
 
         return view;
     }
@@ -79,6 +66,24 @@ public class PasswordFindDialogFragment extends DialogFragment {
         dialogPasswordFindConfirmTxt = (TextView) view.findViewById(R.id.dialog_password_find_confirm_btn);
         dialogPasswordFindCancelTxt = (TextView) view.findViewById(R.id.dialog_password_find_cancel_btn);
         dialogPasswordFindProgressTxt = (TextView) view.findViewById(R.id.dialog_password_find_progress_txt);
+
+    }
+
+    private void viewSetting() {
+
+        dialogPasswordFindConfirmTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                passwordChange();
+            }
+        });
+
+        dialogPasswordFindCancelTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
 
     }
 

@@ -65,21 +65,6 @@ public class AccountSettingActivity extends AppCompatActivity {
         initSetting();
         viewSetting();
 
-        accountSettingLogoutTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                userSignOut();
-            }
-        });
-
-        accountSettingDeleteAccountTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                userDelete();
-            }
-        });
-
-
     }
 
     /**
@@ -121,6 +106,7 @@ public class AccountSettingActivity extends AppCompatActivity {
      * Set view
      */
     private void viewSetting() {
+
         userEmail = firebaseUser.getEmail();
         if (userEmail != null) {
             accountSettingEmailTxt.setText(userEmail);
@@ -129,6 +115,20 @@ public class AccountSettingActivity extends AppCompatActivity {
                 accountSettingEmailTxt.setText("페이스북");
             }
         }
+
+        accountSettingLogoutTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userSignOut();
+            }
+        });
+
+        accountSettingDeleteAccountTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userDelete();
+            }
+        });
     }
 
     /**

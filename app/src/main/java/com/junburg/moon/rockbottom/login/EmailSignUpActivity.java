@@ -42,13 +42,7 @@ public class EmailSignUpActivity extends AppCompatActivity{
         setContentView(R.layout.activity_sign_up_email);
 
         initSetting();
-
-        emailLoginSignUpBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                userSignUp();
-            }
-        });
+        viewSetting();
 
     }
 
@@ -68,6 +62,16 @@ public class EmailSignUpActivity extends AppCompatActivity{
         // Util
         firebaseMethods = new FirebaseMethods(context);
         validationCheck = new ValidationCheck(context);
+    }
+
+    private void viewSetting() {
+        emailLoginSignUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userSignUp();
+            }
+        });
+
     }
 
     private void userSignUp() {

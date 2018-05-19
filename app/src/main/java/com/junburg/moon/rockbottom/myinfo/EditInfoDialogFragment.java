@@ -84,29 +84,7 @@ public class EditInfoDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_edit_info, container);
 
         initSetup(view);
-
         viewSetting();
-
-        dialogEditInfoConfirmBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-              setConfirm();
-            }
-        });
-
-        dialogEditInfoCancelBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
-
-        dialogEditInfoDoubleCheckBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               nickNameCheck();
-            }
-        });
 
         return view;
     }
@@ -148,6 +126,27 @@ public class EditInfoDialogFragment extends DialogFragment {
         if (bundle.getString("targetString").equals("닉네임")) {
             dialogEditInfoDoubleCheckBtn.setVisibility(View.VISIBLE);
         }
+
+        dialogEditInfoConfirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setConfirm();
+            }
+        });
+
+        dialogEditInfoCancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
+
+        dialogEditInfoDoubleCheckBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                nickNameCheck();
+            }
+        });
 
 
     }

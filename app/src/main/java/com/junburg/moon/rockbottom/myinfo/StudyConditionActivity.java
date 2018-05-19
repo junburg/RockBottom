@@ -64,8 +64,6 @@ public class StudyConditionActivity extends AppCompatActivity {
         initSetting();
         viewSetting();
         getUserStudyCondition(firebaseUser.getUid());
-
-
     }
 
     /**

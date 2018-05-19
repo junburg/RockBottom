@@ -52,6 +52,8 @@ public class RankingRecyclerAdapter extends RecyclerView.Adapter<RankingRecycler
         User userData = userList.get(position);
         holder.rankingNickNameTxt.setText(userData.getNickName());
         holder.rankingPointTxt.setText(Integer.toString(userData.getPoints()) + "pts");
+
+        // 1st, 2nd, 3rd, 4th .....
         switch (position) {
             case 0:
                 numAppend = "st";

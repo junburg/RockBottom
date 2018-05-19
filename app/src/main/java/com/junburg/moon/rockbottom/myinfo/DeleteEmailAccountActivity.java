@@ -53,25 +53,7 @@ public class DeleteEmailAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_delete_email_account);
 
         initSetting();
-
-        deleteEmailAccountConfirmBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deleteEmailAccount();
-
-            }
-
-        });
-
-        deleteEmailAccountCanecelBtn.setOnClickListener(new View.OnClickListener()
-
-        {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
+        viewSetting();
 
     }
 
@@ -109,6 +91,27 @@ public class DeleteEmailAccountActivity extends AppCompatActivity {
         deleteEmailAccountEditTxt = (EditText) findViewById(R.id.delete_email_account_edit_txt);
         deleteEmailAccountConfirmBtn = (Button) findViewById(R.id.delete_email_account_confirm_btn);
         deleteEmailAccountCanecelBtn = (Button) findViewById(R.id.delete_email_account_cancel_btn);
+    }
+
+    private void viewSetting() {
+        deleteEmailAccountConfirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteEmailAccount();
+
+            }
+
+        });
+
+        deleteEmailAccountCanecelBtn.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
     }
 
     /**

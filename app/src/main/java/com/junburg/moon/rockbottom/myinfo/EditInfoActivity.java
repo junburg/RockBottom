@@ -93,27 +93,6 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         viewSetting();
         getIntentFromMyInfo();
 
-        editInfoSelfieEditBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                galleryPermission(view);
-            }
-        });
-
-        editInfoSelfieDeleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deleteUserSelfie();
-            }
-        });
-
-        editInfoAccountSettingsTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(EditInfoActivity.this, AccountSettingActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     /**
@@ -172,6 +151,28 @@ public class EditInfoActivity extends AppCompatActivity implements EditInfoDialo
         editInfoRecyclerView.setAdapter(editInfoRecyclerAdapter);
 
         editInfoAccountSettingsTxt.setText(Html.fromHtml("<u>" + getResources().getString(R.string.edit_info_account_settings_txt) + "</u>"));
+
+        editInfoSelfieEditBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                galleryPermission(view);
+            }
+        });
+
+        editInfoSelfieDeleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteUserSelfie();
+            }
+        });
+
+        editInfoAccountSettingsTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditInfoActivity.this, AccountSettingActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 

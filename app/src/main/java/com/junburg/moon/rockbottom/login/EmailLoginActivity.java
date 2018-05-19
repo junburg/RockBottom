@@ -63,29 +63,6 @@ public class EmailLoginActivity extends AppCompatActivity {
 
         initSetting();
         viewSetting();
-
-        emailLoginSignUpBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(EmailLoginActivity.this, EmailSignUpActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        emailLoginPasswordFindBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PasswordFindDialogFragment passwordFindDialogFragment = new PasswordFindDialogFragment();
-                passwordFindDialogFragment.show(getFragmentManager(), "PasswordFindDialogFragment");
-            }
-        });
-
-        emailLoginSignInBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                userSignIn();
-            }
-        });
     }
 
     /**
@@ -116,6 +93,28 @@ public class EmailLoginActivity extends AppCompatActivity {
         emailLoginSignUpBtn.setText(Html.fromHtml("<u>" + getString(R.string.email_login_sign_up_txt) + "</u>"));
         emailLoginPasswordFindBtn.setText(Html.fromHtml("<u>" + getString(R.string.email_login_password_find_txt) + "</u>"));
 
+        emailLoginSignUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EmailLoginActivity.this, EmailSignUpActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        emailLoginPasswordFindBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PasswordFindDialogFragment passwordFindDialogFragment = new PasswordFindDialogFragment();
+                passwordFindDialogFragment.show(getFragmentManager(), "PasswordFindDialogFragment");
+            }
+        });
+
+        emailLoginSignInBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userSignIn();
+            }
+        });
     }
 
     /**

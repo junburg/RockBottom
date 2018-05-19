@@ -107,28 +107,9 @@ public class InputInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_input_info);
 
         initSetting();
+        viewSetting();
         checkPermission();
 
-        inputInfoSelfieImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               setSelfieImg(view);
-            }
-        });
-
-        inputInfoDoneBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setInputData(view);
-            }
-        });
-
-        inputInfoDoubleCheckTxt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                checkNickName(view);
-            }
-        });
 
 
     }
@@ -175,6 +156,32 @@ public class InputInfoActivity extends AppCompatActivity {
         validationCheck = new ValidationCheck(context);
         firebaseMethods = new FirebaseMethods(context);
 
+    }
+
+    /**
+     * Set view
+     */
+    private void viewSetting() {
+        inputInfoSelfieImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setSelfieImg(view);
+            }
+        });
+
+        inputInfoDoneBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setInputData(view);
+            }
+        });
+
+        inputInfoDoubleCheckTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                checkNickName(view);
+            }
+        });
     }
 
     /**

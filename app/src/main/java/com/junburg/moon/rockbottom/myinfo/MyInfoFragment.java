@@ -85,27 +85,7 @@ public class MyInfoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my_info, null);
 
         initSetting(view);
-
-        myInfoGithubBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toMyGithub();
-            }
-        });
-        myInfoEditProfileBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toEditInfo();
-            }
-        });
-        myInfoStudyConditionBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), StudyConditionActivity.class);
-                startActivity(intent);
-            }
-        });
-
+        viewSetting();
         return view;
     }
 
@@ -169,6 +149,28 @@ public class MyInfoFragment extends Fragment {
         myInfoEditProfileBtn = (TextView) view.findViewById(R.id.my_info_edit_profile_btn);
         myInfoStudyConditionBtn = (TextView) view.findViewById(R.id.my_info_study_condition_btn);
 
+    }
+
+    private void viewSetting() {
+        myInfoGithubBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toMyGithub();
+            }
+        });
+        myInfoEditProfileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toEditInfo();
+            }
+        });
+        myInfoStudyConditionBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), StudyConditionActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**

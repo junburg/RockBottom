@@ -29,6 +29,7 @@ public class RankingRecyclerViewHolder extends RecyclerView.ViewHolder {
         rankingPointTxt = (TextView)itemView.findViewById(R.id.ranking_list_points_txt);
         rankingNumberTxt = (TextView)itemView.findViewById(R.id.ranking_list_number_txt);
 
+        // Add RecyclerView ClickListener
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
