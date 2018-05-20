@@ -49,12 +49,13 @@ import static android.content.ContentValues.TAG;
 
 public class StudyFragment extends Fragment {
 
+    // Views
     private MutedVideoView studyVideo;
     private RecyclerView studyRecycler;
     private StudyRecyclerAdapter studyRecyclerAdapter;
     private ProgressDialog progressDialog;
 
-    // Firebase
+    // Firebases
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
@@ -62,6 +63,7 @@ public class StudyFragment extends Fragment {
     private FirebaseMethods firebaseMethods;
     private FirebaseAuth.AuthStateListener authStateListener;
 
+    // Objects
     private List<Subject> subjectList;
     private Context context;
 
@@ -72,34 +74,24 @@ public class StudyFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_study, null);
         subjectList = new ArrayList<>();
 
+        initSetting(view);
+        viewSetting();
+        getStudyData();
+
+        return view;
+    }
+
+    /**
+     * Initial setting
+     */
+    private void initSetting(View view) {
+        // Context
+        context = getActivity();
+
+        // Firebases
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
-        context = getActivity();
-        firebaseMethods = new FirebaseMethods(context);
-        firebaseMethods.checkUserConditionSetting(firebaseUser.getUid());
-        getStudyData();
-
-        studyVideo = (MutedVideoView) view.findViewById(R.id.study_video);
-        String videoUriPath = "android.resource://" + getActivity().getPackageName() + "/" + R.raw.study_video;
-        Uri uri = Uri.parse(videoUriPath);
-        studyVideo.setVideoURI(uri);
-        studyVideo.start();
-        studyVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                studyVideo.start();
-            }
-        });
-        studyRecycler = (RecyclerView) view.findViewById(R.id.study_recycler_view);
-        studyRecycler.setHasFixedSize(true);
-        studyRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
-        studyRecycler.setNestedScrollingEnabled(false);
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        studyRecyclerAdapter = new StudyRecyclerAdapter(subjectList, getContext(), fm);
-        studyRecycler.setAdapter(studyRecyclerAdapter);
-
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -113,11 +105,43 @@ public class StudyFragment extends Fragment {
                 }
             }
         };
+        firebaseMethods = new FirebaseMethods(context);
+        firebaseMethods.checkUserConditionSetting(firebaseUser.getUid());
 
-        return view;
+        // Views
+        studyVideo = (MutedVideoView) view.findViewById(R.id.study_video);
+        studyRecycler = (RecyclerView) view.findViewById(R.id.study_recycler_view);
+
+
+    }
+
+    /**
+     * Set view
+     */
+    private void viewSetting() {
+        String videoUriPath = "android.resource://" + getActivity().getPackageName() + "/" + R.raw.study_video;
+        Uri uri = Uri.parse(videoUriPath);
+        studyVideo.setVideoURI(uri);
+        studyVideo.start();
+        studyVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                studyVideo.start();
+            }
+        });
+        studyRecycler.setHasFixedSize(true);
+        studyRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+        studyRecycler.setNestedScrollingEnabled(false);
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        studyRecyclerAdapter = new StudyRecyclerAdapter(subjectList, getContext(), fm);
+        studyRecycler.setAdapter(studyRecyclerAdapter);
+
     }
 
 
+    /**
+     * 과목과 과목별 챕터의 정보를 가져와 리사이클러 뷰를 notify
+     */
     private void getStudyData() {
 
         progressDialog = new ProgressDialog(getActivity());
@@ -131,17 +155,12 @@ public class StudyFragment extends Fragment {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
                     Subject subject = ds.getValue(Subject.class);
 
-                    Log.d(TAG, "onDataChange: " + subject.getName()
-                            + subject.getExplain()
-                            );
-
                     ArrayList<Chapter> chapterList = new ArrayList<>();
                     for(DataSnapshot ds2 : ds.child("chapter").getChildren()) {
                         Chapter chapter = ds2.getValue(Chapter.class);
                         chapterList.add(chapter);
                     }
                     subject.setChapterList(chapterList);
-                    Log.d(TAG, "onDataChange: " +subject.toString());
                     subjectList.add(subject);
                     studyRecyclerAdapter.notifyDataSetChanged();
                 }
@@ -157,6 +176,9 @@ public class StudyFragment extends Fragment {
     }
 
 
+    /**
+     * AuthStateListener 추가
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -164,6 +186,9 @@ public class StudyFragment extends Fragment {
     }
 
 
+    /**
+     * AuthStateListener 제거
+     */
     @Override
     public void onResume() {
         super.onResume();

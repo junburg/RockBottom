@@ -36,8 +36,13 @@ import java.util.Vector;
 /**
  * Created by vishna on 22/07/15.
  */
-public class MutedVideoView extends SurfaceView
-        implements MediaController.MediaPlayerControl {
+
+/**
+ * 오디오 재생이 되지 않는 VideoView
+ * VideoView 코드의 특정 줄을 주석 처리하면 오디오 기능을 사용하지 않을 수 있음
+ */
+public class MutedVideoView extends SurfaceView implements MediaController.MediaPlayerControl {
+
     private String TAG = "VideoView";
     // settable by the client
     private Uri mUri;

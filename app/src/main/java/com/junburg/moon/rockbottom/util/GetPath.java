@@ -10,6 +10,9 @@ import android.provider.MediaStore;
  * Created by Junburg on 2018. 4. 18..
  */
 
+/**
+ * 파일 경로를 읽어서 String으로 반환
+ */
 public class GetPath {
 
     private Context context;

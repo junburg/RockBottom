@@ -8,6 +8,10 @@ import com.tsengvn.typekit.Typekit;
  * Created by Junburg on 2018. 4. 24..
  */
 
+
+/**
+ * 특정 폰트 사용
+ */
 public class AppForFont extends Application {
 
     @Override

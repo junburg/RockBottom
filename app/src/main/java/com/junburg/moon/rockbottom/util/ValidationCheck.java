@@ -27,15 +27,24 @@ import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
  * Created by Junburg on 2018. 4. 16..
  */
 
+/**
+ * 문자열 유효성 체크
+ */
 public class ValidationCheck {
 
     private Context context;
-    private boolean doubleCheck;
 
     public ValidationCheck(Context context) {
         this.context = context;
     }
 
+    /**
+     * Sign in 문자열 공백 체크
+     * @param email
+     * @param password
+     * @param checkPassword
+     * @return
+     */
     public boolean blankStringCheck(String email, String password, String checkPassword) {
         if (email.equals("") || password.equals("") || checkPassword.equals("")) {
             Snackbar.make(((EmailSignUpActivity) context).getWindow().getDecorView().getRootView(), "입력하신 정보의 공백을 확인해주세욘", Snackbar.LENGTH_SHORT).show();
@@ -44,6 +53,12 @@ public class ValidationCheck {
         return true;
     }
 
+    /**
+     * Sign up 문자열 공백 체크
+     * @param email
+     * @param password
+     * @return
+     */
     public boolean blankStringCheck(String email, String password) {
         if (email.equals("") || password.equals("")) {
             Snackbar.make(((EmailSignUpActivity) context).getWindow().getDecorView().getRootView(), "입력하신 정보의 공백을 확인해주세욘", Snackbar.LENGTH_SHORT).show();
@@ -52,6 +67,11 @@ public class ValidationCheck {
         return true;
     }
 
+    /**
+     * 올바른 이메일 형식인지 체크
+     * @param email
+     * @return
+     */
     public boolean isEmailString(String email) {
         if (!(android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())) {
             Snackbar.make(((EmailSignUpActivity) context).getWindow().getDecorView().getRootView(), "입력한 이메일을 확인해주세요", Snackbar.LENGTH_SHORT).show();
@@ -78,6 +98,12 @@ public class ValidationCheck {
         }
     }
 
+    /**
+     * 올바른 비밀번호 확인 체크
+     * @param password
+     * @param checkPassword
+     * @return
+     */
     public boolean checkSamePassword(String password, String checkPassword) {
         if (!(password.equals(checkPassword))) {
             Snackbar.make(((EmailSignUpActivity) context).getWindow().getDecorView().getRootView(), "입력한 비밀번호를 확인해주세요", Snackbar.LENGTH_SHORT).show();
@@ -86,6 +112,11 @@ public class ValidationCheck {
         return true;
     }
 
+    /**
+     * 해당 EditText의 공백 체크
+     * @param editText
+     * @return
+     */
     public boolean infoEmptyCheck(TextInputEditText editText) {
         String text = editText.getText().toString();
         if (text.equals("")) {
@@ -95,6 +126,14 @@ public class ValidationCheck {
         }
     }
 
+    /**
+     * 해당 EditText의 문자열 길이 체크
+     * @param nickNameEditTxt
+     * @param messageEditTxt
+     * @param teamNameEditTxt
+     * @param githubEditTxt
+     * @return
+     */
     public boolean infoLengthCheck(TextInputEditText nickNameEditTxt, TextInputEditText messageEditTxt
             , TextInputEditText teamNameEditTxt, TextInputEditText githubEditTxt) {
         String nickName = nickNameEditTxt.getText().toString();
@@ -109,6 +148,13 @@ public class ValidationCheck {
         }
     }
 
+    /**
+     * 해당 문자열의 길이 체크
+     * @param targetString
+     * @param editString
+     * @param progressTxt
+     * @return
+     */
     public boolean editLengthCheck(String targetString, String editString, TextView progressTxt) {
         if (targetString.equals("닉네임")) {
             if (editString.length() > 20 || editString.equals("")) {

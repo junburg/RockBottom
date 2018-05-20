@@ -23,6 +23,7 @@ import com.junburg.moon.rockbottom.learn.LearnActivity;
  */
 
 public class ChapterDialogFragment extends DialogFragment {
+
     private LinearLayout dialogLearnLayout;
     private LinearLayout dialogQuizLayout;
     private TextView dialogChapterBackTxt;

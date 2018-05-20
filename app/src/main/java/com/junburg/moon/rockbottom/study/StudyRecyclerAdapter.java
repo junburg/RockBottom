@@ -25,16 +25,15 @@ import static android.content.ContentValues.TAG;
  */
 
 public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerViewHolder>{
+
+    // Objects
     private List<Subject> subjectList;
-    private Context context;
     private android.support.v4.app.FragmentManager fm;
 
     public StudyRecyclerAdapter(
             List<Subject> subjectList
-            , Context context
             , android.support.v4.app.FragmentManager fm) {
         this.subjectList = subjectList;
-        this.context = context;
         this.fm = fm;
     }
 
@@ -64,6 +63,12 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
         return (subjectList != null) ? subjectList.size() : 0;
     }
 
+    /**
+     * position, chapterId, subjectId 값을 다이얼로그 프래그먼트로 넘겨줌
+     * @param position
+     * @param chapterId
+     * @param subjectId
+     */
     private void showDialog(int position, String chapterId, String subjectId) {
         ChapterDialogFragment chapterDialogFragment = new ChapterDialogFragment();
         Bundle bundle = new Bundle();
@@ -71,7 +76,6 @@ public class StudyRecyclerAdapter extends RecyclerView.Adapter<StudyRecyclerView
         bundle.putString("chapterId", chapterId);
         bundle.putString("subjectId", subjectId);
         chapterDialogFragment.setArguments(bundle);
-
         chapterDialogFragment.setCancelable(false);
         chapterDialogFragment.show(fm, "ChapterDialogFragment");
     }
