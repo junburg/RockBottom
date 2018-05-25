@@ -50,14 +50,14 @@ public class EmailSignUpActivity extends AppCompatActivity{
      * Initial setting
      */
     private void initSetting() {
-        // Context
-        context = EmailSignUpActivity.this;
-
         // View
         emailLoginEmailTxt = (TextInputEditText) findViewById(R.id.email_login_email_txt);
         emailLoginPasswordTxt = (TextInputEditText) findViewById(R.id.email_login_password_txt);
         emailLoginCheckPasswordTxt = (TextInputEditText) findViewById(R.id.email_login_check_password_txt);
         emailLoginSignUpBtn = (Button) findViewById(R.id.email_login_sign_up_btn);
+
+        // Context
+        context = EmailSignUpActivity.this;
 
         // Util
         firebaseMethods = new FirebaseMethods(context);
@@ -71,7 +71,6 @@ public class EmailSignUpActivity extends AppCompatActivity{
                 userSignUp();
             }
         });
-
     }
 
     private void userSignUp() {

@@ -110,8 +110,6 @@ public class InputInfoActivity extends AppCompatActivity {
         viewSetting();
         checkPermission();
 
-
-
     }
 
     /**
@@ -320,7 +318,7 @@ public class InputInfoActivity extends AppCompatActivity {
             selfieUri = null;
             User user = setUserData(selfieUri);
             firebaseDatabase.getReference().child("users").child(uid).setValue(user);
-            firebaseMethods.initUserConditionSetting(uid, progressDialog);
+          //  firebaseMethods.initUserConditionSetting(uid, progressDialog);
             startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
             finish();
 
@@ -344,7 +342,7 @@ public class InputInfoActivity extends AppCompatActivity {
                     User user = setUserData(downloadUrl);
                     Log.d(TAG, "onSuccess: " + user.toString());
                     firebaseDatabase.getReference().child("users").child(uid).setValue(user);
-                    firebaseMethods.initUserConditionSetting(uid, progressDialog);
+                //    firebaseMethods.initUserConditionSetting(uid, progressDialog);
                     startActivity(new Intent(InputInfoActivity.this, MainActivity.class));
                     finish();
                 }

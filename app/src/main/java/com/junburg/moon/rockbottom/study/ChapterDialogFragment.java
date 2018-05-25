@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.junburg.moon.rockbottom.R;
 import com.junburg.moon.rockbottom.learn.LearnActivity;
+import com.junburg.moon.rockbottom.quiz.QuizActivity;
 
 /**
  * Created by Junburg on 2018. 3. 13..
@@ -54,6 +55,14 @@ public class ChapterDialogFragment extends DialogFragment {
                 intent.putExtra("subjectId", subjectId);
                 getActivity().startActivity(intent);
                 dismiss();
+            }
+        });
+
+        dialogQuizLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), QuizActivity.class);
+                startActivity(intent);
             }
         });
 

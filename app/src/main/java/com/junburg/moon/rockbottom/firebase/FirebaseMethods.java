@@ -113,35 +113,37 @@ public class FirebaseMethods {
      * @param progressDialog
      */
     private void sendVerificationEmail(final ProgressDialog progressDialog) {
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser != null) {
-            firebaseUser.sendEmailVerification()
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Snackbar
-                                        .make(
-                                                ((EmailSignUpActivity) context).getWindow()
-                                                        .getDecorView().findViewById(android.R.id.content)
-                                                , "인증 메일을 보냈습니다! 확인 후 로그인 해주세요 :)"
-                                                , Snackbar.LENGTH_SHORT)
-                                        .show();
-                                progressDialog.dismiss();
+            firebaseUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
 
-                            } else {
-                                Snackbar
-                                        .make(
-                                                ((EmailSignUpActivity) context).getWindow()
-                                                        .getDecorView().findViewById(android.R.id.content)
-                                                , "해당 이메일로 인증 메일을 발송할 수 없습니다. 문의는 ahn428@gmail.com로 해주세요."
-                                                , Snackbar.LENGTH_SHORT)
-                                        .show();
-                                progressDialog.dismiss();
-                            }
-                        }
-                    });
+                        Snackbar
+                                .make(
+                                        ((EmailSignUpActivity) context).getWindow()
+                                                .getDecorView().findViewById(android.R.id.content)
+                                        , "인증 메일을 보냈습니다! 확인 후 로그인 해주세요 :)"
+                                        , Snackbar.LENGTH_SHORT)
+                                .show();
+                        progressDialog.dismiss();
+                    } else {
+                        Snackbar
+                                .make(
+                                        ((EmailSignUpActivity) context).getWindow()
+                                                .getDecorView().findViewById(android.R.id.content)
+                                        , "해당 이메일로 인증 메일을 발송할 수 없습니다. 문의는 ahn428@gmail.com로 해주세요."
+                                        , Snackbar.LENGTH_SHORT)
+                                .show();
+                        progressDialog.dismiss();
+                    }
+                }
+            });
         }
     }
+
+
 
     /**
      * 이메일 계정으로 로그인
@@ -151,7 +153,7 @@ public class FirebaseMethods {
      * @param progressDialog
      */
     public void loginEmail(String email, String password, final ProgressDialog progressDialog) {
-
+        final FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         // 입력 정보에 대한 유효성 체크
         ValidationCheck validationCheck = new ValidationCheck(context);
         if (validationCheck.isEmailString(email)
@@ -197,6 +199,7 @@ public class FirebaseMethods {
      * @param progressDialog
      */
     public void firstEmailLogin(String email, String password, final ProgressDialog progressDialog) {
+        final FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
         // 입력한 정보에 대한 유효성 체크
         ValidationCheck validationCheck = new ValidationCheck(context);

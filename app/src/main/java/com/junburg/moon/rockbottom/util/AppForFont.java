@@ -1,4 +1,4 @@
-package com.junburg.moon.rockbottom;
+package com.junburg.moon.rockbottom.util;
 
 import android.app.Application;
 

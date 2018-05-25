@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".AppForFont"
+        android:name=".util.AppForFont"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,6 +16,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.junburg.moon.rockbottom.login.LoginActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme2">
 
             <intent-filter>
@@ -27,31 +28,44 @@
         <activity
             android:name="com.junburg.moon.rockbottom.login.InputInfoActivity"
             android:theme="@style/AppTheme2"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"></activity>
         <activity
             android:name="com.junburg.moon.rockbottom.main.MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme2"></activity>
         <activity
             android:name="com.junburg.moon.rockbottom.myinfo.EditInfoActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme2"></activity>
         <activity
             android:name="com.junburg.moon.rockbottom.learn.LearnActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme2"></activity>
         <activity
             android:name=".login.EmailLoginActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme2"></activity>
         <activity
             android:name=".login.EmailSignUpActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme2"></activity>
         <activity
             android:name=".myinfo.AccountSettingActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme2"></activity>
         <activity
             android:name=".myinfo.StudyConditionActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme2"></activity>
 
         <activity
             android:name=".myinfo.DeleteEmailAccountActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2"></activity>
+        <activity
+            android:name=".quiz.QuizActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme2"></activity>
 
         <meta-data

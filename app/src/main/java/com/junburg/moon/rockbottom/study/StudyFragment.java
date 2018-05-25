@@ -92,6 +92,7 @@ public class StudyFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -133,7 +134,7 @@ public class StudyFragment extends Fragment {
         studyRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         studyRecycler.setNestedScrollingEnabled(false);
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        studyRecyclerAdapter = new StudyRecyclerAdapter(subjectList, getContext(), fm);
+        studyRecyclerAdapter = new StudyRecyclerAdapter(subjectList, fm);
         studyRecycler.setAdapter(studyRecyclerAdapter);
 
     }

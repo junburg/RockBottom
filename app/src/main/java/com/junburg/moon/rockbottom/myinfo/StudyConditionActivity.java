@@ -1,5 +1,6 @@
 package com.junburg.moon.rockbottom.myinfo;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -63,7 +64,6 @@ public class StudyConditionActivity extends AppCompatActivity {
 
         initSetting();
         viewSetting();
-        getUserStudyCondition(firebaseUser.getUid());
     }
 
     /**
@@ -99,6 +99,7 @@ public class StudyConditionActivity extends AppCompatActivity {
      * Set view
      */
     private void viewSetting() {
+        getUserStudyCondition(firebaseUser.getUid());
 
         setSupportActionBar(studyConditionToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -108,6 +109,7 @@ public class StudyConditionActivity extends AppCompatActivity {
         studyConditionRecycler.setLayoutManager(new LinearLayoutManager(this));
         studyConditionRecyclerAdapter = new StudyConditionRecyclerAdapter(subjectNameList, countChapterList, trueChapterList);
         studyConditionRecycler.setAdapter(studyConditionRecyclerAdapter);
+        studyConditionRecyclerAdapter.notifyDataSetChanged();
 
     }
 
@@ -126,6 +128,8 @@ public class StudyConditionActivity extends AppCompatActivity {
                     }
                     countChapterList.add(count);
                 }
+                studyConditionRecyclerAdapter.notifyDataSetChanged();
+
             }
 
             @Override
@@ -142,9 +146,8 @@ public class StudyConditionActivity extends AppCompatActivity {
                     String name = ds.child("name").getValue().toString();
                     subjectNameList.add(name);
                     trueChapterList.add((int) ds.getChildrenCount());
-                    Log.d(TAG, "query1: " + name);
+                    Log.d(TAG, "query1: " + name + ds.getChildrenCount());
                 }
-
                 studyConditionRecyclerAdapter.notifyDataSetChanged();
 
             }
