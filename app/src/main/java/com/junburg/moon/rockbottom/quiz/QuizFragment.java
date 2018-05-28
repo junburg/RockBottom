@@ -34,6 +34,18 @@ public class QuizFragment extends Fragment{
     private RecyclerView quizRecyclerView;
     private ArrayList<String> exampleList = new ArrayList<>();
 
+    public static QuizFragment newInstance(int quizProgress, int quizSize, Quiz quiz) {
+
+        Bundle args = new Bundle();
+        args.putInt("quizProgress", quizProgress);
+        args.putInt("quizSize", quizSize);
+        args.putParcelable("quizObject", quiz);
+        QuizFragment fragment = new QuizFragment();
+        fragment.setArguments(args);
+        return fragment;
+
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -66,10 +78,6 @@ public class QuizFragment extends Fragment{
         QuizRecyclerAdapter quizRecyclerAdapter = new QuizRecyclerAdapter(exampleList);
         quizRecyclerView.setAdapter(quizRecyclerAdapter);
         quizQuestionProgressTxt.setText((quizProgress + 1) + "/" + quizSize);
-
-
-
-
 
     }
 }

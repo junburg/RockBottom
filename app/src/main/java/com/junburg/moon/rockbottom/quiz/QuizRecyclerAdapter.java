@@ -1,5 +1,6 @@
 package com.junburg.moon.rockbottom.quiz;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.util.ItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,9 @@ import java.util.List;
 
 public class QuizRecyclerAdapter extends RecyclerView.Adapter<QuizRecyclerViewHolder>{
 
-    private ArrayList<String> exampleList = new ArrayList<>();
+    private List<String> exampleList;
+    int row_index = -1;
+
     public QuizRecyclerAdapter(ArrayList<String> exampleList) {
         this.exampleList = exampleList;
     }
@@ -48,6 +52,22 @@ public class QuizRecyclerAdapter extends RecyclerView.Adapter<QuizRecyclerViewHo
                 break;
         }
         holder.quizExampleTxt.setText(append + exampleList.get(position));
+
+        holder.setItemClickListener(new ItemClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                row_index = position;
+                notifyDataSetChanged();
+            }
+        });
+
+        if(row_index == position) {
+            holder.itemView.setBackgroundColor(Color.parseColor("#F8F8FA"));
+            holder.quizExampleTxt.setTextColor(Color.parseColor("#c5c5c7"));
+        } else {
+            holder.itemView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            holder.quizExampleTxt.setTextColor(Color.parseColor("#000000"));
+        }
     }
 
     @Override

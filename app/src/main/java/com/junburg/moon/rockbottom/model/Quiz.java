@@ -9,13 +9,14 @@ import android.os.Parcelable;
 
 public class Quiz implements Parcelable{
 
-    String question;
-    String firstExample;
-    String secondExample;
-    String thirdExample;
-    String fourthExample;
+    private String question;
+    private String firstExample;
+    private String secondExample;
+    private String thirdExample;
+    private String fourthExample;
 
     public Quiz() {
+
     }
 
     protected Quiz(Parcel in) {

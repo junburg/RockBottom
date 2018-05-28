@@ -57,14 +57,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private void viewSetting() {
 
-        quizFragment = new QuizFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("quizObject", quizList.get(0));
-        bundle.putInt("quizProgress", 0);
-        bundle.putInt("quizSize", quizList.size());
-        quizFragment.setArguments(bundle);
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.container, quizFragment).commit();
+        makeQuizFragment(0, quizList.size(), quizList.get(0));
 
         quizBackBtn.setVisibility(View.INVISIBLE);
         quizBackBtn.setOnClickListener(new View.OnClickListener() {
@@ -72,14 +65,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (fragmentCount > 0 && fragmentCount < quizList.size()) {
                     fragmentCount--;
-                    quizFragment = new QuizFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("quizObject", quizList.get(fragmentCount));
-                    bundle.putInt("quizProgress", fragmentCount);
-                    bundle.putInt("quizSize", quizList.size());
-                    quizFragment.setArguments(bundle);
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.container, quizFragment).commit();
+                    makeQuizFragment(fragmentCount, quizList.size(), quizList.get(fragmentCount));
                     if (fragmentCount > 0 && fragmentCount < quizList.size() - 1) {
                         quizForwardBtn.setVisibility(View.VISIBLE);
                     }
@@ -98,15 +84,8 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (fragmentCount >= 0 && fragmentCount < quizList.size()) {
                     fragmentCount++;
-                    quizFragment = new QuizFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("quizObject", quizList.get(fragmentCount));
-                    bundle.putInt("quizProgress", fragmentCount);
-                    bundle.putInt("quizSize", quizList.size());
-                    quizFragment.setArguments(bundle);
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.container, quizFragment).commit();
-                    if (fragmentCount > 0 && fragmentCount < quizList.size()) {
+                    makeQuizFragment(fragmentCount, quizList.size(), quizList.get(fragmentCount));
+                     if (fragmentCount > 0 && fragmentCount < quizList.size()) {
                         quizBackBtn.setVisibility(View.VISIBLE);
                     }
                     if (fragmentCount == quizList.size() - 1) {
@@ -157,6 +136,11 @@ public class QuizActivity extends AppCompatActivity {
         quizList.add(quiz4);
 
 
+    }
+
+    private void makeQuizFragment(int quizProgress, int quizSize, Quiz quiz) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.container, QuizFragment.newInstance(quizProgress, quizSize, quiz)).commit();
     }
 
 
