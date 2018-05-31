@@ -1,6 +1,8 @@
 package com.junburg.moon.rockbottom.quiz;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -13,7 +15,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.junburg.moon.rockbottom.R;
+import com.junburg.moon.rockbottom.learn.LearnActivity;
+import com.junburg.moon.rockbottom.login.LoginActivity;
 import com.junburg.moon.rockbottom.model.Quiz;
 
 import java.io.Serializable;
@@ -28,12 +39,28 @@ import java.util.Map;
 
 public class QuizActivity extends AppCompatActivity {
 
+    private static final String TAG = "QuizActivity";
+
     // Views
     private ImageButton quizBackBtn, quizForwardBtn;
     private TextView quizConfirmBtn;
     private Fragment quizFragment;
     private ArrayList<Quiz> quizList = new ArrayList<>();
     private int fragmentCount = 0;
+
+    // Objects
+    private Intent intent;
+
+    // Variables
+    private String chapterId;
+    private String subjectId;
+    private int position;
+
+    // Firebase
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
 
 
     @Override
@@ -43,15 +70,39 @@ public class QuizActivity extends AppCompatActivity {
 
         initSetting();
         setQuizData();
-        viewSetting();
 
     }
 
     private void initSetting() {
 
+        // Views
         quizBackBtn = (ImageButton) findViewById(R.id.quiz_back_btn);
         quizForwardBtn = (ImageButton) findViewById(R.id.quiz_forward_btn);
         quizConfirmBtn = (TextView) findViewById(R.id.quiz_confirm_btn);
+
+        // Intent
+        intent = getIntent();
+        chapterId = intent.getStringExtra("chapterId");
+        subjectId = intent.getStringExtra("subjectId");
+        position = intent.getIntExtra("position", 0);
+
+        // Firebases
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                if(firebaseUser == null) {
+                    Intent intent = new Intent(QuizActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }
+        };
+
+
 
     }
 
@@ -96,47 +147,35 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
+
 
     private void setQuizData() {
+        databaseReference.child("quiz").child(subjectId).child(chapterId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                quizList.clear();
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Quiz quiz = ds.getValue(Quiz.class);
+                    Log.d(TAG, "quiz: " + quiz.toString());
+                    quizList.add(quiz);
+                }
 
-        quizList.clear();
+                viewSetting();
+            }
 
-        Quiz quiz1 = new Quiz();
-        quiz1.setQuestion("Question1");
-        quiz1.setFirstExample("Example1");
-        quiz1.setSecondExample("Example2");
-        quiz1.setThirdExample("Example3");
-        quiz1.setFourthExample("Example4");
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        Quiz quiz2 = new Quiz();
-        quiz2.setQuestion("Question2");
-        quiz2.setFirstExample("Example1");
-        quiz2.setSecondExample("Example2");
-        quiz2.setThirdExample("Example3");
-        quiz2.setFourthExample("Example4");
+            }
+        });
 
-        Quiz quiz3 = new Quiz();
-        quiz3.setQuestion("Question3");
-        quiz3.setFirstExample("Example1");
-        quiz3.setSecondExample("Example2");
-        quiz3.setThirdExample("Example3");
-        quiz3.setFourthExample("Example4");
-
-        Quiz quiz4 = new Quiz();
-        quiz4.setQuestion("Question4");
-        quiz4.setFirstExample("Example1");
-        quiz4.setSecondExample("Example2");
-        quiz4.setThirdExample("Example3");
-        quiz4.setFourthExample("Example4");
-
-        quizList.add(quiz1);
-        quizList.add(quiz2);
-        quizList.add(quiz3);
-        quizList.add(quiz4);
 
 
     }
+
 
     private void makeQuizFragment(int quizProgress, int quizSize, Quiz quiz) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

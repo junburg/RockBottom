@@ -7,13 +7,14 @@ import android.os.Parcelable;
  * Created by Junburg on 2018. 5. 24..
  */
 
-public class Quiz implements Parcelable{
+public class Quiz implements Parcelable {
 
     private String question;
     private String firstExample;
     private String secondExample;
     private String thirdExample;
     private String fourthExample;
+    private int answerNumber;
 
     public Quiz() {
 
@@ -25,7 +26,9 @@ public class Quiz implements Parcelable{
         secondExample = in.readString();
         thirdExample = in.readString();
         fourthExample = in.readString();
+        answerNumber = in.readInt();
     }
+
 
     public static final Creator<Quiz> CREATOR = new Creator<Quiz>() {
         @Override
@@ -79,6 +82,18 @@ public class Quiz implements Parcelable{
         this.fourthExample = fourthExample;
     }
 
+    public int getAnswerNumber() {
+        return answerNumber;
+    }
+
+    public void setAnswerNumber(int answerNumber) {
+        this.answerNumber = answerNumber;
+    }
+
+    public static Creator<Quiz> getCREATOR() {
+        return CREATOR;
+    }
+
     @Override
     public String toString() {
         return "Quiz{" +
@@ -87,6 +102,7 @@ public class Quiz implements Parcelable{
                 ", secondExample='" + secondExample + '\'' +
                 ", thirdExample='" + thirdExample + '\'' +
                 ", fourthExample='" + fourthExample + '\'' +
+                ", answerNumber=" + answerNumber +
                 '}';
     }
 
@@ -102,6 +118,7 @@ public class Quiz implements Parcelable{
         dest.writeString(secondExample);
         dest.writeString(thirdExample);
         dest.writeString(fourthExample);
+        dest.writeInt(answerNumber);
 
     }
 }

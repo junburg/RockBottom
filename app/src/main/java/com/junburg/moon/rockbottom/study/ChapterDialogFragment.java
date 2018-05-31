@@ -62,7 +62,11 @@ public class ChapterDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), QuizActivity.class);
+                intent.putExtra("position", position);
+                intent.putExtra("chapterId", chapterId);
+                intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+
             }
         });
 

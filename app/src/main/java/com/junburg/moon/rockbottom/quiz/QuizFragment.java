@@ -80,4 +80,5 @@ public class QuizFragment extends Fragment{
         quizQuestionProgressTxt.setText((quizProgress + 1) + "/" + quizSize);
 
     }
+
 }
